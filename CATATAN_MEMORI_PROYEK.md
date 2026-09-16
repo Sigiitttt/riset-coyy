@@ -149,12 +149,22 @@ Data Understanding Isic & Ham10k/
 │   ├── dataset_irisan_7kelas_final.csv     # Dataset final irisan 7 kelas alternatif (24.900 citra bersih)
 │   ├── HAM10K/                             # Folder dataset HAM10000 & uji ISIC 2018
 │   ├── isic 2016/ ... isic 2024/           # Arsip kompetisi ISIC tahunan
-├── kode/                                   # Direktori seluruh notebook Jupyter
-│   ├── 1-data_understanding_isic.ipynb     # Analisis awal & deteksi overlap seluruh ISIC
-│   ├── binary_mapping.ipynb                # Notebook jalur biner (100% selesai & dieksekusi)
-│   ├── irisan_mapping.ipynb                # Notebook jalur irisan 3 kelas AKTIF (100% selesai & dieksekusi)
-│   ├── baseline_modeling_3kelas.ipynb      # Notebook baseline modeling PyTorch 3 kelas (Tugas 3 SELESAI)
-│   └── irisan_7kelas_mapping.ipynb         # Notebook jalur irisan 7 kelas alternatif (100% selesai & dieksekusi)
+├── kode/                                   # Direktori seluruh kode & notebook terstruktur rapi
+│   ├── 1_data_understanding/               # Eksplorasi awal dataset ISIC & HAM10000
+│   │   ├── 1-data_understanding_isic.ipynb
+│   │   ├── 1.1-data_understanding_isic copy.ipynb
+│   │   ├── 1.1-data_understanding_isic.ipynb.bak
+│   │   ├── 1.1-data_understanding_isic_exclude isic 20.ipynb
+│   │   └── kaggle isic CLI  16-24-ham10k.ipynb
+│   ├── 2_jalur_biner/                      # Jalur Biner (Benign 0 vs Malignant 1 - Global Union)
+│   │   ├── binary_mapping.ipynb
+│   │   └── data understanding biner.ipynb
+│   ├── 3_jalur_irisan_3kelas/              # Jalur Irisan 3 Kelas (NV, MEL, BKL - Sesuai Dosen)
+│   │   ├── irisan_mapping.ipynb            # Data preparation & lesion-aware split 80:10:10
+│   │   ├── baseline_modeling_3kelas.ipynb  # Notebook baseline modeling PyTorch 3 kelas
+│   │   └── train_baseline.py               # Skrip eksekusi pelatihan modular (ResNet-50 & EfficientNet-B0)
+│   └── 4_jalur_irisan_7kelas/              # Jalur Irisan 7 Kelas (HAM10k ∩ ISIC 2019 - Alternatif)
+│       └── irisan_7kelas_mapping.ipynb
 ├── notes jurnal/                           # Direktori catatan, analisis, & ringkasan jurnal
 │   ├── biner/                              # Catatan riset jalur biner
 │   │   ├── ringkasan jurnal biner saya.txt                # Catatan ringkasan paper rujukan biner

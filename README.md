@@ -43,11 +43,11 @@ Riset ini mengintegrasikan repositori arsip lesi kulit internasional terbesar di
 │   ├── dataset_irisan_3kelas_test.csv      # Test set 10% (2.203 baris)
 │   ├── dataset_irisan_7kelas_final.csv     # Master dataset 7 kelas (24.900 baris)
 │   └── dataset_binary_final.csv            # Master dataset biner (33.552 baris)
-├── kode/                                   # Direktori Notebook Jupyter Eksperimen
-│   ├── irisan_mapping.ipynb                # Pipeline data understanding, irisan 3 kelas, & split
-│   ├── baseline_modeling_3kelas.ipynb      # Pipeline DataLoader PyTorch, ResNet-50, & Evaluasi Test
-│   ├── irisan_7kelas_mapping.ipynb         # Pipeline irisan 7 kelas
-│   └── binary_mapping.ipynb                # Pipeline pemetaan biner
+├── kode/                                   # Direktori kode & notebook terstruktur rapi
+│   ├── 1_data_understanding/               # Eksplorasi awal dataset ISIC & HAM10000
+│   ├── 2_jalur_biner/                      # Pipeline pemetaan biner (33.552 citra)
+│   ├── 3_jalur_irisan_3kelas/              # Pipeline irisan 3 kelas, modeling, & train_baseline.py
+│   └── 4_jalur_irisan_7kelas/              # Pipeline irisan 7 kelas benchmark (24.900 citra)
 ├── notes jurnal/                           # Analisis literatur paper ilmiah Scopus Q1
 │   ├── irisan/                             # Ringkasan paper pendukung jalur irisan
 │   └── biner/                              # Ringkasan paper pendukung jalur biner
@@ -68,13 +68,13 @@ git clone https://github.com/Sigiitttt/riset-coyy.git
 cd riset-coyy
 ```
 
-### 2. Menjalankan Notebook
-1. **Pemetaan & Partisi Data:** Buka [`kode/irisan_mapping.ipynb`](kode/irisan_mapping.ipynb) untuk melihat proses deduplikasi terarah dan pembentukan subset Train/Val/Test.
-2. **Eksperimen Deep Learning:** Buka [`kode/baseline_modeling_3kelas.ipynb`](kode/baseline_modeling_3kelas.ipynb) untuk melatih model baseline (ResNet-50 / EfficientNet-B0) menggunakan bobot penyeimbang (*Inverse Class Weights*):
-   * `NV` (0): Weight = 0.52
-   * `MEL` (1): Weight = 1.51
-   * `BKL` (2): Weight = 2.40
-   * Lengkap dengan visualisasi *Normalized Confusion Matrix* dan *Multi-class ROC Curves (One-vs-Rest)*.
+### 2. Menjalankan Notebook & Script
+1. **Pemetaan & Partisi Data:** Buka [`kode/3_jalur_irisan_3kelas/irisan_mapping.ipynb`](kode/3_jalur_irisan_3kelas/irisan_mapping.ipynb) untuk melihat proses deduplikasi terarah dan pembentukan subset Train/Val/Test.
+2. **Eksperimen Deep Learning (Jupyter):** Buka [`kode/3_jalur_irisan_3kelas/baseline_modeling_3kelas.ipynb`](kode/3_jalur_irisan_3kelas/baseline_modeling_3kelas.ipynb) untuk melatih model baseline (ResNet-50 / EfficientNet-B0).
+3. **Eksekusi Pelatihan Cepat (Python CLI):** Jalankan [`kode/3_jalur_irisan_3kelas/train_baseline.py`](kode/3_jalur_irisan_3kelas/train_baseline.py):
+   ```bash
+   python kode/3_jalur_irisan_3kelas/train_baseline.py --model efficientnet_b0 --epochs 10
+   ```
 
 ---
 
