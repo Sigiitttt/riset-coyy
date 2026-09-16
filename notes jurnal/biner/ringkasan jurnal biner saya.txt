@@ -1,0 +1,154 @@
+# ham10k
+
+# **Judul Paper:** Deep Learning Methods for Accurate Skin Cancer Recognition and Mobile Application
+
+- **Penulis:** Ioannis Kousis, Isidoros Perikos, Ioannis Hatzilygeroudis, dan Maria Virvou
+- **Jurnal:** *Electronics* (MDPI)
+- **Tahun Terbit:** 2022 (Diterima: 17 April 2022, Dipublikasikan: 19 April 2022)
+- **Volume / Isu / Halaman:** Vol. 11, No. 9, Art. 1294 (hal. 1–19)
+- **DOI:** 10.3390/electronics11091294
+- **Dataset yang Digunakan:** HAM10000 (10.015 citra dermoskopi)
+- **Model Terbaik:** DenseNet169
+
+| **Kode Kelas** | **Nama Lengkap Lesi Kulit** | **Kategori Medis Asli** | **Pemetaan Biner (Output Model)** |
+| --- | --- | --- | --- |
+| `nv` | Melanocytic nevus | Benign (Jinak) | **Benign** |
+| `bkl` | Benign keratosis lesions | Benign (Jinak) | **Benign** |
+| `vasc` | Vascular lesion | Benign (Jinak) | **Benign** |
+| `df` | Dermatofibroma | Benign (Jinak) | **Benign** |
+| `mel` | Melanoma | Malignant (Ganas) | **Malignant** |
+| `bcc` | Basal cell carcinoma | Malignant (Ganas) | **Malignant** |
+| `akiec` | Actinic keratosis & intraepithelial carcinoma | Malignant (Ganas / Pre-kanker) | **Malignant** |
+
+# **Judul Paper:** Assisted deep learning framework for multi-class skin lesion classification considering a binary classification support
+
+- **Penulis:** Balázs Harangi, Ágnes Baran, dan András Hajdu
+- **Afiliasi:** Faculty of Informatics, University of Debrecen, Debrecen, Hungary
+- **Nama Jurnal:** *Biomedical Signal Processing and Control* (Elsevier)
+- **Tahun Terbit:** 2020 (Volume 62, Artikel 102041)
+- **DOI:** `10.1016/j.bspc.2020.102041`
+- **Sumber Data Asli:** Dataset kompetisi ISIC 2018 / HAM10000
+
+| **Kode Kelas** | **Nama Asli / Diagnosis Medis** | **Label Biner** | **Arti Label Biner** | **Jumlah Data Latih** |
+| --- | --- | --- | --- | --- |
+| C_BKL | Benign keratosis (solar lentigo / seborrheic keratosis / lichen planus-like keratosis) | C_NEG | Benign (Jinak / Sehat) | 1.099 |
+| C_DF | Dermatofibroma | C_NEG | Benign (Jinak / Sehat) | 115 |
+| C_NV | Melanocytic nevus | C_NEG | Benign (Jinak / Sehat) | 6.705 |
+| C_AKIE | Actinic keratosis / Bowen's disease | C_POS | Malignant (Ganas / Berpenyakit) | 327 |
+| C_BCC | Basal cell carcinoma | C_POS | Malignant (Ganas / Berpenyakit) | 514 |
+| C_MEL | Melanoma | C_POS | Malignant (Ganas / Berpenyakit) | 1.113 |
+| C_VASC | Vascular lesion | C_POS | Malignant (Ganas / Berpenyakit) | 142 |
+
+# j**udul Paper:** SkinNet-16: A deep learning approach to identify benign and malignant skin lesions
+
+- **Nama Jurnal:** Frontiers in Oncology
+- **Tahun Publikasi:** 2022 (Published: 08 August 2022)
+- **Penulis:** Pronab Ghosh, Sami Azam, Ryana Quadir, Asif Karim, F. M. Javed Mehedi Shamrat, Shohag Kumar Bhowmik, Mirjam Jonkman, Khan Md. Hasib, dan Kawsar Ahmed
+- **DOI:** 10.3389/fonc.2022.931141
+- **Tipe Artikel:** Original Research
+- **Lokasi Keterangan di Paper:** Bagian **3 Dataset**, Halaman 4, Kolom Kiri
+
+| **Singkatan** | **Nama Awal Kelas (Original Class)** | **Kategori Pemetaan (Binary Class)** | **Jumlah Citra Awal** |
+| --- | --- | --- | --- |
+| **df** | Dermatofibroma | **Benign (Jinak)** | 115 |
+| **bkl** | Benign keratosis-like lesions | **Benign (Jinak)** | 1.099 |
+| **vasc** | Vascular lesions | **Benign (Jinak)** | 142 |
+| **nv** | Melanocytic nevi | **Benign (Jinak)** | 6.705 |
+| **bcc** | Basal cell carcinoma | **Malignant (Ganas)** | 514 |
+| **mel** | Melanoma | **Malignant (Ganas)** | 1.113 |
+| **akiec** | Actinic keratoses and intraepithelial carcinoma / Bowen's disease | **Malignant (Ganas)** | 327 |
+
+### **Judul Paper:** A Deep Learning Approach to Skin Cancer Detection in Dermoscopy Images
+
+- **Nama Jurnal:** Journal of Biomedical Physics and Engineering (JBPE)
+- **Tahun Publikasi:** 2020 (Volume 10, Issue 6, Halaman 801–806; Diterima: 06 Juni 2020)
+- **Penulis:** A. Ameri
+- **DOI:** 10.31661/jbpe.v010i2004-1107
+- **Tipe Artikel:** Technical Note
+- **Lokasi Keterangan di Paper:** Bagian **Technical Presentation > Data Description**, Halaman 802, Kolom Kanan, Paragraf 1
+
+| **Kode Asli HAM10000** | **Nama Kelas Asli di HAM10000** | **Nama Lesi di Paper** | **Pemetaan Biner** | **Jumlah Sampel** |
+| --- | --- | --- | --- | --- |
+| **mel** | *Melanoma* | *Melanoma* | **Malignant** (Ganas) | 860 |
+| **bcc** | *Basal cell carcinoma* | *Basal cell carcinoma (BCC)* | **Malignant** (Ganas) | 513 |
+| **akiec** | *Actinic keratoses and intraepithelial carcinoma* | *Actinic keratoses and intraepithelial carcinoma (AKIEC)* | **Malignant** (Ganas) | 327 |
+| **df** | *Dermatofibroma* | *Dermatofibroma* | **Benign** (Jinak) | 115 |
+| **nv** | *Melanocytic nevi* | *Melanocytic nevi* | **Benign** (Jinak) | 795 |
+| **bkl** | *Benign keratosis* | *Benign keratosis (BK)* | **Benign** (Jinak) | 790 |
+| **vasc** | *Vascular lesions* | *Tidak disertakan dalam studi* | *Exclude* (Diabaikan) | 0 |
+| **TOTAL** | — | — | **1.700 Benign / 1.700 Malignant** | **3.400** |
+
+
+
+
+
+
+
+
+
+
+
+
+# isic 2017
+
+# **Judul Paper: Explainable skin lesion diagnosis using taxonomies**
+
+• **Penulis:** Catarina Barata, M. Emre Celebi, dan Jorge S. Marques
+• **Jurnal:** *Pattern Recognition* (Elsevier)
+• **Tahun Terbit:** 2020 (Diterima: 15 Juli 2019, Direvisi: 18 April 2020, Disetujui: 29 April 2020)
+• **Volume / Isu / Halaman:** Vol. 110, Art. 107413 (hal. 1–11)
+• **DOI:** 10.1016/j.patcog.2020.107413
+• **Dataset yang Digunakan:** ISIC 2017 (2.750 citra dermoskopi: 2.000 latih, 150 validasi, dan 600 uji) serta ISIC 2018 (11.527 citra)
+• **Model Terbaik:** DenseNet-161 + Channel Attention ($r=2$) + Spatial Attention + LSTM (Inference CI1)
+
+| **Kode Kelas** | **Nama Lengkap Lesi Kulit** | **Kategori Medis Asli** | **Pemetaan Biner (Output Model)** |
+| --- | --- | --- | --- |
+| `nevus` | Melanocytic nevi (Congenital, Atypical, Spitz/Reed nevi) | Benign (Jinak) | **Benign** |
+| `keratosis` | Seborrheic keratosis / Benign keratosis | Benign (Jinak) | **Benign** |
+| `melanoma` | Melanoma | Malignant (Ganas) | **Malignant** |
+
+# **Judul Paper: Melanoma diagnosis using deep learning techniques on dermatoscopic images**
+
+• **Penulis:** Mario Fernando Jojoa Acosta, Liesle Yail Caballero Tovar, Maria Begonya Garcia-Zapirain, dan Winston Spencer Percybrooks
+• **Jurnal:** *BMC Medical Imaging* (BMC / Springer Nature)
+• **Tahun Terbit:** 2021 (Diterima: 5 Juli 2020, Disetujui: 8 Desember 2020, Daring: 6 Januari 2021)
+• **Volume / Isu / Halaman:** Vol. 21, Art. 6 (hal. 1–11)
+• **DOI:** 10.1186/s12880-020-00534-8
+• **Dataset yang Digunakan:** ISIC / ISBI 2017 (1.995 latih, 149 validasi, dan 598 uji) serta database $PH^2$ (tambahan sampel *malignant* pada Model 5)
+• **Model Terbaik:** Mask R-CNN (Tahap 1: Deteksi & *Cropping* ROI) + ResNet152 *Fine-tuned* (Tahap 2: Klasifikasi Biner, Konfigurasi eVida Model 6)
+**Tabel Pemetaan Kelas ke BinerNama Awal Kelas (ISIC 2017)Pemetaan Biner (Label Output)Keterangan / Justifikasi PaperMelanomaMalignant**Ditetapkan sebagai kelas target ganas (*malignant*) atau lesi melanoma.**NevusBenign**Dikelompokkan ke dalam kelas jinak (*benign*) karena bukan termasuk lesi melanoma.**Seborrheic KeratosisBenign**
+
+| **Nama Awal Kelas (ISIC 2017)** | **Pemetaan Biner (Label Output)** | **Keterangan / Justifikasi Paper** |
+| --- | --- | --- |
+| **Melanoma** | **Malignant** | Ditetapkan sebagai kelas target ganas (*malignant*) atau lesi melanoma. |
+| **Nevus** | **Benign** | Dikelompokkan ke dalam kelas jinak (*benign*) karena bukan termasuk lesi melanoma. |
+| **Seborrheic Keratosis** | **Benign** | Dikelompokkan ke dalam kelas jinak (*benign*) karena bukan melanoma; evaluasi pada paper tidak menguji deteksi keratosis secara terpisah. |
+
+
+
+
+
+
+
+# isic 2019
+
+# **Judul Paper: MorphoNet: An Interpretable Hierarchical Deep Learning Framework for Multi-Class Skin Lesion Classification Using Dermoscopic Morphology**
+
+• **Penulis:** Bradley Yao, Angela Jin, Huijuan Liu, dan Qiliang Li
+• **Jurnal:** *Bioengineering* (MDPI)
+• **Tahun Terbit:** 2026 (Diterima: 16 Juli 2026, Dipublikasikan: 27 Agustus 2026)
+• **Volume / Isu / Halaman:** Vol. 13, No. 9, Art. 989 (hal. 1–20)
+• **DOI:** 10.3390/bioengineering13090989
+• **Dataset yang Digunakan:** HAM10000 (10.013 citra), ISIC 2019 (6.329 citra), dan DERM12345 (503 citra) — Total: 16.845 citra dermoskopi
+• **Model Terbaik:** MorphoNet (EfficientNet-B4 + Attention ABCD Descriptors + CORAL Regularization)
+
+| **Kode Kelas** | **Nama Lengkap Lesi Kulit** | **Kategori Medis Asli** | **Pemetaan Biner (Output Model - Stage 1)** |
+| --- | --- | --- | --- |
+| `NV` | Melanocytic nevi | Benign (Jinak) | **Benign** |
+| `BKL` | Benign keratosis-like lesions | Benign (Jinak) | **Benign** |
+| `DF` | Dermatofibroma | Benign (Jinak) | **Benign** |
+| `VASC` | Vascular lesions | Benign (Jinak) | **Benign** |
+| `MEL` | Melanoma | Malignant (Ganas) | **Malignant** |
+| `BCC` | Basal cell carcinoma | Malignant (Ganas) | **Malignant** |
+| `AKIEC` | Actinic keratoses | Malignant (Ganas / Pre-kanker) | **Malignant** |
+| `SCC` | Squamous cell carcinoma | Malignant (Ganas) | **Malignant** |

@@ -1,0 +1,55 @@
+                         DATA UNDERSTANDING
+                                │
+                                │
+               ┌────────────────┴────────────────┐
+               │                                 │
+               ▼                                 ▼
+          JALUR BINARY                       JALUR IRISAN
+               │                                 │
+               │                                 │
+               ▼                                 ▼
+        Lihat label asli                  Lihat label asli
+        tiap dataset                      tiap dataset
+               │                                 │
+               ▼                                 ▼
+        Cari paper yang                   Bandingkan label
+        menggunakan dataset              antar-dataset
+        tersebut untuk binary                    │
+               │                                 ▼
+               ▼                           Cari label yang
+        Baca & identifikasi               sama / ekuivalen
+        binary mapping                           │
+               │                                 ▼
+               ▼                           Verifikasi definisi
+        Tentukan mapping                   diagnosis
+        berdasarkan paper                        │
+               │                                 ▼
+               ▼                            HARMONISASI
+        Original label                           │
+               │                                 ▼
+               ▼                           Tentukan label
+        ┌───────────────┐                  standar yang
+        │               │                  digunakan bersama
+        ▼               ▼                       │
+      Benign         Malignant                    ▼
+        │               │                  AMBIL IRISAN
+        └───────┬───────┘                       │
+                │                               ▼
+                ▼                         Kelas yang
+          Mapping final                   terdapat pada
+                │                         seluruh dataset
+                │                               │
+                │                               ▼
+                │                         Hitung jumlah
+                │                         kelas hasil irisan
+                │                               │
+                │                         ┌─────┴─────┐
+                │                         │           │
+                │                         ▼           ▼
+                │                      2 kelas     >2 kelas
+                │                         │           │
+                │                         ▼           ▼
+                │                       BINARY     MULTICLASS
+                │
+                ▼
+           DATA SIAP

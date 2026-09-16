@@ -1,0 +1,59 @@
+# =====================================================================
+# GITIGNORE: Proyek Riset Data Understanding ISIC & HAM10000
+# =====================================================================
+
+# 1. File Citra Fisik & Arsip Kompresi (PENTING: Jangan upload citra mentah ke GitHub)
+*.jpg
+*.jpeg
+*.png
+*.bmp
+*.tiff
+*.gif
+*.webp
+*.zip
+*.tar
+*.gz
+*.rar
+*.7z
+
+# 2. Folder Citra Mentah Dataset (Abaikan seluruh subfolder mentah di Dataset/)
+Dataset/HAM10K/
+Dataset/isic 2016/
+Dataset/isic 2017/
+Dataset/isic 2018/
+Dataset/isic 2019/
+Dataset/isic 2020/
+Dataset/isic 2024/
+
+# PENGECUALIAN: Tetap lacak file CSV hasil kurasi dan partisi dataset di Dataset/
+!Dataset/*.csv
+
+# 3. Model Weights & File Binary Besar
+*.pth
+*.pt
+*.h5
+*.hdf5
+*.onnx
+*.bin
+*.pkl
+models/*
+!models/.gitkeep
+
+# 4. Python, Jupyter, & Virtual Environment
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints/
+.pytest_cache/
+.env
+.venv
+env/
+venv/
+ENV/
+
+# 5. OS & IDE System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
