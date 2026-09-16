@@ -1,7 +1,7 @@
 # 🧠 DOKUMEN MEMORI UTAMA PROYEK (PERSISTENT MEMORY)
 **Proyek:** Data Understanding & Pemetaan Dataset ISIC (2016–2024) & HAM10000  
 **Lokasi Direktori:** `C:\Users\ARII\Downloads\Data Understanding Isic & Ham10k\`  
-* **Terakhir Diperbarui:** 16 September 2026, Pukul 12:00 WIB (Sesi Ditutup via `/end`)  
+* **Terakhir Diperbarui:** 16 September 2026, Pukul 17:40 WIB (Sesi Ditutup via `/end`)  
 
 
 ---
@@ -203,36 +203,36 @@ Progres implementasi Jalur Irisan 3 Kelas (HAM10000 ∩ ISIC 2017 ∩ ISIC 2019)
   - Evaluasi klinis menyeluruh pada Test Set (Accuracy, Balanced Acc, Sensitivity, Specificity, Precision, Macro ROC-AUC).
   - Visualisasi diagnostik *Normalized Confusion Matrix* & *Multi-Class ROC Curves (One-vs-Rest)*.
 
-### Rencana Tindak Lanjut Berikutnya (Eksekusi Pelatihan & Perbandingan Model):
-- [ ] **Tugas 4:** Menjalankan eksperimen pelatihan baseline (ResNet-50 vs EfficientNet-B0) pada lingkungan komputasi GPU (CUDA/Colab/Kaggle) dan mencatat tabel komparasi metrik diagnostik klinis (Macro F1, Balanced Accuracy, Sensitivity MEL).
-- [ ] **Tugas 5:** Eksplorasi teknik lanjutan penanganan class imbalance (Focal Loss, Class-Balanced Loss) dan arsitektur Vision Transformer (Swin Transformer / ConvNeXt).
+- [x] **Tugas 4 (Selesai):** Pembangunan mesin pelatihan modular [`kode/3_jalur_irisan_3kelas/train_baseline.py`](kode/3_jalur_irisan_3kelas/train_baseline.py) dan verifikasi *end-to-end smoke test* (EfficientNet-B0 & ResNet-50) berhasil 100%. Lengkap dengan loss berbobot (*Inverse Class Weights*), checkpointing otomatis (`best_val_f1`), evaluasi komprehensif test set, confusion matrix (`models/cm_*.png`), dan rekapitulasi metrik ke [`models/baseline_comparison_results.csv`](models/baseline_comparison_results.csv).
+- [x] **Tugas 5 (Selesai):** Restrukturisasi folder `kode/` menjadi 4 subdirektori tematik modular (`1_data_understanding/`, `2_jalur_biner/`, `3_jalur_irisan_3kelas/`, `4_jalur_irisan_7kelas/`) dengan path resolution adaptif (`../../Dataset` dan `../../models`) serta sinkronisasi penuh ke GitHub.
+- [x] **Tugas 6 (Selesai):** Perumusan dan pematangan strategi pencarian literatur paper ilmiah Jalur Irisan 3 Kelas (Harmonisasi Opsi C: Sumber Primer Label + Pendukung Multi-Dataset & Anti-Leakage).
+
+### Titik Lanjut Sesi Berikutnya (Next Steps saat `/start`):
+- [ ] **Langkah 1:** Menuliskan rangkuman dan tabel sitasi 5 paper ilmiah terpilih (Kelompok 1 Primer: Codella 2018, Tschandl 2018, Combalia 2019; Kelompok 2 Pendukung: Baig 2023, Ichim 2023) ke dalam file catatan `notes jurnal/irisan/ringkasan_jurnal_irisan_3kelas.md` atau draf Bab 2/3 skripsi.
+- [ ] **Langkah 2:** Menjalankan pelatihan penuh (*Full Training* 10–20 epoch) ResNet-50 vs EfficientNet-B0 pada akselerator GPU (Google Colab / Kaggle T4) menggunakan perintah `python kode/3_jalur_irisan_3kelas/train_baseline.py` dan mencatat tabel metrik performa klinis komparatif final.
+- [ ] **Langkah 3:** Eksplorasi penanganan ketimpangan data lanjutan (*Focal Loss* seperti pada notebook dosen `Eksperimen_Skenario1_Spark.ipynb` dan *Class-Balanced Loss*).
 
 ---
 
 ## 7. Catatan Penutupan Sesi Terakhir (Session Log via `/end`)
-* **Waktu Penutupan:** 16 September 2026, Pukul 12:00 WIB.
+* **Waktu Penutupan:** 16 September 2026, Pukul 17:40 WIB.
 * **Rangkuman Sesi Ini:**
-  1. **Pemulihan Sesi via `/start`:**
-     * Memulihkan memori utama proyek dari `CATATAN_MEMORI_PROYEK.md` dan mengidentifikasi fokus pada Jalur Irisan 3 Kelas (HAM10k ∩ ISIC 2017 ∩ ISIC 2019 — 22.051 citra bersih).
-  2. **Eksekusi Tugas 3 (Pipeline DataLoader & Baseline Modeling 3 Kelas):**
-     * Membangun notebook baru [`kode/baseline_modeling_3kelas.ipynb`](kode/baseline_modeling_3kelas.ipynb) (21 sel lengkap, terstruktur dan modular).
-     * Menerapkan deteksi hardware otomatis (CUDA vs CPU) dan reproducibility seed (42).
-     * Memuat 3 file partisi siap latih (`train.csv` 17.656 citra, `val.csv` 2.192 citra, `test.csv` 2.203 citra).
-     * Menghitung *Balanced Inverse Class Weights* (NV: 0,52, MEL: 1,51, BKL: 2,40) dan memasukkannya ke dalam `nn.CrossEntropyLoss`.
-     * Membangun `SkinLesionDataset` dengan pipeline augmentasi citra dermatologi medis (RandomResizedCrop 224, Flip, Rotation, ColorJitter, ImageNet norm) dan fungsi inspeksi batch RGB.
-     * Mengimplementasikan arsitektur transfer learning standar benchmark (ResNet-50 & EfficientNet-B0) dengan modifikasi classification head 3 kelas, optimizer AdamW, dan Cosine Annealing LR scheduler.
-     * Menyusun engine pelatihan & validasi modular dengan checkpointing otomatis (`best_val_f1`) yang tersimpan di folder [`models/`](models/).
-     * Menyusun fungsi evaluasi klinis komprehensif pada Test Set (Overall Acc, Balanced Acc, Macro F1, Sensitivity, Specificity, Precision, OvR ROC-AUC) serta visualisasi *Normalized Confusion Matrix Heatmap* dan kurva ROC multi-class.
-  3. **Analisis Ilmiah Skenario Biner Irisan (Benign vs Malignant Berbasis Intersection):**
-     * Menjawab pertanyaan pengguna mengenai formulasi biner jika dibuat dengan pendekatan irisan (bukan union).
-     * Merumuskan 2 opsi ilmiah yang sangat solid:
-       - **Opsi A (Irisan 3 Kelas $\rightarrow$ Biner):** NV + BKL (17.156 / 77,8%) vs MEL (4.895 / 22,2%) — Total 22.051 citra. Benchmark resmi ISIC 2017 Task 3 Sub-challenge 1 (*Melanoma Detection*) yang memungkinkan komparasi langsung (*apples-to-apples*) dengan model 3-kelas karena datasetnya identik.
-       - **Opsi B (Irisan 7 Kelas $\rightarrow$ Biner):** NV + BKL + DF + VASC (15.991 / 64,2%) vs MEL + BCC + AKIEC (8.909 / 35,8%) — Total 24.900 citra dengan rasio kelas seimbang dan mencakup kanker non-melanoma.
-  4. **Inisialisasi Git & Publikasi Repositori GitHub:**
-     * Menyiapkan konfigurasi [`.gitignore`](.gitignore) untuk memproteksi puluhan ribu citra mentah (`*.jpg`, folder `Dataset/isic*`, `HAM10K`) dan bobot model (`*.pth`) dari batas kuota GitHub, sekaligus mempertahankan 6 file CSV partisi penting di `Dataset/`.
-     * Menulis dokumentasi komprehensif pada [`README.md`](README.md) agar mudah dipahami oleh rekan/kolaborator pengguna.
-     * Menginisialisasi Git, menghubungkan remote `origin` ke `https://github.com/Sigiitttt/riset-coyy.git`, dan berhasil melakukan push 100% tuntas ke branch `main`.
-* **Status Memori:** **AMAN, TERSINKRONISASI KE GITHUB, & PERSISTEN.** Seluruh notebook, dataset CSV siap latih, dan repositori telah tersimpan rapi. Sesi berikutnya siap dilanjutkan kapan saja dengan mengetik **`/start`**.
+  1. **Pembuatan Mesin Pelatihan Modular & Verifikasi Smoke-Test (Tugas 4):**
+     * Membangun skrip CLI modular [train_baseline.py](kode/3_jalur_irisan_3kelas/train_baseline.py) yang kompatibel dengan CPU dan GPU CUDA, dilengkapi penanganan encoding UTF-8 untuk Windows, argumen `--smoke_test`, dan perbaikan `weights_only=False` pada PyTorch modern.
+     * Menjalankan uji verifikasi end-to-end pada kedua arsitektur (EfficientNet-B0 & ResNet-50). Keduanya lulus 100% dengan metrik test set, file checkpoint `.pth`, normalized confusion matrix `.png`, dan rekapitulasi ke `baseline_comparison_results.csv`.
+  2. **Bedah File Acuan Dosen (`Eksperimen_Skenario1_Spark.ipynb`):**
+     * Menganalisis file acuan dosen dan mengonfirmasi bahwa maksud dosen menggunakan 3 kelas (`nevus`, `melanoma`, `seborrheic_keratosis`) identik 100% dengan jalur irisan yang telah kita bangun di [kode/3_jalur_irisan_3kelas/irisan_mapping.ipynb](kode/3_jalur_irisan_3kelas/irisan_mapping.ipynb) (22.051 citra bersih bebas kebocoran lesi).
+  3. **Restrukturisasi Direktori `kode/` Menjadi 4 Subfolder Modular:**
+     * Menata folder `kode/` menjadi: `1_data_understanding/`, `2_jalur_biner/`, `3_jalur_irisan_3kelas/`, dan `4_jalur_irisan_7kelas/`.
+     * Menyesuaikan logika deteksi path dataset secara adaptif sehingga notebook dan script dapat dijalankan dari root maupun dari dalam subfolder tanpa error.
+     * Memperbarui dokumentasi di [README.md](README.md) dan melakukan commit serta push sukses ke repositori GitHub `https://github.com/Sigiitttt/riset-coyy.git`.
+  4. **Pematangan Strategi Literatur Ilmiah Jalur Irisan (Opsi C):**
+     * Mengklarifikasi posisi paper *SkinLesNet* (sebagai studi komparasi terpisah, bukan penggabungan fisik).
+     * Menyepakati strategi literatur ilmiah **Opsi C** (kombinasi 2 kelompok):
+       - **Kelompok 1 (Wajib - Sumber Primer Label):** Codella et al. (2018) untuk ISIC 2017, Tschandl et al. (2018) untuk HAM10000, Combalia et al. (2019) untuk ISIC 2019.
+       - **Kelompok 2 (Pendukung - Multi-dataset & Anti-Leakage):** Baig et al. (2023) untuk justifikasi penggabungan multi-dataset dan Ichim et al. (2023) untuk protokol eliminasi duplikasi (*overlap removal*).
+       - Menegaskan justifikasi medis ekuivalensi sinonim: `seborrheic keratosis` (ISIC 2017) $\equiv$ `BKL` (HAM10000/ISIC 2019).
+* **Status Memori:** **AMAN, TERSINKRONISASI KE GITHUB, & PERSISTEN.** Seluruh progres dan titik lanjut telah tersimpan rapi. Sesi berikutnya siap dilanjutkan kapan saja dengan mengetik **`/start`**.
 
 
 
