@@ -1,7 +1,7 @@
 # 🧠 DOKUMEN MEMORI UTAMA PROYEK (PERSISTENT MEMORY)
 **Proyek:** Data Understanding & Pemetaan Dataset ISIC (2016–2024) & HAM10000  
 **Lokasi Direktori:** `C:\Users\ARII\Downloads\Data Understanding Isic & Ham10k\`  
-**Terakhir Diperbarui:** 16 September 2026, Pukul 09:56 WIB (Sesi Ditutup via `/end`)  
+* **Terakhir Diperbarui:** 16 September 2026, Pukul 12:00 WIB (Sesi Ditutup via `/end`)  
 
 
 ---
@@ -142,7 +142,10 @@ Repositori ditata rapi ke dalam direktori tematik untuk memudahkan penulisan skr
 Data Understanding Isic & Ham10k/
 ├── Dataset/                                # Direktori data citra dan ground truth CSV
 │   ├── dataset_binary_final.csv            # Dataset final jalur binary (33.552 citra bersih)
-│   ├── dataset_irisan_multiclass_final.csv # Dataset final irisan 3 kelas AKTIF (22.051 citra bersih)
+│   ├── dataset_irisan_multiclass_final.csv # Master dataset irisan 3 kelas AKTIF (22.051 citra bersih)
+│   ├── dataset_irisan_3kelas_train.csv     # Training set 80% (17.656 citra)
+│   ├── dataset_irisan_3kelas_val.csv       # Validation set 10% (2.192 citra)
+│   ├── dataset_irisan_3kelas_test.csv      # Test set 10% (2.203 citra)
 │   ├── dataset_irisan_7kelas_final.csv     # Dataset final irisan 7 kelas alternatif (24.900 citra bersih)
 │   ├── HAM10K/                             # Folder dataset HAM10000 & uji ISIC 2018
 │   ├── isic 2016/ ... isic 2024/           # Arsip kompetisi ISIC tahunan
@@ -150,6 +153,7 @@ Data Understanding Isic & Ham10k/
 │   ├── 1-data_understanding_isic.ipynb     # Analisis awal & deteksi overlap seluruh ISIC
 │   ├── binary_mapping.ipynb                # Notebook jalur biner (100% selesai & dieksekusi)
 │   ├── irisan_mapping.ipynb                # Notebook jalur irisan 3 kelas AKTIF (100% selesai & dieksekusi)
+│   ├── baseline_modeling_3kelas.ipynb      # Notebook baseline modeling PyTorch 3 kelas (Tugas 3 SELESAI)
 │   └── irisan_7kelas_mapping.ipynb         # Notebook jalur irisan 7 kelas alternatif (100% selesai & dieksekusi)
 ├── notes jurnal/                           # Direktori catatan, analisis, & ringkasan jurnal
 │   ├── biner/                              # Catatan riset jalur biner
@@ -157,8 +161,12 @@ Data Understanding Isic & Ham10k/
 │   │   └── ringkasan_ekstraksi_lengkap_jurnal_biner.txt   # Ekstraksi teks mendalam seluruh paper biner
 │   └── irisan/                             # Catatan riset jalur irisan
 │       └── ringkasan_jurnal_irisan_7kelas.md              # Analisis kecocokan 4 jurnal irisan 7 kelas
+├── models/                                 # Direktori penyimpanan bobot model PyTorch (.pth)
 ├── jurnal/ & Jurnal biner/                 # Repositori file PDF jurnal ilmiah asli
 ├── plan.text                               # Diagram alur konsep arsitektur riset
+├── AGENTS.md                               # Protokol sesi kerja otomatis AI (/start & /end)
+├── .gitignore                              # Konfigurasi proteksi file citra mentah untuk GitHub
+├── README.md                               # Dokumentasi repositori GitHub (riset-coyy)
 └── CATATAN_MEMORI_PROYEK.md                # Dokumen memori utama (persistent memory)
 ```
 
@@ -192,31 +200,30 @@ Progres implementasi Jalur Irisan 3 Kelas (HAM10000 ∩ ISIC 2017 ∩ ISIC 2019)
 ---
 
 ## 7. Catatan Penutupan Sesi Terakhir (Session Log via `/end`)
-* **Waktu Penutupan:** 16 September 2026, Pukul 09:56 WIB.
+* **Waktu Penutupan:** 16 September 2026, Pukul 12:00 WIB.
 * **Rangkuman Sesi Ini:**
-  1. **Pemulihan Sesi via `/start`:** Memulihkan memori utama proyek dan memfokuskan kerja pada kelanjutan Jalur Irisan 3 Kelas (HAM10k ∩ ISIC 2017 ∩ ISIC 2019 — 22.051 citra).
-  2. **Eksekusi Tugas 1 (Partisi Data Bebas Kebocoran):**
-     * Memetakan 17.937 citra dengan kelompok `lesion_id` dari metadata resmi HAM10000 dan ISIC 2019.
-     * Menerapkan `StratifiedGroupKFold(n_splits=10, shuffle=True, random_state=42)` dengan proporsi 80:10:10.
-     * Menguji dan mengonfirmasi **0 kebocoran lesi** (*lesion leakage*) antara Train, Val, dan Test set.
-     * Mengekspor 4 file CSV siap latih:
-       - `Dataset/dataset_irisan_multiclass_final.csv` (22.051 baris, dilengkapi kolom `lesion_id` dan `split`).
-       - `Dataset/dataset_irisan_3kelas_train.csv` (17.656 baris / 80,07%).
-       - `Dataset/dataset_irisan_3kelas_val.csv` (2.192 baris / 9,94%).
-       - `Dataset/dataset_irisan_3kelas_test.csv` (2.203 baris / 9,99%).
-  3. **Eksekusi Tugas 2 (Analisis Karakteristik Citra & Preprocessing Pipeline):**
-     * Analisis dimensi fisik citra dermoskopi: HAM10000 (600×450 px), ISIC 2019 (1022×767 px), dan ISIC 2017 (1504×1129 s.d. 4288×2848 px).
-     * Membangun visualisasi grafik batang komparasi volume data dan stratifikasi proporsi kelas (%) antar-split.
-     * Merumuskan rekomendasi arsitektur deep learning: target resolusi 224×224 px / 384×384 px, ImageNet normalisasi, augmentasi spatial, dan loss function Focal Loss/Weighted CE.
-  4. **Pembaruan Notebook `kode/irisan_mapping.ipynb`:**
-     * Menambahkan Langkah 9 & Langkah 10 secara modular dan mengeksekusi penuh seluruh selnya (100% tuntas dengan visualisasi tersemat).
-  5. **Telaah Ilmiah & Bukti Paper Terkini (2024 Scopus Q1):**
-     * Menelaah paper *Azeem et al. (Cancers MDPI 2024, IF: 5.2 - SkinLesNet)* yang secara 100% identik menggunakan HAM10000 + ISIC 2017 dan memotongnya menjadi 3 kelas (`MEL`, `NV`, `BKL`).
-     * Menelaah paper *Jang & Park (Springer 2024)*, *Codella et al. (IEEE ISBI 2018)*, dan *Ichim et al. (MDPI Cancers 2023)* sebagai dasar teoritis *Common Label Space Subsetting*.
-     * Menyiapkan 3 varian prompt AI akademis siap pakai untuk pencarian literatur lanjutan dan draf Bab 3 Metodologi Penelitian.
-  6. **Standardisasi Perintah Protokol Agen:**
-     * Mengubah perintah sesi dari `/mulai` $\rightarrow$ **`/start`** dan `/stop` $\rightarrow$ **`/end`** pada [`AGENTS.md`](AGENTS.md) dan [`CATATAN_MEMORI_PROYEK.md`](CATATAN_MEMORI_PROYEK.md).
-* **Status Memori:** **AMAN & TERSIMPAN.** Pipeline dataset irisan 3 kelas telah tuntas 100% hingga tahap siap latih (Train/Val/Test CSV tersedia). Sesi berikutnya siap dilanjutkan langsung dengan mengetik **`/start`**.
+  1. **Pemulihan Sesi via `/start`:**
+     * Memulihkan memori utama proyek dari `CATATAN_MEMORI_PROYEK.md` dan mengidentifikasi fokus pada Jalur Irisan 3 Kelas (HAM10k ∩ ISIC 2017 ∩ ISIC 2019 — 22.051 citra bersih).
+  2. **Eksekusi Tugas 3 (Pipeline DataLoader & Baseline Modeling 3 Kelas):**
+     * Membangun notebook baru [`kode/baseline_modeling_3kelas.ipynb`](kode/baseline_modeling_3kelas.ipynb) (21 sel lengkap, terstruktur dan modular).
+     * Menerapkan deteksi hardware otomatis (CUDA vs CPU) dan reproducibility seed (42).
+     * Memuat 3 file partisi siap latih (`train.csv` 17.656 citra, `val.csv` 2.192 citra, `test.csv` 2.203 citra).
+     * Menghitung *Balanced Inverse Class Weights* (NV: 0,52, MEL: 1,51, BKL: 2,40) dan memasukkannya ke dalam `nn.CrossEntropyLoss`.
+     * Membangun `SkinLesionDataset` dengan pipeline augmentasi citra dermatologi medis (RandomResizedCrop 224, Flip, Rotation, ColorJitter, ImageNet norm) dan fungsi inspeksi batch RGB.
+     * Mengimplementasikan arsitektur transfer learning standar benchmark (ResNet-50 & EfficientNet-B0) dengan modifikasi classification head 3 kelas, optimizer AdamW, dan Cosine Annealing LR scheduler.
+     * Menyusun engine pelatihan & validasi modular dengan checkpointing otomatis (`best_val_f1`) yang tersimpan di folder [`models/`](models/).
+     * Menyusun fungsi evaluasi klinis komprehensif pada Test Set (Overall Acc, Balanced Acc, Macro F1, Sensitivity, Specificity, Precision, OvR ROC-AUC) serta visualisasi *Normalized Confusion Matrix Heatmap* dan kurva ROC multi-class.
+  3. **Analisis Ilmiah Skenario Biner Irisan (Benign vs Malignant Berbasis Intersection):**
+     * Menjawab pertanyaan pengguna mengenai formulasi biner jika dibuat dengan pendekatan irisan (bukan union).
+     * Merumuskan 2 opsi ilmiah yang sangat solid:
+       - **Opsi A (Irisan 3 Kelas $\rightarrow$ Biner):** NV + BKL (17.156 / 77,8%) vs MEL (4.895 / 22,2%) — Total 22.051 citra. Benchmark resmi ISIC 2017 Task 3 Sub-challenge 1 (*Melanoma Detection*) yang memungkinkan komparasi langsung (*apples-to-apples*) dengan model 3-kelas karena datasetnya identik.
+       - **Opsi B (Irisan 7 Kelas $\rightarrow$ Biner):** NV + BKL + DF + VASC (15.991 / 64,2%) vs MEL + BCC + AKIEC (8.909 / 35,8%) — Total 24.900 citra dengan rasio kelas seimbang dan mencakup kanker non-melanoma.
+  4. **Inisialisasi Git & Publikasi Repositori GitHub:**
+     * Menyiapkan konfigurasi [`.gitignore`](.gitignore) untuk memproteksi puluhan ribu citra mentah (`*.jpg`, folder `Dataset/isic*`, `HAM10K`) dan bobot model (`*.pth`) dari batas kuota GitHub, sekaligus mempertahankan 6 file CSV partisi penting di `Dataset/`.
+     * Menulis dokumentasi komprehensif pada [`README.md`](README.md) agar mudah dipahami oleh rekan/kolaborator pengguna.
+     * Menginisialisasi Git, menghubungkan remote `origin` ke `https://github.com/Sigiitttt/riset-coyy.git`, dan berhasil melakukan push 100% tuntas ke branch `main`.
+* **Status Memori:** **AMAN, TERSINKRONISASI KE GITHUB, & PERSISTEN.** Seluruh notebook, dataset CSV siap latih, dan repositori telah tersimpan rapi. Sesi berikutnya siap dilanjutkan kapan saja dengan mengetik **`/start`**.
+
 
 
 
