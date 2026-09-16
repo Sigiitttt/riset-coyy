@@ -170,6 +170,7 @@ Data Understanding Isic & Ham10k/
 │   │   ├── ringkasan jurnal biner saya.txt                # Catatan ringkasan paper rujukan biner
 │   │   └── ringkasan_ekstraksi_lengkap_jurnal_biner.txt   # Ekstraksi teks mendalam seluruh paper biner
 │   └── irisan/                             # Catatan riset jalur irisan
+│       ├── ringkasan_jurnal_irisan_3kelas.md              # Analisis komprehensif 5 jurnal irisan 3 kelas (PILIHAN AKTIF)
 │       └── ringkasan_jurnal_irisan_7kelas.md              # Analisis kecocokan 4 jurnal irisan 7 kelas
 ├── models/                                 # Direktori penyimpanan bobot model PyTorch (.pth)
 ├── jurnal/ & Jurnal biner/                 # Repositori file PDF jurnal ilmiah asli
@@ -208,7 +209,7 @@ Progres implementasi Jalur Irisan 3 Kelas (HAM10000 ∩ ISIC 2017 ∩ ISIC 2019)
 - [x] **Tugas 6 (Selesai):** Perumusan dan pematangan strategi pencarian literatur paper ilmiah Jalur Irisan 3 Kelas (Harmonisasi Opsi C: Sumber Primer Label + Pendukung Multi-Dataset & Anti-Leakage).
 
 ### Titik Lanjut Sesi Berikutnya (Next Steps saat `/start`):
-- [ ] **Langkah 1:** Menuliskan rangkuman dan tabel sitasi 5 paper ilmiah terpilih (Kelompok 1 Primer: Codella 2018, Tschandl 2018, Combalia 2019; Kelompok 2 Pendukung: Baig 2023, Ichim 2023) ke dalam file catatan `notes jurnal/irisan/ringkasan_jurnal_irisan_3kelas.md` atau draf Bab 2/3 skripsi.
+- [x] **Langkah 1 (Selesai):** Menuliskan rangkuman dan tabel sitasi 5 paper ilmiah terpilih (Kelompok 1 Primer: Codella 2018, Tschandl 2018, Combalia 2019; Kelompok 2 Pendukung: Baig 2023, Ichim 2023) ke dalam file catatan [`notes jurnal/irisan/ringkasan_jurnal_irisan_3kelas.md`](notes%20jurnal/irisan/ringkasan_jurnal_irisan_3kelas.md) lengkap dengan ontologi medis `SK ≡ BKL`, diagram alur justifikasi Bab 2/3, tabel sebaran data, format APA 7th, dan BibTeX.
 - [ ] **Langkah 2:** Menjalankan pelatihan penuh (*Full Training* 10–20 epoch) ResNet-50 vs EfficientNet-B0 pada akselerator GPU (Google Colab / Kaggle T4) menggunakan perintah `python kode/3_jalur_irisan_3kelas/train_baseline.py` dan mencatat tabel metrik performa klinis komparatif final.
 - [ ] **Langkah 3:** Eksplorasi penanganan ketimpangan data lanjutan (*Focal Loss* seperti pada notebook dosen `Eksperimen_Skenario1_Spark.ipynb` dan *Class-Balanced Loss*).
 
