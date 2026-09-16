@@ -1,7 +1,7 @@
 # 🧠 DOKUMEN MEMORI UTAMA PROYEK (PERSISTENT MEMORY)
 **Proyek:** Data Understanding & Pemetaan Dataset ISIC (2016–2024) & HAM10000  
 **Lokasi Direktori:** `C:\Users\ARII\Downloads\Data Understanding Isic & Ham10k\`  
-* **Terakhir Diperbarui:** 16 September 2026, Pukul 17:40 WIB (Sesi Ditutup via `/end`)  
+* **Terakhir Diperbarui:** 16 September 2026, Pukul 22:20 WIB (Sesi Ditutup via `/end`)  
 
 
 ---
@@ -218,25 +218,18 @@ Progres implementasi Jalur Irisan 3 Kelas (HAM10000 ∩ ISIC 2017 ∩ ISIC 2019)
 ---
 
 ## 7. Catatan Penutupan Sesi Terakhir (Session Log via `/end`)
-* **Waktu Penutupan:** 16 September 2026, Pukul 17:40 WIB.
+* **Waktu Penutupan:** 16 September 2026, Pukul 22:20 WIB.
 * **Rangkuman Sesi Ini:**
-  1. **Pembuatan Mesin Pelatihan Modular & Verifikasi Smoke-Test (Tugas 4):**
-     * Membangun skrip CLI modular [train_baseline.py](kode/3_jalur_irisan_3kelas/train_baseline.py) yang kompatibel dengan CPU dan GPU CUDA, dilengkapi penanganan encoding UTF-8 untuk Windows, argumen `--smoke_test`, dan perbaikan `weights_only=False` pada PyTorch modern.
-     * Menjalankan uji verifikasi end-to-end pada kedua arsitektur (EfficientNet-B0 & ResNet-50). Keduanya lulus 100% dengan metrik test set, file checkpoint `.pth`, normalized confusion matrix `.png`, dan rekapitulasi ke `baseline_comparison_results.csv`.
-  2. **Bedah File Acuan Dosen (`Eksperimen_Skenario1_Spark.ipynb`):**
-     * Menganalisis file acuan dosen dan mengonfirmasi bahwa maksud dosen menggunakan 3 kelas (`nevus`, `melanoma`, `seborrheic_keratosis`) identik 100% dengan jalur irisan yang telah kita bangun di [kode/3_jalur_irisan_3kelas/irisan_mapping.ipynb](kode/3_jalur_irisan_3kelas/irisan_mapping.ipynb) (22.051 citra bersih bebas kebocoran lesi).
-  3. **Restrukturisasi Direktori `kode/` Menjadi 4 Subfolder Modular:**
-     * Menata folder `kode/` menjadi: `1_data_understanding/`, `2_jalur_biner/`, `3_jalur_irisan_3kelas/`, dan `4_jalur_irisan_7kelas/`.
-     * Menyesuaikan logika deteksi path dataset secara adaptif sehingga notebook dan script dapat dijalankan dari root maupun dari dalam subfolder tanpa error.
-     * Memperbarui dokumentasi di [README.md](README.md) dan melakukan commit serta push sukses ke repositori GitHub `https://github.com/Sigiitttt/riset-coyy.git`.
-  4. **Pematangan Strategi Literatur Ilmiah Jalur Irisan (Opsi C):**
-     * Mengklarifikasi posisi paper *SkinLesNet* (sebagai studi komparasi terpisah, bukan penggabungan fisik).
-     * Menyepakati strategi literatur ilmiah **Opsi C** (kombinasi 2 kelompok):
-       - **Kelompok 1 (Wajib - Sumber Primer Label):** Codella et al. (2018) untuk ISIC 2017, Tschandl et al. (2018) untuk HAM10000, Combalia et al. (2019) untuk ISIC 2019.
-       - **Kelompok 2 (Pendukung - Multi-dataset & Anti-Leakage):** Baig et al. (2023) untuk justifikasi penggabungan multi-dataset dan Ichim et al. (2023) untuk protokol eliminasi duplikasi (*overlap removal*).
-       - Menegaskan justifikasi medis ekuivalensi sinonim: `seborrheic keratosis` (ISIC 2017) $\equiv$ `BKL` (HAM10000/ISIC 2019).
+  1. **Pembuatan Notebook Data Understanding Jalur Irisan 3 Kelas:**
+     * Membangun notebook baru [`kode/3_jalur_irisan_3kelas/data_understanding_irisan_3kelas.ipynb`](kode/3_jalur_irisan_3kelas/data_understanding_irisan_3kelas.ipynb) yang berada berdampingan dengan `irisan_mapping.ipynb`.
+     * Menjalankan eksekusi penuh (26 cells) sehingga seluruh visualisasi grafik 4-panel, tabel sebaran data, pengecekan ukuran gambar, dan sampel dermatoskopi nyata ter-render aktif.
+  2. **Pengecekan Mendalam 10 Kolom Asli ISIC 2019:**
+     * Mengaudit 10 kolom resmi: `image, MEL, NV, BCC, AK, BKL, DF, VASC, SCC, UNK`.
+     * Mengklarifikasi fungsi kolom `UNK` (bernilai 0 di data train karena placeholder evaluasi out-of-distribution pada kompetisi). Seluruh 25.331 citra latih terpakai 100% pada 8 diagnosis.
+  3. **Penyederhanaan Bahasa (*Human-Friendly & Concise*):**
+     * Merevisi seluruh teks markdown dan output agar padat, ringkas, to the point, dan menggunakan bahasa yang lugas tanpa istilah akademis yang berbelit-belit.
+  4. **Perapihan Literatur PDF:**
+     * Memperbarui folder literatur menjadi `jurnal irisan 3 kelas/` berisi 6 dokumen PDF paper acuan.
+  5. **Sinkronisasi Kode & Dataset:**
+     * Melakukan commit dan push sukses ke repositori GitHub `https://github.com/Sigiitttt/riset-coyy.git` (commit `d380de3`).
 * **Status Memori:** **AMAN, TERSINKRONISASI KE GITHUB, & PERSISTEN.** Seluruh progres dan titik lanjut telah tersimpan rapi. Sesi berikutnya siap dilanjutkan kapan saja dengan mengetik **`/start`**.
-
-
-
-
