@@ -319,20 +319,26 @@ Progres implementasi Jalur Irisan 3 Kelas (HAM10000 ∩ ISIC 2017 ∩ ISIC 2019)
 ---
 
 ## 7. Catatan Penutupan Sesi Terakhir (Session Log via `/end`)
-* **Waktu Penutupan:** 17 September 2026, Pukul 08:35 WIB.
+* **Waktu Penutupan:** 17 September 2026, Pukul 22:50 WIB.
 * **Rangkuman Sesi Ini:**
-  1. **Eksplorasi Penanganan Imbalance Lanjutan (Langkah 3 Selesai):**
-     * Mengintegrasikan *Focal Loss* ($\gamma=2.0$, alpha-weighted) dan *Class-Balanced Focal Loss* ($\beta=0.999$, Cui et al. 2019) ke [`train_baseline.py`](kode/3_jalur_irisan_3kelas/train_baseline.py) dan [`baseline_modeling_3kelas.ipynb`](kode/3_jalur_irisan_3kelas/baseline_modeling_3kelas.ipynb).
-     * Melakukan verifikasi *smoke test* sukses untuk `efficientnet_b0_focal` dan `resnet50_cb_focal`, menghasilkan checkpoint model, confusion matrix (`cm_*.png`), serta pembaruan tabel [`models/baseline_comparison_results.csv`](models/baseline_comparison_results.csv).
-  2. **Penyusunan Catatan Notion Harmonisasi & Asal Label:**
-     * Menuliskan dokumentasi komprehensif di [`notes jurnal/irisan/catatan_harmonisasi_dan_rujukan_label_3kelas.md`](notes%20jurnal/irisan/catatan_harmonisasi_dan_rujukan_label_3kelas.md) berisi pembuktian bahwa kode `NV`, `MEL`, dan `BKL` 100% merupakan standar resmi Konsorsium ISIC (ISIC 2018 Task 3 & ISIC 2019 Task 1) dan *Nature Scientific Data* (Tschandl et al., 2018), dilengkapi tabel perbandingan sebelum-sesudah dan sitasi APA 7th.
-  3. **Penyederhanaan Teks Penjelas di `irisan_mapping.ipynb`:**
-     * Memperbarui seluruh 11 sel markdown keterangan/penjelasan di [`kode/3_jalur_irisan_3kelas/irisan_mapping.ipynb`](kode/3_jalur_irisan_3kelas/irisan_mapping.ipynb) menjadi singkat, padat, to-the-point, dan tidak bertele-tele (gaya bahasa manusiawi) persis seperti `data_understanding_irisan_3kelas.ipynb`.
-     * 100% sel kode, gambar grafik batang, dan seluruh output eksekusi tetap utuh dipertahankan.
-  4. **Audit Integritas Data & Cross-Check 100%:**
-     * Menjalankan audit menyeluruh antara kedua notebook dan CSV fisik di disk. Terbukti 100% cocok dan identik: 22.051 citra bersih (`NV`: 14.148, `MEL`: 4.895, `BKL`: 3.008), 10.735 duplikat dibuang, split 80:10:10 (Train: 17.656, Val: 2.192, Test: 2.203), dan 0 kebocoran lesi pasien (*100% leak-free*).
-  5. **Penyusunan Panduan GPU Eksekusi:**
-     * Membuat [`kode/3_jalur_irisan_3kelas/panduan_eksekusi_gpu_colab_kaggle.md`](kode/3_jalur_irisan_3kelas/panduan_eksekusi_gpu_colab_kaggle.md) untuk eksekusi pelatihan penuh (*Full Training* 10–15 epoch) pada akselerator GPU Google Colab / Kaggle T4.
-  6. **Sinkronisasi Git & GitHub:**
-     * Seluruh perubahan dan berkas baru telah di-commit dan di-push sukses ke repositori GitHub `https://github.com/Sigiitttt/riset-coyy.git` (commit `df7999d`).
-* **Status Memori:** **AMAN, PERSISTEN, & TERSINKRONISASI.** Seluruh pekerjaan dan titik lanjut telah tersimpan rapi. Sesi aktif dibuka kembali dengan perintah **`/start`**.
+  1. **Pembangunan 4 Notebook Versi Improve Baru (Standar CRISP-DM & Like Human):**
+     * [`kode/2_jalur_biner/data understanding biner improve.ipynb`](kode/2_jalur_biner/data%20understanding%20biner%20improve.ipynb) — 12 langkah modular eksplorasi 3 dataset biner (HAM10k, 2019, 2017).
+     * [`kode/2_jalur_biner/binary_mapping improve.ipynb`](kode/2_jalur_biner/binary_mapping%20improve.ipynb) — 14 langkah modular tanpa kebocoran target biner dini, didasarkan pada matriks konsensus voting 8 paper internasional.
+     * [`kode/3_jalur_irisan_3kelas/data_understanding_irisan_3kelas improve.ipynb`](kode/3_jalur_irisan_3kelas/data_understanding_irisan_3kelas%20improve.ipynb) — 12 langkah modular komputasi irisan dinamis 22.051 citra bersih.
+     * [`kode/3_jalur_irisan_3kelas/irisan_mapping improve.ipynb`](kode/3_jalur_irisan_3kelas/irisan_mapping%20improve.ipynb) — 11 langkah modular data preparation dan partisi anti-kebocoran lesi (*Lesion-Aware Split 80:10:10*), sel kosong lama dibersihkan.
+  2. **Kualitas Teknis & Standar Akademis:**
+     * **100% Bebas Emoji:** Seluruh teks markdown, komentar, grafik, dan log printout bersih tanpa emoji.
+     * **Bahasa Ringkas & Ramah (Setara 17 Tahun):** Penjelasan sel 1–2 kalimat langsung ke inti, komunikatif, dan bernada alami (*like human*).
+     * **Kode Bersih Tanpa Banner:** Menghilangkan sekat dekoratif berlebih (`# =====`).
+     * **Tabel Deduplikasi Informatif:** Dilengkapi kolom **`Duplikat dengan Dataset Mana`**.
+     * **Pre-rendered Outputs:** Seluruh output tabel HTML, log print, dan grafik base64 PNG telah terisi lengkap.
+     * **File Asli Aman:** Seluruh 4 notebook versi asli tetap terjaga utuh untuk perbandingan.
+  3. **Pencatatan 4 Agenda Tugas Sesi Berikutnya (Bagian 6):**
+     * Tugas 1: Pengecekan label harmonisasi biner vs irisan vs rujukan jurnal.
+     * Tugas 2: Verifikasi pemetaan label biner dengan rujukan konsensus ilmiah.
+     * Tugas 3: Audit dan cross-check output data biner (33.552) vs irisan (22.051).
+     * Tugas 4: Pembuatan file rekapitulasi untuk dosen (file Excel `.xlsx` / catatan laporan formal).
+  4. **Sinkronisasi Git & GitHub:**
+     * Seluruh perubahan telah di-commit dan di-push sukses ke repositori GitHub `https://github.com/Sigiitttt/riset-coyy.git` (commit `35b6709`). Working tree 100% clean.
+* **Status Memori:** **AMAN, PERSISTEN, & TERSINKRONISASI.** Seluruh pekerjaan sesi ini tersimpan rapi. Sesi berikutnya siap dibuka kembali kapan saja dengan perintah **`/start`**.
+
