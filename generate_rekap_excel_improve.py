@@ -4,7 +4,7 @@ Generator: rekap_dataset_biner_dan_irisan improve.xlsx
 Versi improve dari file asli rekap_dataset_biner_dan_irisan.xlsx.
 Perubahan utama:
   - Bahasa natural, enak dibaca, tanpa analogi kekanak-kanakan.
-  - Tampilan lebih bersih: warna modern, spacing rapi, border halus.
+  - Tampilan bersih kayak tabel biasa buatan manusia.
   - Jurnal lengkap: judul paper, nama jurnal, DOI/link.
 """
 
@@ -16,37 +16,33 @@ from openpyxl.utils import get_column_letter
 from copy import copy
 
 # ===========================================================================
-# DESIGN SYSTEM
+# DESIGN SYSTEM — Bersih, sederhana, kayak buatan manusia
 # ===========================================================================
-FONT_BODY = Font(name="Segoe UI", size=10, color="2D3436")
-FONT_HEADER = Font(name="Segoe UI", size=10, bold=True, color="FFFFFF")
-FONT_TITLE = Font(name="Segoe UI", size=13, bold=True, color="2D3436")
-FONT_SUBTITLE = Font(name="Segoe UI", size=10, italic=True, color="636E72")
-FONT_SECTION = Font(name="Segoe UI", size=11, bold=True, color="2D3436")
-FONT_NOTE = Font(name="Segoe UI", size=9, italic=True, color="636E72")
-FONT_TOTAL = Font(name="Segoe UI", size=10, bold=True, color="2D3436")
-FONT_BOLD = Font(name="Segoe UI", size=10, bold=True, color="2D3436")
-FONT_JINAK = Font(name="Segoe UI", size=10, bold=True, color="27AE60")
-FONT_GANAS = Font(name="Segoe UI", size=10, bold=True, color="E74C3C")
-FONT_LINK = Font(name="Segoe UI", size=10, color="2980B9", underline="single")
+FONT_BODY = Font(name="Calibri", size=11, color="000000")
+FONT_HEADER = Font(name="Calibri", size=11, bold=True, color="000000")
+FONT_TITLE = Font(name="Calibri", size=14, bold=True, color="000000")
+FONT_SUBTITLE = Font(name="Calibri", size=11, italic=True, color="555555")
+FONT_SECTION = Font(name="Calibri", size=12, bold=True, color="000000")
+FONT_NOTE = Font(name="Calibri", size=10, italic=True, color="444444")
+FONT_TOTAL = Font(name="Calibri", size=11, bold=True, color="000000")
+FONT_BOLD = Font(name="Calibri", size=11, bold=True, color="000000")
+FONT_JINAK = Font(name="Calibri", size=11, bold=True, color="1A7A2E")   # hijau gelap
+FONT_GANAS = Font(name="Calibri", size=11, bold=True, color="C0392B")   # merah gelap
+FONT_LOLOS = Font(name="Calibri", size=11, bold=True, color="1A7A2E")
 
-# Fills
-FILL_HEADER = PatternFill("solid", fgColor="2C3E50")  # dark navy
-FILL_ROW_ODD = PatternFill("solid", fgColor="FFFFFF")
-FILL_ROW_EVEN = PatternFill("solid", fgColor="F8F9FA")
-FILL_TOTAL = PatternFill("solid", fgColor="E8EDF2")
-FILL_JINAK = PatternFill("solid", fgColor="E8F8F5")   # soft mint
-FILL_GANAS = PatternFill("solid", fgColor="FDEDEC")   # soft rose
-FILL_SECTION = PatternFill("solid", fgColor="EBF0F5")
-FILL_NOTE_BG = PatternFill("solid", fgColor="FFF9E6")  # warm cream for notes
-FILL_LOLOS = PatternFill("solid", fgColor="D5F5E3")   # green pass
+# Fills — minimal, cuma dipake di tempat yang beneran perlu
+FILL_NONE = PatternFill(fill_type=None)  # no fill / white
+FILL_HEADER = PatternFill("solid", fgColor="D9E1F2")   # biru muda standar Excel
+FILL_TOTAL = PatternFill("solid", fgColor="D9E1F2")    # sama kayak header
+FILL_SECTION = PatternFill("solid", fgColor="E2EFDA")  # hijau muda standar Excel
+FILL_NOTE_BG = PatternFill("solid", fgColor="FFF2CC")  # kuning muda standar Excel
 
-# Borders
+# Borders — hitam tipis, standar
 THIN_BORDER = Border(
-    left=Side(style="thin", color="D5D8DC"),
-    right=Side(style="thin", color="D5D8DC"),
-    top=Side(style="thin", color="D5D8DC"),
-    bottom=Side(style="thin", color="D5D8DC"),
+    left=Side(style="thin", color="000000"),
+    right=Side(style="thin", color="000000"),
+    top=Side(style="thin", color="000000"),
+    bottom=Side(style="thin", color="000000"),
 )
 NO_BORDER = Border()
 
@@ -92,14 +88,16 @@ def write_title(ws, row, col, text, subtitle=None, merge_end=5):
 
 
 def write_section(ws, row, col, text, merge_end=5):
-    """Write a section heading row."""
+    """Write a section heading row — bold, background hijau muda."""
     c = ws.cell(row=row, column=col, value=text)
     c.font = FONT_SECTION
     c.alignment = ALIGN_LEFT
     c.fill = FILL_SECTION
-    for cc in range(col, merge_end + 1):
-        ws.cell(row=row, column=cc).fill = FILL_SECTION
-        ws.cell(row=row, column=cc).border = THIN_BORDER
+    c.border = THIN_BORDER
+    for cc in range(col + 1, merge_end + 1):
+        cell = ws.cell(row=row, column=cc)
+        cell.fill = FILL_SECTION
+        cell.border = THIN_BORDER
     ws.merge_cells(
         start_row=row, start_column=col,
         end_row=row, end_column=merge_end
@@ -107,7 +105,7 @@ def write_section(ws, row, col, text, merge_end=5):
 
 
 def write_header_row(ws, row, headers, start_col=1):
-    """Write a styled header row."""
+    """Write a styled header row — bold, border hitam, background biru muda."""
     for i, h in enumerate(headers):
         c = ws.cell(row=row, column=start_col + i, value=h)
         c.font = FONT_HEADER
@@ -117,9 +115,8 @@ def write_header_row(ws, row, headers, start_col=1):
 
 
 def write_data_row(ws, row, values, start_col=1, is_total=False, fonts=None, fills=None):
-    """Write a data row with alternating colors."""
-    is_even = (row % 2 == 0)
-    default_fill = FILL_TOTAL if is_total else (FILL_ROW_EVEN if is_even else FILL_ROW_ODD)
+    """Write a data row — background putih, border hitam tipis."""
+    default_fill = FILL_TOTAL if is_total else FILL_NONE
     default_font = FONT_TOTAL if is_total else FONT_BODY
     for i, v in enumerate(values):
         c = ws.cell(row=row, column=start_col + i, value=v)
@@ -138,7 +135,7 @@ def write_data_row(ws, row, values, start_col=1, is_total=False, fonts=None, fil
 
 
 def write_note(ws, row, col, text, merge_end=5):
-    """Write a note/remark cell."""
+    """Write a note/remark cell — italic, kuning muda."""
     c = ws.cell(row=row, column=col, value=text)
     c.font = FONT_NOTE
     c.alignment = ALIGN_LEFT_TOP
@@ -156,7 +153,7 @@ def write_note(ws, row, col, text, merge_end=5):
 def build_sheet_1(wb):
     ws = wb.active
     ws.title = "1. Ringkasan Komparatif"
-    ws.sheet_properties.tabColor = "2C3E50"
+    ws.sheet_properties.tabColor = "4472C4"
 
     set_col_widths(ws, {1: 28, 2: 40, 3: 40, 4: 42})
 
@@ -217,7 +214,7 @@ def build_sheet_1(wb):
 # ===========================================================================
 def build_sheet_2(wb):
     ws = wb.create_sheet("2. Harmonisasi & Konsensus")
-    ws.sheet_properties.tabColor = "2980B9"
+    ws.sheet_properties.tabColor = "5B9BD5"
 
     set_col_widths(ws, {1: 14, 2: 42, 3: 18, 4: 16, 5: 22, 6: 20, 7: 16,
                         8: 12, 9: 12, 10: 12, 11: 12, 12: 12})
@@ -250,10 +247,8 @@ def build_sheet_2(wb):
         sifat = d[5]
         sifat_font = FONT_JINAK if "Jinak" in sifat else FONT_GANAS
         biner_font = FONT_JINAK if "Benign" in d[6] else FONT_GANAS
-        biner_fill = FILL_JINAK if "Benign" in d[6] else FILL_GANAS
         fonts = [FONT_BOLD, None, None, None, None, sifat_font, biner_font]
-        fills = [None, None, None, None, None, None, biner_fill]
-        write_data_row(ws, r + 1 + i, d, 1, fonts=fonts, fills=fills)
+        write_data_row(ws, r + 1 + i, d, 1, fonts=fonts)
 
     # -- B. BKL Explanation --
     r2 = r + 1 + len(harm_data) + 1
@@ -321,20 +316,16 @@ def build_sheet_2(wb):
     ]
     for i, d in enumerate(voting_data):
         fonts = [None, None, None, None]  # Penulis, Judul, Jurnal, Dataset
-        fills = [None, None, None, None]
         for j in range(4, 12):
             val = d[j]
             if val == "Jinak":
                 fonts.append(FONT_JINAK)
-                fills.append(FILL_JINAK)
             elif val in ("Ganas", "Ganas*"):
                 fonts.append(FONT_GANAS)
-                fills.append(FILL_GANAS)
             else:
                 fonts.append(None)
-                fills.append(None)
-        write_data_row(ws, r3 + 1 + i, d, 1, fonts=fonts, fills=fills)
-        ws.row_dimensions[r3 + 1 + i].height = 36  # taller rows for title readability
+        write_data_row(ws, r3 + 1 + i, d, 1, fonts=fonts)
+        ws.row_dimensions[r3 + 1 + i].height = 36
 
     # Consensus row
     r_cons = r3 + 1 + len(voting_data)
@@ -344,15 +335,12 @@ def build_sheet_2(wb):
         "GANAS (100%)", "GANAS (100%)", "GANAS (100%)", "GANAS (100%)"
     ]
     fonts_cons = [FONT_TOTAL, FONT_TOTAL, FONT_TOTAL, FONT_TOTAL]
-    fills_cons = [FILL_TOTAL, FILL_TOTAL, FILL_TOTAL, FILL_TOTAL]
     for j in range(4, 12):
         if "JINAK" in consensus[j]:
             fonts_cons.append(FONT_JINAK)
-            fills_cons.append(FILL_JINAK)
         else:
             fonts_cons.append(FONT_GANAS)
-            fills_cons.append(FILL_GANAS)
-    write_data_row(ws, r_cons, consensus, 1, is_total=True, fonts=fonts_cons, fills=fills_cons)
+    write_data_row(ws, r_cons, consensus, 1, is_total=True, fonts=fonts_cons)
 
 
 # ===========================================================================
@@ -360,7 +348,7 @@ def build_sheet_2(wb):
 # ===========================================================================
 def build_sheet_3(wb):
     ws = wb.create_sheet("3. Statistik Jalur Biner")
-    ws.sheet_properties.tabColor = "8E44AD"
+    ws.sheet_properties.tabColor = "A5A5A5"
 
     set_col_widths(ws, {1: 16, 2: 20, 3: 18, 4: 16, 5: 18, 6: 14, 7: 44,
                         8: 16, 9: 14, 10: 14, 11: 18})
@@ -436,10 +424,8 @@ def build_sheet_3(wb):
     ]
     for i, d in enumerate(biner_data):
         label_font = FONT_JINAK if d[0] == 0 else FONT_GANAS
-        label_fill = FILL_JINAK if d[0] == 0 else FILL_GANAS
         fonts = [None, label_font, None, None, None, None]
-        fills = [None, label_fill, None, None, None, None]
-        write_data_row(ws, r3 + 1 + i, d, 1, fonts=fonts, fills=fills)
+        write_data_row(ws, r3 + 1 + i, d, 1, fonts=fonts)
 
     total_biner = ["-", "TOTAL", "8 Kelas Gabungan", 33552, 1.0, "Siap Modeling"]
     write_data_row(ws, r3 + 1 + len(biner_data), total_biner, 1, is_total=True)
@@ -450,7 +436,7 @@ def build_sheet_3(wb):
 # ===========================================================================
 def build_sheet_4(wb):
     ws = wb.create_sheet("4. Statistik Jalur Irisan 3K")
-    ws.sheet_properties.tabColor = "27AE60"
+    ws.sheet_properties.tabColor = "70AD47"
 
     set_col_widths(ws, {1: 16, 2: 28, 3: 14, 4: 14, 5: 14, 6: 16, 7: 20,
                         8: 20, 9: 22})
@@ -516,10 +502,8 @@ def build_sheet_4(wb):
         ["Test", "10%", 2203, 0.0999, 1391, 543, 269, "0 overlap", "Bebas Kebocoran"],
     ]
     for i, d in enumerate(split_data):
-        status_font = Font(name="Segoe UI", size=10, bold=True, color="27AE60")
-        fonts = [None]*8 + [status_font]
-        fills = [None]*8 + [FILL_LOLOS]
-        write_data_row(ws, r3 + 1 + i, d, 1, fonts=fonts, fills=fills)
+        fonts = [None]*8 + [FONT_LOLOS]
+        write_data_row(ws, r3 + 1 + i, d, 1, fonts=fonts)
 
     total_split = ["TOTAL", "100%", 22051, 1.0, 14148, 4895, 3008, "0 overlap", "Lolos Semua"]
     write_data_row(ws, r3 + 1 + len(split_data), total_split, 1, is_total=True)
@@ -530,7 +514,7 @@ def build_sheet_4(wb):
 # ===========================================================================
 def build_sheet_5(wb):
     ws = wb.create_sheet("5. Audit & Validasi Silang")
-    ws.sheet_properties.tabColor = "E67E22"
+    ws.sheet_properties.tabColor = "ED7D31"
 
     set_col_widths(ws, {1: 38, 2: 28, 3: 18, 4: 18, 5: 52,
                         6: 14, 7: 12, 8: 12, 9: 12, 10: 12, 11: 36})
@@ -569,11 +553,8 @@ def build_sheet_5(wb):
          "Tidak ada baris atau kolom yang kosong"],
     ]
     for i, d in enumerate(audit_data):
-        status = d[3]
-        status_font = Font(name="Segoe UI", size=10, bold=True, color="27AE60")
-        fonts = [None, None, None, status_font, None]
-        fills = [None, None, None, FILL_LOLOS, None]
-        write_data_row(ws, r + 1 + i, d, 1, fonts=fonts, fills=fills)
+        fonts = [None, None, None, FONT_LOLOS, None]
+        write_data_row(ws, r + 1 + i, d, 1, fonts=fonts)
 
     # -- B. Non-intersection breakdown --
     r2 = r + 1 + len(audit_data) + 1
@@ -605,7 +586,7 @@ def build_sheet_5(wb):
 # ===========================================================================
 def build_sheet_6(wb):
     ws = wb.create_sheet("6. Daftar Rujukan Jurnal")
-    ws.sheet_properties.tabColor = "C0392B"
+    ws.sheet_properties.tabColor = "FF0000"
 
     set_col_widths(ws, {1: 5, 2: 36, 3: 8, 4: 70, 5: 44, 6: 30, 7: 60})
 
@@ -725,9 +706,9 @@ def main():
     print("Membangun Sheet 6: Daftar Rujukan Jurnal...")
     build_sheet_6(wb)
 
-    # Freeze panes for all sheets (freeze row 1-2 title area)
+    # Grid lines tetap tampil kayak Excel biasa
     for ws in wb.worksheets:
-        ws.sheet_view.showGridLines = False
+        ws.sheet_view.showGridLines = True
 
     outfile = "rekap_dataset_biner_dan_irisan improve.xlsx"
     try:
