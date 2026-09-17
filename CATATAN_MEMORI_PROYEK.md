@@ -1,7 +1,7 @@
 # 🧠 DOKUMEN MEMORI UTAMA PROYEK (PERSISTENT MEMORY)
 **Proyek:** Data Understanding & Pemetaan Dataset ISIC (2016–2024) & HAM10000  
 **Lokasi Direktori:** `C:\Users\ARII\Downloads\Data Understanding Isic & Ham10k\`  
-* **Terakhir Diperbarui:** 18 September 2026, Pukul 02:15 WIB (Sesi Aktif)  
+* **Terakhir Diperbarui:** 18 September 2026, Pukul 02:35 WIB (Sesi Aktif)  
 
 
 ---
@@ -311,7 +311,9 @@ Progres implementasi Jalur Irisan 3 Kelas (HAM10000 ∩ ISIC 2017 ∩ ISIC 2019)
   - Hasil: Seluruh 22.051 citra irisan (100%) beririsan sempurna di dalam dataset biner dengan 0 mismatch label dan 0 mismatch sumber dataset. Dekomposisi 11.501 citra non-irisan terbukti berasal dari kelas non-2017 (BCC, AKIEC, SCC, VASC, DF) serta partisi test ISIC 2019.
 - [ ] **Tugas 4 (Pending Review Pengguna): Pembuatan & Pemeriksaan File Rekapitulasi untuk Dosen**
   - Berkas yang telah disiapkan dan siap ditinjau pengguna:
-    * File Excel: [`rekap_dataset_biner_dan_irisan.xlsx`](file:///c:/Users/ARII/Downloads/Data%20Understanding%20Isic%20&%20Ham10k/rekap_dataset_biner_dan_irisan.xlsx) (6 sheets lengkap).
+    * File Excel Versi Improve (Bahasa Santai & Desain Premium): [`rekap_dataset_biner_dan_irisan improve.xlsx`](file:///c:/Users/ARII/Downloads/Data%20Understanding%20Isic%20&%20Ham10k/rekap_dataset_biner_dan_irisan%20improve.xlsx) (6 sheet terstruktur: Ringkasan & Panduan Mudah setara usia 18 tahun, Kenapa Jinak vs Ganas, Angka Data Jalur Biner, Angka Data Irisan 3K, Bukti Data Klop, Daftar Jurnal Lengkap berbobot Q1/Nature + judul lengkap paper + link DOI).
+    * File Excel Versi Standar Formal: [`rekap_dataset_biner_dan_irisan.xlsx`](file:///c:/Users/ARII/Downloads/Data%20Understanding%20Isic%20&%20Ham10k/rekap_dataset_biner_dan_irisan.xlsx).
+    * Skrip Generator Otomatis: [`generate_rekap_excel_improve.py`](file:///c:/Users/ARII/Downloads/Data%20Understanding%20Isic%20&%20Ham10k/generate_rekap_excel_improve.py).
     * Dokumen Laporan Formal: [`notes jurnal/laporan_komparasi_dan_rekap_dataset_biner_vs_irisan.md`](file:///c:/Users/ARII/Downloads/Data%20Understanding%20Isic%20&%20Ham10k/notes%20jurnal/laporan_komparasi_dan_rekap_dataset_biner_vs_irisan.md).
   - Pengguna perlu memeriksa lembar kerja ini sebelum diserahkan ke dosen pembimbing.
 
