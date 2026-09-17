@@ -35,13 +35,13 @@ Riset ini terbagi menjadi 2 jalur independen:
 ### A. `binary_mapping.ipynb` (Jalur Binary — Status: SELESAI 100%)
 * **Dataset yang Digunakan:** HAM10000, ISIC 2017, ISIC 2019.
 * **Aturan Deduplikasi:** HAM10000 dipertahankan 100% utuh (10.015 citra), duplikat di 2019 dan 2017 dibersihkan.
-* **Hasil Akhir:** **33.552 citra bersih**
-  * **Benign (0):** 23.504 citra (70,0%) $\rightarrow$ `NV`, `BKL`, `DF`, `VASC`
-  * **Malignant (1):** 10.048 citra (30,0%) $\rightarrow$ `MEL`, `BCC`, `AKIEC`, `SCC`
-* **Fitur Tambahan:**
-  * Langkah 9: Visualisasi 5 sampel citra per kelas (grid 2x5 gambar).
-  * Langkah 10: Pengecekan lengkap kolom `diagnosis` (ISIC 2020) & taksonomi `iddx_1/2/3` (ISIC 2024).
-* **Output File:** `Dataset/dataset_binary_final.csv`.
+* **Hasil Akhir:** **33.552 citra bersih** (setelah drop 2.047 citra `UNK`)
+  * **Benign (0):** 20.998 citra (62,6%) $\rightarrow$ `NV` (16.643), `BKL` (3.668), `VASC` (357), `DF` (330)
+  * **Malignant (1):** 12.554 citra (37,4%) $\rightarrow$ `MEL` (6.222), `BCC` (4.298), `AKIEC` (1.438), `SCC` (596)
+* **Fitur Tambahan & Pembaruan:**
+  * Langkah 3: Menampilkan seluruh kelas asli per dataset (HAM10000 7 kelas, ISIC 2019 9 kelas, ISIC 2017 3 kelas), penyatuan/harmonisasi kelas ke dalam 1 matriks komparasi gabungan ("jadikan 1"), dan visualisasi grafik batang sebaran kelas.
+  * Langkah 9: Visualisasi 5 sampel citra per kelas biner (grid 2x5 gambar).
+* **Output File:** `Dataset/dataset_binary_final.csv` (33.552 baris, kolom: `image_id`, `source`, `original_label`, `unified_class`, `binary_class`, `target_binary`, `filepath`).
 
 ---
 
