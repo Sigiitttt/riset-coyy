@@ -1,7 +1,7 @@
 # 🧠 DOKUMEN MEMORI UTAMA PROYEK (PERSISTENT MEMORY)
 **Proyek:** Data Understanding & Pemetaan Dataset ISIC (2016–2024) & HAM10000  
 **Lokasi Direktori:** `C:\Users\ARII\Downloads\Data Understanding Isic & Ham10k\`  
-* **Terakhir Diperbarui:** 17 September 2026, Pukul 08:35 WIB (Sesi Ditutup via `/end`)  
+* **Terakhir Diperbarui:** 17 September 2026, Pukul 19:15 WIB (Sesi Aktif via `/start`)  
 
 
 ---
@@ -42,6 +42,18 @@ Riset ini terbagi menjadi 2 jalur independen:
   * Langkah 3: Menampilkan seluruh kelas asli per dataset (HAM10000 7 kelas, ISIC 2019 9 kelas, ISIC 2017 3 kelas), penyatuan/harmonisasi kelas ke dalam 1 matriks komparasi gabungan ("jadikan 1"), dan visualisasi grafik batang sebaran kelas.
   * Langkah 9: Visualisasi 5 sampel citra per kelas biner (grid 2x5 gambar).
 * **Output File:** `Dataset/dataset_binary_final.csv` (33.552 baris, kolom: `image_id`, `source`, `original_label`, `unified_class`, `binary_class`, `target_binary`, `filepath`).
+
+---
+
+### A.1 `gabungan_ham10k_2017_2019.ipynb` (Analisis Penggabungan 3 Dataset & 9 Kelas Medis — Status: SELESAI 100%)
+* **Dataset yang Digunakan:** HAM10000, ISIC 2017 (Train/Val/Test), ISIC 2019 (Train/Test) — total 6 partisi data.
+* **Hasil Penggabungan:** Menghasilkan **9 KELAS MEDIS HARMONISASI** (`NV`, `MEL`, `BCC`, `BKL`, `AKIEC`, `SCC`, `VASC`, `DF`, dan `UNK`).
+* **Kuantitas Citra:**
+  * **RAW (Mentah):** **46.334 citra** (HAM10k: 10.015, ISIC 2019: 33.569, ISIC 2017: 2.750).
+  * **BERSIH (Bebas Duplikat):** **35.599 citra** (10.735 duplikat dibuang dengan mempertahankan HAM10000 100% utuh).
+  * **BERSIH Tanpa UNK:** **33.552 citra** (siap klasifikasi biner maupun multiclass).
+* **Output File:** `Dataset/dataset_gabungan_ham10k_2017_2019.csv` (35.599 baris).
+* **Status Git:** Telah di-commit dan tersinkronisasi ke remote `origin/main` (`df7999d`).
 
 ---
 
@@ -142,6 +154,7 @@ Repositori ditata rapi ke dalam direktori tematik untuk memudahkan penulisan skr
 Data Understanding Isic & Ham10k/
 ├── Dataset/                                # Direktori data citra dan ground truth CSV
 │   ├── dataset_binary_final.csv            # Dataset final jalur binary (33.552 citra bersih)
+│   ├── dataset_gabungan_ham10k_2017_2019.csv # Dataset gabungan bersih 3 dataset 9 kelas (35.599 baris)
 │   ├── dataset_irisan_multiclass_final.csv # Master dataset irisan 3 kelas AKTIF (22.051 citra bersih)
 │   ├── dataset_irisan_3kelas_train.csv     # Training set 80% (17.656 citra)
 │   ├── dataset_irisan_3kelas_val.csv       # Validation set 10% (2.192 citra)
@@ -158,13 +171,16 @@ Data Understanding Isic & Ham10k/
 │   │   └── kaggle isic CLI  16-24-ham10k.ipynb
 │   ├── 2_jalur_biner/                      # Jalur Biner (Benign 0 vs Malignant 1 - Global Union)
 │   │   ├── binary_mapping.ipynb
-│   │   └── data understanding biner.ipynb
+│   │   ├── data understanding biner.ipynb
+│   │   └── gabungan_ham10k_2017_2019.ipynb # Analisis penggabungan 3 dataset 9 kelas
 │   ├── 3_jalur_irisan_3kelas/              # Jalur Irisan 3 Kelas (NV, MEL, BKL - Sesuai Dosen)
 │   │   ├── data_understanding_irisan_3kelas.ipynb # Data Understanding & audit 10 kolom 2019, HAM10k, 2017
 │   │   ├── irisan_mapping.ipynb            # Data preparation & lesion-aware split 80:10:10
 │   │   ├── tabel_ekstraksi_jurnal_3kelas.md # Matriks komparasi jurnal & harmonisasi medis
 │   │   ├── baseline_modeling_3kelas.ipynb  # Notebook baseline modeling PyTorch 3 kelas
-│   │   └── train_baseline.py               # Skrip eksekusi pelatihan modular (ResNet-50 & EfficientNet-B0)
+│   │   ├── train_baseline.py               # Skrip eksekusi pelatihan modular (ResNet-50 & EfficientNet-B0)
+│   │   ├── eksekusi_full_training_gpu.ipynb # Notebook siap jalan untuk Kaggle/Colab T4
+│   │   └── panduan_eksekusi_gpu_colab_kaggle.md # Panduan komprehensif eksekusi cloud GPU
 │   └── 4_jalur_irisan_7kelas/              # Jalur Irisan 7 Kelas (HAM10k ∩ ISIC 2019 - Alternatif)
 │       └── irisan_7kelas_mapping.ipynb
 ├── notes jurnal/                           # Direktori catatan, analisis, & ringkasan jurnal
@@ -237,5 +253,5 @@ Progres implementasi Jalur Irisan 3 Kelas (HAM10000 ∩ ISIC 2017 ∩ ISIC 2019)
   5. **Penyusunan Panduan GPU Eksekusi:**
      * Membuat [`kode/3_jalur_irisan_3kelas/panduan_eksekusi_gpu_colab_kaggle.md`](kode/3_jalur_irisan_3kelas/panduan_eksekusi_gpu_colab_kaggle.md) untuk eksekusi pelatihan penuh (*Full Training* 10–15 epoch) pada akselerator GPU Google Colab / Kaggle T4.
   6. **Sinkronisasi Git & GitHub:**
-     * Seluruh perubahan dan berkas baru telah di-commit dan di-push sukses ke repositori GitHub `https://github.com/Sigiitttt/riset-coyy.git` (commit `4ae8ce5`).
-* **Status Memori:** **AMAN, PERSISTEN, & TERSINKRONISASI.** Seluruh pekerjaan dan titik lanjut telah tersimpan rapi. Sesi berikutnya siap dilanjutkan kapan saja dengan mengetik **`/start`**.
+     * Seluruh perubahan dan berkas baru telah di-commit dan di-push sukses ke repositori GitHub `https://github.com/Sigiitttt/riset-coyy.git` (commit `df7999d`).
+* **Status Memori:** **AMAN, PERSISTEN, & TERSINKRONISASI.** Seluruh pekerjaan dan titik lanjut telah tersimpan rapi. Sesi aktif dibuka kembali dengan perintah **`/start`**.
