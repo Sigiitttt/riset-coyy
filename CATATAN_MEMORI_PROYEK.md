@@ -121,13 +121,8 @@ Riset ini terbagi menjadi 2 jalur independen:
 
 
 
-### C. `irisan_7kelas_mapping.ipynb` (Jalur Irisan 7 Kelas: HAM10k ∩ ISIC 2019 — Status: ALTERNATIF SELESAI 100%)
-* **Konsep:** Menggabungkan HAM10000 dan ISIC 2019 (tanpa ISIC 2017) untuk mempertahankan 7 kelas standar emas benchmark medis dunia.
-* **Hasil Irisan (Standar Emas Benchmark HAM10000 / ISIC 2018 Task 3):**
-  1. `NV`: 12.875 citra (51,7%) | 2. `MEL`: 4.522 citra (18,2%) | 3. `BCC`: 3.323 citra (13,3%) | 4. `BKL`: 2.624 citra (10,5%) | 5. `AKIEC`: 1.064 citra (4,3%) | 6. `VASC`: 253 citra (1,0%) | 7. `DF`: 239 citra (1,0%)
-* **Total Citra Bersih:** **24.900 citra** (100% bebas dari duplikat, 0 missing values).
-* **Output File:** `Dataset/dataset_irisan_7kelas_final.csv` (4,39 MB, 24.900 baris).
-* **Status:** **SELESAI & TERSIMPAN** — Tersedia sebagai alternatif benchmark komparasi 7 kelas.
+### C. Jalur Irisan 7 Kelas (Status: DIHAPUS / TIDAK DIGUNAKAN)
+* **Keterangan:** Folder `kode/4_jalur_irisan_7kelas` dan notebook `irisan_7kelas_mapping.ipynb` telah dihapus secara permanen atas permintaan pengguna karena riset difokuskan penuh pada **Jalur Irisan 3 Kelas (NV, MEL, BKL)** sesuai arahan dosen pembimbing.
 
 ### A.2 `data understanding biner improve.ipynb` (Data Understanding Biner 3 Dataset — Status: SELESAI 100%)
 * **Fokus Riset:** Khusus pada 3 dataset acuan Jalur Biner: HAM10000, ISIC 2017, dan ISIC 2019 (6 partisi data).
@@ -233,8 +228,6 @@ Data Understanding Isic & Ham10k/
 │   │   ├── train_baseline.py               # Skrip eksekusi pelatihan modular (ResNet-50 & EfficientNet-B0)
 │   │   ├── eksekusi_full_training_gpu.ipynb # Notebook siap jalan untuk Kaggle/Colab T4
 │   │   └── panduan_eksekusi_gpu_colab_kaggle.md # Panduan komprehensif eksekusi cloud GPU
-│   └── 4_jalur_irisan_7kelas/              # Jalur Irisan 7 Kelas (HAM10k ∩ ISIC 2019 - Alternatif)
-│       └── irisan_7kelas_mapping.ipynb
 ├── notes jurnal/                           # Direktori catatan, analisis, & ringkasan jurnal
 │   ├── biner/                              # Catatan riset jalur biner
 │   │   ├── ringkasan jurnal biner saya.txt                # Catatan ringkasan paper rujukan biner
