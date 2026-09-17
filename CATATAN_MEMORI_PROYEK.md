@@ -296,19 +296,24 @@ Progres implementasi Jalur Irisan 3 Kelas (HAM10000 ∩ ISIC 2017 ∩ ISIC 2019)
   - **Panduan GPU Eksekusi:** Disediakan panduan siap eksekusi di [`kode/3_jalur_irisan_3kelas/panduan_eksekusi_gpu_colab_kaggle.md`](kode/3_jalur_irisan_3kelas/panduan_eksekusi_gpu_colab_kaggle.md).
 - [ ] **Langkah 2:** Menjalankan pelatihan penuh (*Full Training* 10–20 epoch) ResNet-50 vs EfficientNet-B0 pada akselerator GPU (Google Colab / Kaggle T4) menggunakan skrip modular `python kode/3_jalur_irisan_3kelas/train_baseline.py --loss focal` / `--loss cb_focal` sesuai panduan GPU.
 
-### 📋 Agenda Tugas Verifikasi Komparatif Biner vs Irisan & Rekap Dosen (SELESAI 100%)
-- [x] **Tugas 1 (Selesai): Pengecekan Label Harmonisasi Biner vs Irisan vs Rujukan Jurnal**
+### 📋 Agenda 4 Tugas Verifikasi & Rekap Dosen (STATUS: PENDING TINJAUAN PENGGUNA)
+> [!IMPORTANT]
+> **Catatan Pengguna:** Pengguna belum melakukan/meninjau sendiri 4 tugas di bawah ini setelah perintah `/start`. Seluruh berkas pendukung (file Excel dan laporan formal) telah disiapkan oleh sistem, namun status checklist **tetap dianggap belum selesai (`[ ]`)** dari sudut pandang pengguna dan **wajib diingatkan kembali pada sesi berikutnya**.
+
+- [ ] **Tugas 1 (Pending Review Pengguna): Pengecekan Label Harmonisasi Biner vs Irisan vs Rujukan Jurnal**
   - Mengaudit konsistensi kode diagnosis (`NV`, `MEL`, `BKL`, `BCC`, `AKIEC`, `SCC`, `VASC`, `DF`, `UNK`) antara notebook jalur biner (`binary_mapping improve.ipynb`) dan jalur irisan (`data_understanding_irisan_3kelas improve.ipynb` & `irisan_mapping improve.ipynb`).
   - Memastikan definisi harmonisasi (peleburan `seborrheic_keratosis ≡ BKL`) 100% selaras dengan standar literatur (*Tschandl et al., Nature 2018*, hal. 7 dan *Codella et al., IEEE ISBI 2018*).
-- [x] **Tugas 2 (Selesai): Verifikasi Pemetaan Label Biner dengan Rujukan Konsensus Ilmiah**
+- [ ] **Tugas 2 (Pending Review Pengguna): Verifikasi Pemetaan Label Biner dengan Rujukan Konsensus Ilmiah**
   - Mengecek ulang pemetaan biner (Benign 0 vs Malignant 1) terhadap matriks voting 8 jurnal internasional (Elsevier, MDPI, Springer, Frontiers).
   - Konsensus mutlak (100%): `NV`, `BKL`, `DF` (Jinak) dan `MEL`, `BCC`, `AKIEC`, `SCC` (Ganas). Konsensus mayoritas (80%): `VASC` (Jinak). `UNK` berhasil dieliminasi (2.047 citra OOD).
-- [x] **Tugas 3 (Selesai): Audit dan Cross-Check Output Data Biner vs Irisan**
+- [ ] **Tugas 3 (Pending Review Pengguna): Audit dan Cross-Check Output Data Biner vs Irisan**
   - Melakukan validasi silang komputasional antara file output: `dataset_binary_final.csv` (33.552 baris) dengan `dataset_irisan_multiclass_final.csv` (22.051 baris).
   - Hasil: Seluruh 22.051 citra irisan (100%) beririsan sempurna di dalam dataset biner dengan 0 mismatch label dan 0 mismatch sumber dataset. Dekomposisi 11.501 citra non-irisan terbukti berasal dari kelas non-2017 (BCC, AKIEC, SCC, VASC, DF) serta partisi test ISIC 2019.
-- [x] **Tugas 4 (Selesai): Pembuatan File Rekapitulasi untuk Dosen (File Excel `.xlsx` & Dokumen Laporan Formal)**
-  - Menghasilkan file Excel resmi [`rekap_dataset_biner_dan_irisan.xlsx`](rekap_dataset_biner_dan_irisan.xlsx) dengan 6 lembar kerja berstandar profesional (Ringkasan Eksekutif, Harmonisasi & Konsensus, Statistik Biner, Statistik Irisan 3K, Audit & Validasi Silang, Daftar Rujukan Ilmiah).
-  - Menyusun dokumen laporan formal lengkap di [`notes jurnal/laporan_komparasi_dan_rekap_dataset_biner_vs_irisan.md`](notes%20jurnal/laporan_komparasi_dan_rekap_dataset_biner_vs_irisan.md).
+- [ ] **Tugas 4 (Pending Review Pengguna): Pembuatan & Pemeriksaan File Rekapitulasi untuk Dosen**
+  - Berkas yang telah disiapkan dan siap ditinjau pengguna:
+    * File Excel: [`rekap_dataset_biner_dan_irisan.xlsx`](file:///c:/Users/ARII/Downloads/Data%20Understanding%20Isic%20&%20Ham10k/rekap_dataset_biner_dan_irisan.xlsx) (6 sheets lengkap).
+    * Dokumen Laporan Formal: [`notes jurnal/laporan_komparasi_dan_rekap_dataset_biner_vs_irisan.md`](file:///c:/Users/ARII/Downloads/Data%20Understanding%20Isic%20&%20Ham10k/notes%20jurnal/laporan_komparasi_dan_rekap_dataset_biner_vs_irisan.md).
+  - Pengguna perlu memeriksa lembar kerja ini sebelum diserahkan ke dosen pembimbing.
 
 ### 🚀 Titik Lanjut Berikutnya (Actionable Next Steps)
 - [ ] **Langkah Lanjut (Modeling GPU):** Menjalankan pelatihan penuh (*Full Training* 10–20 epoch) ResNet-50 vs EfficientNet-B0 pada akselerator GPU (Google Colab / Kaggle T4) menggunakan skrip modular `python kode/3_jalur_irisan_3kelas/train_baseline.py --loss focal` / `--loss cb_focal` sesuai panduan di [`kode/3_jalur_irisan_3kelas/panduan_eksekusi_gpu_colab_kaggle.md`](kode/3_jalur_irisan_3kelas/panduan_eksekusi_gpu_colab_kaggle.md).
