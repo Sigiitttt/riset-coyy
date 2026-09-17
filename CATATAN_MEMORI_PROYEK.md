@@ -1,7 +1,7 @@
 # 🧠 DOKUMEN MEMORI UTAMA PROYEK (PERSISTENT MEMORY)
 **Proyek:** Data Understanding & Pemetaan Dataset ISIC (2016–2024) & HAM10000  
 **Lokasi Direktori:** `C:\Users\ARII\Downloads\Data Understanding Isic & Ham10k\`  
-* **Terakhir Diperbarui:** 16 September 2026, Pukul 22:20 WIB (Sesi Ditutup via `/end`)  
+* **Terakhir Diperbarui:** 17 September 2026, Pukul 08:35 WIB (Sesi Ditutup via `/end`)  
 
 
 ---
@@ -222,18 +222,20 @@ Progres implementasi Jalur Irisan 3 Kelas (HAM10000 ∩ ISIC 2017 ∩ ISIC 2019)
 ---
 
 ## 7. Catatan Penutupan Sesi Terakhir (Session Log via `/end`)
-* **Waktu Penutupan:** 16 September 2026, Pukul 22:20 WIB.
+* **Waktu Penutupan:** 17 September 2026, Pukul 08:35 WIB.
 * **Rangkuman Sesi Ini:**
-  1. **Pembuatan Notebook Data Understanding Jalur Irisan 3 Kelas:**
-     * Membangun notebook baru [`kode/3_jalur_irisan_3kelas/data_understanding_irisan_3kelas.ipynb`](kode/3_jalur_irisan_3kelas/data_understanding_irisan_3kelas.ipynb) yang berada berdampingan dengan `irisan_mapping.ipynb`.
-     * Menjalankan eksekusi penuh (26 cells) sehingga seluruh visualisasi grafik 4-panel, tabel sebaran data, pengecekan ukuran gambar, dan sampel dermatoskopi nyata ter-render aktif.
-  2. **Pengecekan Mendalam 10 Kolom Asli ISIC 2019:**
-     * Mengaudit 10 kolom resmi: `image, MEL, NV, BCC, AK, BKL, DF, VASC, SCC, UNK`.
-     * Mengklarifikasi fungsi kolom `UNK` (bernilai 0 di data train karena placeholder evaluasi out-of-distribution pada kompetisi). Seluruh 25.331 citra latih terpakai 100% pada 8 diagnosis.
-  3. **Penyederhanaan Bahasa (*Human-Friendly & Concise*):**
-     * Merevisi seluruh teks markdown dan output agar padat, ringkas, to the point, dan menggunakan bahasa yang lugas tanpa istilah akademis yang berbelit-belit.
-  4. **Perapihan Literatur PDF:**
-     * Memperbarui folder literatur menjadi `jurnal irisan 3 kelas/` berisi 6 dokumen PDF paper acuan.
-  5. **Sinkronisasi Kode & Dataset:**
-     * Melakukan commit dan push sukses ke repositori GitHub `https://github.com/Sigiitttt/riset-coyy.git` (commit `d380de3`).
-* **Status Memori:** **AMAN, TERSINKRONISASI KE GITHUB, & PERSISTEN.** Seluruh progres dan titik lanjut telah tersimpan rapi. Sesi berikutnya siap dilanjutkan kapan saja dengan mengetik **`/start`**.
+  1. **Eksplorasi Penanganan Imbalance Lanjutan (Langkah 3 Selesai):**
+     * Mengintegrasikan *Focal Loss* ($\gamma=2.0$, alpha-weighted) dan *Class-Balanced Focal Loss* ($\beta=0.999$, Cui et al. 2019) ke [`train_baseline.py`](kode/3_jalur_irisan_3kelas/train_baseline.py) dan [`baseline_modeling_3kelas.ipynb`](kode/3_jalur_irisan_3kelas/baseline_modeling_3kelas.ipynb).
+     * Melakukan verifikasi *smoke test* sukses untuk `efficientnet_b0_focal` dan `resnet50_cb_focal`, menghasilkan checkpoint model, confusion matrix (`cm_*.png`), serta pembaruan tabel [`models/baseline_comparison_results.csv`](models/baseline_comparison_results.csv).
+  2. **Penyusunan Catatan Notion Harmonisasi & Asal Label:**
+     * Menuliskan dokumentasi komprehensif di [`notes jurnal/irisan/catatan_harmonisasi_dan_rujukan_label_3kelas.md`](notes%20jurnal/irisan/catatan_harmonisasi_dan_rujukan_label_3kelas.md) berisi pembuktian bahwa kode `NV`, `MEL`, dan `BKL` 100% merupakan standar resmi Konsorsium ISIC (ISIC 2018 Task 3 & ISIC 2019 Task 1) dan *Nature Scientific Data* (Tschandl et al., 2018), dilengkapi tabel perbandingan sebelum-sesudah dan sitasi APA 7th.
+  3. **Penyederhanaan Teks Penjelas di `irisan_mapping.ipynb`:**
+     * Memperbarui seluruh 11 sel markdown keterangan/penjelasan di [`kode/3_jalur_irisan_3kelas/irisan_mapping.ipynb`](kode/3_jalur_irisan_3kelas/irisan_mapping.ipynb) menjadi singkat, padat, to-the-point, dan tidak bertele-tele (gaya bahasa manusiawi) persis seperti `data_understanding_irisan_3kelas.ipynb`.
+     * 100% sel kode, gambar grafik batang, dan seluruh output eksekusi tetap utuh dipertahankan.
+  4. **Audit Integritas Data & Cross-Check 100%:**
+     * Menjalankan audit menyeluruh antara kedua notebook dan CSV fisik di disk. Terbukti 100% cocok dan identik: 22.051 citra bersih (`NV`: 14.148, `MEL`: 4.895, `BKL`: 3.008), 10.735 duplikat dibuang, split 80:10:10 (Train: 17.656, Val: 2.192, Test: 2.203), dan 0 kebocoran lesi pasien (*100% leak-free*).
+  5. **Penyusunan Panduan GPU Eksekusi:**
+     * Membuat [`kode/3_jalur_irisan_3kelas/panduan_eksekusi_gpu_colab_kaggle.md`](kode/3_jalur_irisan_3kelas/panduan_eksekusi_gpu_colab_kaggle.md) untuk eksekusi pelatihan penuh (*Full Training* 10–15 epoch) pada akselerator GPU Google Colab / Kaggle T4.
+  6. **Sinkronisasi Git & GitHub:**
+     * Seluruh perubahan dan berkas baru telah di-commit dan di-push sukses ke repositori GitHub `https://github.com/Sigiitttt/riset-coyy.git` (commit `4ae8ce5`).
+* **Status Memori:** **AMAN, PERSISTEN, & TERSINKRONISASI.** Seluruh pekerjaan dan titik lanjut telah tersimpan rapi. Sesi berikutnya siap dilanjutkan kapan saja dengan mengetik **`/start`**.
