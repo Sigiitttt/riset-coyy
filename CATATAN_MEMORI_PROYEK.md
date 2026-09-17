@@ -210,7 +210,8 @@ Data Understanding Isic & Ham10k/
 
 ├── kode/                                   # Direktori seluruh kode & notebook terstruktur rapi
 │   ├── 1_data_understanding/               # Eksplorasi awal dataset ISIC & HAM10000
-│   │   ├── 1-data_understanding_isic.ipynb
+│   │   ├── 1-data_understanding_isic.ipynb # Versi original 14 dataset
+│   │   ├── 1-data_understanding_isic improve.ipynb # Versi baru: harmonisasi medis lengkap, rujukan 14 dataset, HAM10k utuh 100%, pre-rendered
 │   │   ├── 1.1-data_understanding_isic copy.ipynb
 │   │   ├── 1.1-data_understanding_isic.ipynb.bak
 │   │   ├── 1.1-data_understanding_isic_exclude isic 20.ipynb
