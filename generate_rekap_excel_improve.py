@@ -220,7 +220,7 @@ def build_sheet_2(wb):
     ws.sheet_properties.tabColor = "2980B9"
 
     set_col_widths(ws, {1: 14, 2: 42, 3: 18, 4: 16, 5: 22, 6: 20, 7: 16,
-                        8: 12, 9: 12, 10: 12, 11: 12})
+                        8: 12, 9: 12, 10: 12, 11: 12, 12: 12})
 
     write_title(ws, 1, 1,
                 "Harmonisasi Label & Konsensus Pemetaan Biner",
@@ -273,36 +273,56 @@ def build_sheet_2(wb):
     c.border = THIN_BORDER
     ws.merge_cells(start_row=r2, start_column=1, end_row=r2 + 3, end_column=7)
 
-    # -- C. Voting Matrix --
+    # -- C. Voting Matrix (with paper titles) --
     r3 = r2 + 5
-    write_section(ws, r3, 1, "C. Matriks Voting 8 Paper Internasional (Pemetaan Biner)", merge_end=11)
+    write_section(ws, r3, 1, "C. Matriks Voting 8 Paper Internasional (Pemetaan Biner)", merge_end=12)
     r3 += 1
     write_header_row(ws, r3, [
-        "Penulis", "Jurnal & Tahun", "Dataset", "NV", "BKL", "DF", "VASC", "MEL", "BCC", "AKIEC", "SCC"
+        "Penulis", "Judul Paper", "Jurnal & Tahun", "Dataset",
+        "NV", "BKL", "DF", "VASC", "MEL", "BCC", "AKIEC", "SCC"
     ], 1)
+    # Adjust column widths for voting table area
+    ws.column_dimensions['B'].width = 52  # Judul Paper needs more space
+    ws.column_dimensions['C'].width = 44
 
     voting_data = [
-        ["Kousis et al.", "Electronics (MDPI), 2022", "HAM10000",
+        ["Kousis et al.",
+         "Deep Learning Methods for Accurate Skin Cancer Recognition and Mobile Application",
+         "Electronics (MDPI), 2022", "HAM10000",
          "Jinak", "Jinak", "Jinak", "Jinak", "Ganas", "Ganas", "Ganas", "-"],
-        ["Ghosh et al. (SkinNet-16)", "Frontiers in Oncology, 2022", "HAM10000",
+        ["Ghosh et al.",
+         "SkinNet-16: A deep learning approach to identify benign and malignant skin lesions",
+         "Frontiers in Oncology, 2022", "HAM10000",
          "Jinak", "Jinak", "Jinak", "Jinak", "Ganas", "Ganas", "Ganas", "-"],
-        ["Harangi et al.", "Biomedical Signal Proc. & Control (Elsevier), 2020", "HAM10000 / 2018",
+        ["Harangi et al.",
+         "Assisted deep learning framework for multi-class skin lesion classification considering a binary classification support",
+         "Biomedical Signal Proc. & Control (Elsevier), 2020", "HAM10000 / 2018",
          "Jinak", "Jinak", "Jinak", "Ganas*", "Ganas", "Ganas", "Ganas", "-"],
-        ["Ameri", "J. Biomed. Physics & Eng. (JBPE), 2020", "HAM10000",
+        ["Ameri",
+         "A deep learning approach to skin cancer detection in dermoscopy images",
+         "J. Biomed. Physics & Eng. (JBPE), 2020", "HAM10000",
          "Jinak", "Jinak", "Jinak", "Exclude", "Ganas", "Ganas", "Ganas", "-"],
-        ["Barata et al.", "Pattern Recognition (Elsevier), 2020", "ISIC 2017",
+        ["Barata et al.",
+         "Explainable skin lesion diagnosis using taxonomies",
+         "Pattern Recognition (Elsevier), 2020", "ISIC 2017",
          "Jinak", "Jinak", "-", "-", "Ganas", "-", "-", "-"],
-        ["Jojoa Acosta et al.", "BMC Medical Imaging (Springer), 2021", "ISIC 2017",
+        ["Jojoa Acosta et al.",
+         "Melanoma diagnosis using deep learning techniques on dermatoscopic images",
+         "BMC Medical Imaging (Springer), 2021", "ISIC 2017",
          "Jinak", "Jinak", "-", "-", "Ganas", "-", "-", "-"],
-        ["Yao et al. (MorphoNet)", "Bioengineering (MDPI), 2026", "HAM10k & 2019",
+        ["Yao et al.",
+         "MorphoNet: An Interpretable Hierarchical Deep Learning Framework for Multi-Class Skin Lesion Classification",
+         "Bioengineering (MDPI), 2026", "HAM10k & 2019",
          "Jinak", "Jinak", "Jinak", "Jinak", "Ganas", "Ganas", "Ganas", "Ganas"],
-        ["Venugopal et al.", "Data Analysis Journal (Elsevier), 2023", "ISIC 2019",
+        ["Venugopal et al.",
+         "Multiclass skin cancer classification using ensemble of fine-tuned deep learning models",
+         "Data Analysis Journal (Elsevier), 2023", "ISIC 2019",
          "Jinak", "Jinak", "Jinak", "Jinak", "Ganas", "Ganas", "Ganas", "Ganas"],
     ]
     for i, d in enumerate(voting_data):
-        fonts = [None, None, None]
-        fills = [None, None, None]
-        for j in range(3, 11):
+        fonts = [None, None, None, None]  # Penulis, Judul, Jurnal, Dataset
+        fills = [None, None, None, None]
+        for j in range(4, 12):
             val = d[j]
             if val == "Jinak":
                 fonts.append(FONT_JINAK)
@@ -314,17 +334,18 @@ def build_sheet_2(wb):
                 fonts.append(None)
                 fills.append(None)
         write_data_row(ws, r3 + 1 + i, d, 1, fonts=fonts, fills=fills)
+        ws.row_dimensions[r3 + 1 + i].height = 36  # taller rows for title readability
 
     # Consensus row
     r_cons = r3 + 1 + len(voting_data)
     consensus = [
-        "KONSENSUS (VOTING)", "Mayoritas Literatur", "Semua Sumber",
+        "KONSENSUS (VOTING)", "", "Mayoritas Literatur", "Semua Sumber",
         "JINAK (100%)", "JINAK (100%)", "JINAK (100%)", "JINAK (80%)",
         "GANAS (100%)", "GANAS (100%)", "GANAS (100%)", "GANAS (100%)"
     ]
-    fonts_cons = [FONT_TOTAL, FONT_TOTAL, FONT_TOTAL]
-    fills_cons = [FILL_TOTAL, FILL_TOTAL, FILL_TOTAL]
-    for j in range(3, 11):
+    fonts_cons = [FONT_TOTAL, FONT_TOTAL, FONT_TOTAL, FONT_TOTAL]
+    fills_cons = [FILL_TOTAL, FILL_TOTAL, FILL_TOTAL, FILL_TOTAL]
+    for j in range(4, 12):
         if "JINAK" in consensus[j]:
             fonts_cons.append(FONT_JINAK)
             fills_cons.append(FILL_JINAK)
@@ -709,8 +730,14 @@ def main():
         ws.sheet_view.showGridLines = False
 
     outfile = "rekap_dataset_biner_dan_irisan improve.xlsx"
-    wb.save(outfile)
-    print(f"\nBerhasil dibuat: {outfile}")
+    try:
+        wb.save(outfile)
+        print(f"\nBerhasil dibuat: {outfile}")
+    except PermissionError:
+        outfile2 = "rekap_dataset_biner_dan_irisan improve_v2.xlsx"
+        wb.save(outfile2)
+        print(f"\nFile utama sedang terbuka. Disimpan sebagai: {outfile2}")
+        print(f"Tutup file lama di Excel, lalu rename '{outfile2}' -> '{outfile}'.")
 
 
 if __name__ == "__main__":
