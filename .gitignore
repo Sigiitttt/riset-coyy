@@ -38,6 +38,7 @@ Dataset/isic 2024/
 *.pkl
 models/*
 !models/.gitkeep
+!models/*.csv
 
 # 4. Python, Jupyter, & Virtual Environment
 __pycache__/

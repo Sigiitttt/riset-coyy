@@ -212,8 +212,12 @@ Progres implementasi Jalur Irisan 3 Kelas (HAM10000 ∩ ISIC 2017 ∩ ISIC 2019)
 
 - [x] **Langkah 1 (Selesai):** Menuliskan rangkuman dan tabel sitasi 5 paper ilmiah terpilih (Kelompok 1 Primer: Codella 2018, Tschandl 2018, Combalia 2019; Kelompok 2 Pendukung: Baig 2023, Ichim 2023) ke dalam file catatan [`notes jurnal/irisan/ringkasan_jurnal_irisan_3kelas.md`](notes%20jurnal/irisan/ringkasan_jurnal_irisan_3kelas.md) lengkap dengan ontologi medis `SK ≡ BKL`, diagram alur justifikasi Bab 2/3, tabel sebaran data, format APA 7th, dan BibTeX.
 - [x] **Langkah 1.1 (Selesai):** Menyusun dan mengeksekusi penuh notebook [`kode/3_jalur_irisan_3kelas/data_understanding_irisan_3kelas.ipynb`](kode/3_jalur_irisan_3kelas/data_understanding_irisan_3kelas.ipynb) dengan gaya akademis manusiawi (*like human*), memeriksa mendalam 10 kolom asli ISIC 2019 (`image, MEL, NV, BCC, AK, BKL, DF, VASC, SCC, UNK`), 7 kelas HAM10000, 3 kelas 2017, audit tumpang tindih citra dan duplikasi lesi pasien, pembuktian medis peleburan `SK ≡ BKL`, serta visualisasi contoh dermatoskopi nyata.
-- [ ] **Langkah 2:** Menjalankan pelatihan penuh (*Full Training* 10–20 epoch) ResNet-50 vs EfficientNet-B0 pada akselerator GPU (Google Colab / Kaggle T4) menggunakan perintah `python kode/3_jalur_irisan_3kelas/train_baseline.py` dan mencatat tabel metrik performa klinis komparatif final.
-- [ ] **Langkah 3:** Eksplorasi penanganan ketimpangan data lanjutan (*Focal Loss* seperti pada notebook dosen `Eksperimen_Skenario1_Spark.ipynb` dan *Class-Balanced Loss*).
+- [x] **Langkah 3 (Selesai):** Eksplorasi & implementasi penanganan ketimpangan data lanjutan:
+  - **Focal Loss ($\gamma=2.0$, alpha-weighted):** Diintegrasikan ke [`train_baseline.py`](kode/3_jalur_irisan_3kelas/train_baseline.py) dan [`baseline_modeling_3kelas.ipynb`](kode/3_jalur_irisan_3kelas/baseline_modeling_3kelas.ipynb) mengacu pada formulasi Lin et al. (ICCV 2017) dan notebook acuan dosen (`Eksperimen_Skenario1_Spark.ipynb`).
+  - **Class-Balanced Focal Loss ($\beta=0.999$):** Mengadopsi prinsip *Effective Number of Samples* (Cui et al., CVPR 2019) untuk normalisasi bobot dinamis pada kelas minoritas (`MEL` & `BKL`).
+  - **Verifikasi End-to-End Smoke Test:** Sukses dieksekusi untuk `efficientnet_b0_focal` dan `resnet50_cb_focal`, menghasilkan model checkpoint `.pth`, diagram confusion matrix, serta pembaruan otomatis ke [`models/baseline_comparison_results.csv`](models/baseline_comparison_results.csv).
+  - **Panduan GPU Eksekusi:** Disediakan panduan siap eksekusi di [`kode/3_jalur_irisan_3kelas/panduan_eksekusi_gpu_colab_kaggle.md`](kode/3_jalur_irisan_3kelas/panduan_eksekusi_gpu_colab_kaggle.md).
+- [ ] **Langkah 2:** Menjalankan pelatihan penuh (*Full Training* 10–20 epoch) ResNet-50 vs EfficientNet-B0 pada akselerator GPU (Google Colab / Kaggle T4) menggunakan skrip modular `python kode/3_jalur_irisan_3kelas/train_baseline.py --loss focal` / `--loss cb_focal` sesuai panduan GPU.
 
 ---
 

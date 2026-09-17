@@ -91,6 +91,43 @@ def build_baseline_model(model_name="resnet50", num_classes=3, pretrained=True):
     return model
 
 
+class FocalLoss(nn.Module):
+    """
+    Focal Loss multi-class dengan penanganan data imbalance (Lin et al., ICCV 2017).
+    FL(p_t) = - alpha_t * (1 - p_t)^gamma * log(p_t)
+    Diadaptasi dari formulasi paper rujukan & implementasi dosen (Eksperimen_Skenario1_Spark.ipynb).
+    """
+    def __init__(self, alpha=None, gamma=2.0, reduction='mean'):
+        super().__init__()
+        self.alpha = alpha  # Tensor bobot per kelas (alpha_t)
+        self.gamma = gamma  # Focusing parameter (default: 2.0)
+        self.reduction = reduction
+        self.ce = nn.CrossEntropyLoss(weight=alpha, reduction='none')
+
+    def forward(self, logits, targets):
+        ce_loss = self.ce(logits, targets)
+        p_t = torch.exp(-ce_loss)
+        focal_loss = ((1.0 - p_t) ** self.gamma) * ce_loss
+        if self.reduction == 'mean':
+            return focal_loss.mean()
+        elif self.reduction == 'sum':
+            return focal_loss.sum()
+        return focal_loss
+
+
+def compute_effective_num_weights(cls_counts, num_classes=3, beta=0.999):
+    """
+    Menghitung bobot kelas berbasis Effective Number of Samples (Cui et al., CVPR 2019):
+    E_n = (1 - beta^n) / (1 - beta)
+    W_i = (1 - beta) / (1 - beta^n_i)
+    """
+    counts = np.array([cls_counts.get(i, 1) for i in range(num_classes)], dtype=np.float64)
+    effective_num = 1.0 - np.power(beta, counts)
+    weights = (1.0 - beta) / np.maximum(effective_num, 1e-8)
+    weights = weights / np.sum(weights) * num_classes
+    return weights
+
+
 def train_one_epoch(model, dataloader, criterion, optimizer, device):
     model.train()
     running_loss = 0.0
@@ -224,6 +261,11 @@ def evaluate_test(model, test_loader, criterion, device, output_dir, model_name)
 def main():
     parser = argparse.ArgumentParser(description="Pelatihan Baseline Deep Learning 3 Kelas")
     parser.add_argument("--model", type=str, default="resnet50", choices=["resnet50", "efficientnet_b0"])
+    parser.add_argument("--loss", type=str, default="weighted_ce",
+                        choices=["weighted_ce", "focal", "cb_focal", "ce"],
+                        help="Fungsi loss: weighted_ce (Inverse Class Weights), focal (Focal Loss), cb_focal (Class-Balanced Focal Loss), ce (Standard CE)")
+    parser.add_argument("--gamma", type=float, default=2.0, help="Focusing parameter gamma untuk Focal Loss (default: 2.0)")
+    parser.add_argument("--beta", type=float, default=0.999, help="Beta parameter untuk Class-Balanced Loss (default: 0.999)")
     parser.add_argument("--epochs", type=int, default=10)
     parser.add_argument("--batch_size", type=int, default=32)
     parser.add_argument("--lr", type=float, default=1e-4)
@@ -278,12 +320,33 @@ def main():
         df_test  = df_test.sample(n=min(32, len(df_test)), random_state=args.seed)
         args.epochs = 1
 
-    # Class Weights
+    # Perhitungan Class Weights & Konfigurasi Loss
     cls_counts = df_train['target_multiclass'].value_counts().sort_index()
     total_samples = len(df_train)
     n_classes = 3
-    class_weights = [total_samples / (n_classes * cls_counts.get(c, 1)) for c in range(n_classes)]
-    weights_tensor = torch.tensor(class_weights, dtype=torch.float32).to(device)
+
+    if args.loss == "cb_focal":
+        class_weights = compute_effective_num_weights(cls_counts, num_classes=n_classes, beta=args.beta)
+        weights_tensor = torch.tensor(class_weights, dtype=torch.float32).to(device)
+        criterion = FocalLoss(alpha=weights_tensor, gamma=args.gamma)
+        loss_desc = f"Class-Balanced Focal Loss (gamma={args.gamma}, beta={args.beta})"
+    elif args.loss == "focal":
+        class_weights = [total_samples / (n_classes * cls_counts.get(c, 1)) for c in range(n_classes)]
+        weights_tensor = torch.tensor(class_weights, dtype=torch.float32).to(device)
+        criterion = FocalLoss(alpha=weights_tensor, gamma=args.gamma)
+        loss_desc = f"Weighted Focal Loss (gamma={args.gamma})"
+    elif args.loss == "weighted_ce":
+        class_weights = [total_samples / (n_classes * cls_counts.get(c, 1)) for c in range(n_classes)]
+        weights_tensor = torch.tensor(class_weights, dtype=torch.float32).to(device)
+        criterion = nn.CrossEntropyLoss(weight=weights_tensor)
+        loss_desc = "Weighted Cross-Entropy Loss"
+    else:
+        class_weights = [1.0] * n_classes
+        criterion = nn.CrossEntropyLoss()
+        loss_desc = "Standard Cross-Entropy Loss (Unweighted)"
+
+    print(f"[LOSS] Konfigurasi Fungsi Objektif: {loss_desc}")
+    print(f"       Bobot Kelas (NV, MEL, BKL): {[round(w, 2) for w in class_weights]}")
 
     # Transforms
     train_transforms = transforms.Compose([
@@ -314,16 +377,18 @@ def main():
     test_loader  = DataLoader(test_ds, batch_size=args.batch_size, shuffle=False,
                               num_workers=args.num_workers, pin_memory=(device.type == 'cuda'))
 
+    # Identifikasi Eksperimen & Checkpoint
+    exp_name = f"{args.model}_{args.loss}"
+    best_checkpoint_path = os.path.join(output_dir, f"best_{exp_name}_baseline.pth")
+
     # Build Model
     model = build_baseline_model(model_name=args.model, num_classes=3, pretrained=True).to(device)
-    criterion = nn.CrossEntropyLoss(weight=weights_tensor)
     optimizer = optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs, eta_min=1e-6)
 
     best_val_f1 = -1.0
-    best_checkpoint_path = os.path.join(output_dir, f"best_{args.model}_baseline.pth")
 
-    print(f"\n[TRAIN] Memulai Pelatihan Model: {args.model.upper()} ({args.epochs} Epochs)...")
+    print(f"\n[TRAIN] Memulai Pelatihan Model: {exp_name.upper()} ({args.epochs} Epochs)...")
     start_time = time.time()
 
     for epoch in range(1, args.epochs + 1):
@@ -358,14 +423,20 @@ def main():
         chk = torch.load(best_checkpoint_path, map_location=device, weights_only=False)
         model.load_state_dict(chk['model_state_dict'])
 
-    res = evaluate_test(model, test_loader, criterion, device, output_dir, args.model)
+    res = evaluate_test(model, test_loader, criterion, device, output_dir, exp_name)
+    res["loss_type"] = args.loss
 
     # Simpan ke tabel ringkasan perbandingan
     summary_csv = os.path.join(output_dir, "baseline_comparison_results.csv")
     df_new = pd.DataFrame([res])
     if os.path.exists(summary_csv):
         df_exist = pd.read_csv(summary_csv)
-        df_exist = df_exist[df_exist['model'] != args.model] # timpa jika model sama
+        # Hapus baris dengan model & loss_type yang sama jika sudah ada
+        if 'loss_type' in df_exist.columns:
+            mask = (df_exist['model'] == exp_name) | ((df_exist['model'] == args.model) & (df_exist['loss_type'] == args.loss))
+            df_exist = df_exist[~mask]
+        else:
+            df_exist = df_exist[df_exist['model'] != exp_name]
         df_combined = pd.concat([df_exist, df_new], ignore_index=True)
     else:
         df_combined = df_new
