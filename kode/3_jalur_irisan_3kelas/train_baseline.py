@@ -40,11 +40,30 @@ CLASS_NAMES = ["NV", "MEL", "BKL"]
 CLASS_FULLNAMES = ["Melanocytic Nevus", "Melanoma", "Benign Keratosis"]
 
 
+def build_image_file_map(search_dirs):
+    """
+    Membangun indeks kamus O(1) cepat {filename: full_path} untuk mengatasi
+    perbedaan letak path gambar antar platform (Windows lokal, Kaggle /kaggle/input, Colab /content).
+    """
+    file_map = {}
+    print(f"[INDEX] Memindai dan membangun indeks O(1) file citra dari: {search_dirs}...")
+    for s_dir in search_dirs:
+        if os.path.exists(s_dir):
+            for root, _, files in os.walk(s_dir):
+                for f in files:
+                    if f.lower().endswith(('.jpg', '.jpeg', '.png')):
+                        if f not in file_map:
+                            file_map[f] = os.path.join(root, f)
+    print(f"[INDEX] Selesai. Terindeks {len(file_map):,} file citra fisik.")
+    return file_map
+
+
 class SkinLesionDataset(Dataset):
-    def __init__(self, df, transform=None, base_dir=None):
+    def __init__(self, df, transform=None, base_dir=None, file_map=None):
         self.df = df.reset_index(drop=True)
         self.transform = transform
         self.base_dir = base_dir
+        self.file_map = file_map
 
     def __len__(self):
         return len(self.df)
@@ -53,18 +72,15 @@ class SkinLesionDataset(Dataset):
         row = self.df.iloc[idx]
         img_path = str(row['filepath'])
 
-        # Fallback jika path absolut dari machine lain
+        # Fallback jika path absolut dari machine/lingkungan komputasi lain
         if not os.path.exists(img_path):
             filename = os.path.basename(img_path)
-            if self.base_dir:
+            if self.file_map and filename in self.file_map:
+                img_path = self.file_map[filename]
+            elif self.base_dir:
                 candidate = os.path.join(self.base_dir, filename)
                 if os.path.exists(candidate):
                     img_path = candidate
-                else:
-                    for root, _, files in os.walk(self.base_dir):
-                        if filename in files:
-                            img_path = os.path.join(root, filename)
-                            break
 
         image = Image.open(img_path).convert("RGB")
         target = int(row['target_multiclass'])
@@ -272,6 +288,8 @@ def main():
     parser.add_argument("--weight_decay", type=float, default=1e-2)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--smoke_test", action="store_true", help="Uji coba cepat 64 sampel untuk validasi pipeline")
+    parser.add_argument("--image_dir", type=str, default=None,
+                        help="Direktori root tempat citra mentah disimpan (misal: /kaggle/input/datasets/nadiraanindita/skin-lesion-data)")
     parser.add_argument("--num_workers", type=int, default=0)
     args = parser.parse_args()
 
@@ -312,6 +330,22 @@ def main():
     df_train = pd.read_csv(train_csv)
     df_val   = pd.read_csv(val_csv)
     df_test  = pd.read_csv(test_csv)
+
+    # Deteksi aksesibilitas path citra (apakah path CSV cocok di environment saat ini)
+    sample_img_path = str(df_train.iloc[0]['filepath'])
+    file_map = None
+    if not os.path.exists(sample_img_path):
+        search_dirs = []
+        if args.image_dir:
+            search_dirs.append(args.image_dir)
+        if os.path.exists("/kaggle/input"):
+            search_dirs.append("/kaggle/input")
+        if os.path.exists("/content"):
+            search_dirs.append("/content")
+        for cand in [data_dir, "Dataset", "../Dataset", "../../Dataset"]:
+            if os.path.exists(cand) and cand not in search_dirs:
+                search_dirs.append(cand)
+        file_map = build_image_file_map(search_dirs)
 
     if args.smoke_test:
         print("[INFO] Mode SMOKE TEST diaktifkan: Membatasi 64 sampel per split untuk verifikasi cepat.")
@@ -366,9 +400,9 @@ def main():
         transforms.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD)
     ])
 
-    train_ds = SkinLesionDataset(df_train, transform=train_transforms, base_dir=data_dir)
-    val_ds   = SkinLesionDataset(df_val, transform=eval_transforms, base_dir=data_dir)
-    test_ds  = SkinLesionDataset(df_test, transform=eval_transforms, base_dir=data_dir)
+    train_ds = SkinLesionDataset(df_train, transform=train_transforms, base_dir=data_dir, file_map=file_map)
+    val_ds   = SkinLesionDataset(df_val, transform=eval_transforms, base_dir=data_dir, file_map=file_map)
+    test_ds  = SkinLesionDataset(df_test, transform=eval_transforms, base_dir=data_dir, file_map=file_map)
 
     train_loader = DataLoader(train_ds, batch_size=args.batch_size, shuffle=True,
                               num_workers=args.num_workers, pin_memory=(device.type == 'cuda'))

@@ -21,11 +21,31 @@ Pipeline mendukung kombinasi arsitektur dan loss function untuk publikasi ilmiah
 
 ---
 
-## 1. Menjalankan di Kaggle Notebook (GPU T4 x2) — Direkomendasikan ⭐
+## 💡 Opsi A: Menggunakan Notebook Siap Jalan (*One-Click Notebook*) ⭐⭐⭐
+
+Telah disediakan notebook khusus yang dapat langsung dibuka dan dijalankan pada Kaggle maupun Google Colab:
+[`kode/3_jalur_irisan_3kelas/eksekusi_full_training_gpu.ipynb`](eksekusi_full_training_gpu.ipynb)
+
+* **Di Kaggle:** Klik **File** $\rightarrow$ **Upload Notebook** $\rightarrow$ Pilih file `eksekusi_full_training_gpu.ipynb`.
+  * Tambahkan input dataset: Klik **+ Add Input** di panel kanan $\rightarrow$ Cari dataset `nadiraanindita/skin-lesion-data` $\rightarrow$ Klik **Add**.
+  * Aktifkan: **Accelerator: GPU T4 x2** dan **Internet: On**.
+  * Jalankan seluruh cell (Run All)! Seluruh indexing citra, training 15 epoch kedua model, evaluasi test set, dan plotting tabel komparasi berjalan otomatis.
+* **Di Google Colab:** Buka [Google Colab](https://colab.research.google.com) $\rightarrow$ Klik tab **Upload** $\rightarrow$ Pilih file `eksekusi_full_training_gpu.ipynb`.
+  * Ubah runtime: **Runtime** $\rightarrow$ **Change runtime type** $\rightarrow$ **T4 GPU**.
+  * Jalankan seluruh cell secara berurutan!
+
+---
+
+## 💻 Opsi B: Menjalankan via Skrip Modular Terminal / Bash
+
+### 1. Di Kaggle Notebook (GPU T4 x2)
 
 1. **Buat Notebook Baru di Kaggle:**
    * Masuk ke [Kaggle](https://www.kaggle.com) $\rightarrow$ Klik **+ Create** $\rightarrow$ **New Notebook**.
-   * Di panel kanan (Settings), aktifkan: **Accelerator: GPU T4 x2** dan **Internet: On**.
+   * Di panel kanan (Settings):
+     * **Accelerator: GPU T4 x2**
+     * **Internet: On**
+     * Klik **+ Add Input** $\rightarrow$ Cari `nadiraanindita/skin-lesion-data` $\rightarrow$ Klik **Add**.
 
 2. **Clone Repositori:**
    Jalankan cell pertama:
@@ -34,7 +54,7 @@ Pipeline mendukung kombinasi arsitektur dan loss function untuk publikasi ilmiah
    %cd riset-coyy
    ```
 
-3. **Eksekusi Pelatihan (Contoh: EfficientNet-B0 + Focal Loss):**
+3. **Eksekusi Pelatihan EfficientNet-B0 + Focal Loss:**
    ```bash
    !python kode/3_jalur_irisan_3kelas/train_baseline.py \
        --model efficientnet_b0 \
@@ -61,7 +81,7 @@ Pipeline mendukung kombinasi arsitektur dan loss function untuk publikasi ilmiah
 
 ---
 
-## 2. Menjalankan di Google Colab (GPU T4)
+### 2. Di Google Colab (GPU T4)
 
 1. Buka [Google Colab](https://colab.research.google.com) $\rightarrow$ Ubah Runtime: **Runtime** $\rightarrow$ **Change runtime type** $\rightarrow$ Pilih **T4 GPU**.
 2. Clone repositori riset:
@@ -73,7 +93,7 @@ Pipeline mendukung kombinasi arsitektur dan loss function untuk publikasi ilmiah
    ```python
    !pip install -q timm torchvision scikit-learn seaborn matplotlib
    ```
-4. Jalankan script pelatihan modular langsung dari terminal Colab:
+4. Jalankan script pelatihan modular langsung:
    ```python
    !python kode/3_jalur_irisan_3kelas/train_baseline.py --model efficientnet_b0 --loss focal --epochs 15 --batch_size 64
    ```
