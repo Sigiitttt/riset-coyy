@@ -44,6 +44,7 @@ models/*
 __pycache__/
 *.py[cod]
 *$py.class
+*.bak
 .ipynb_checkpoints/
 .pytest_cache/
 .env

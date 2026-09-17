@@ -1,7 +1,7 @@
 # 🧠 DOKUMEN MEMORI UTAMA PROYEK (PERSISTENT MEMORY)
 **Proyek:** Data Understanding & Pemetaan Dataset ISIC (2016–2024) & HAM10000  
 **Lokasi Direktori:** `C:\Users\ARII\Downloads\Data Understanding Isic & Ham10k\`  
-* **Terakhir Diperbarui:** 17 September 2026, Pukul 19:15 WIB (Sesi Aktif via `/start`)  
+* **Terakhir Diperbarui:** 17 September 2026, Pukul 22:45 WIB (Sesi Aktif)  
 
 
 ---
@@ -32,16 +32,19 @@ Riset ini terbagi menjadi 2 jalur independen:
 
 ## 2. Status Implementasi Notebook di Folder `kode/`
 
-### A. `binary_mapping.ipynb` (Jalur Binary — Status: SELESAI 100%)
+### A. `binary_mapping.ipynb` (Jalur Binary — Status: SELESAI 100% & DIRESTRUKTURISASI)
 * **Dataset yang Digunakan:** HAM10000, ISIC 2017, ISIC 2019.
 * **Aturan Deduplikasi:** HAM10000 dipertahankan 100% utuh (10.015 citra), duplikat di 2019 dan 2017 dibersihkan.
 * **Hasil Akhir:** **33.552 citra bersih** (setelah drop 2.047 citra `UNK`)
   * **Benign (0):** 20.998 citra (62,6%) $\rightarrow$ `NV` (16.643), `BKL` (3.668), `VASC` (357), `DF` (330)
   * **Malignant (1):** 12.554 citra (37,4%) $\rightarrow$ `MEL` (6.222), `BCC` (4.298), `AKIEC` (1.438), `SCC` (596)
-* **Fitur Tambahan & Pembaruan:**
-  * Langkah 3: Menampilkan seluruh kelas asli per dataset (HAM10000 7 kelas, ISIC 2019 9 kelas, ISIC 2017 3 kelas), penyatuan/harmonisasi kelas ke dalam 1 matriks komparasi gabungan ("jadikan 1"), dan visualisasi grafik batang sebaran kelas.
-  * Langkah 9: Visualisasi 5 sampel citra per kelas biner (grid 2x5 gambar).
+* **Restrukturisasi Profesional (Versi Baru — 13 Langkah Modular / 29 Cells):**
+  * Penjelasan markdown dirapikan menjadi singkat, padat, mudah dipahami (setara usia 17 tahun/SMA), komunikatif dan *like human*.
+  * Pemisahan Cell 3 menjadi dua langkah mandiri: Langkah 2 (Scan citra fisik $\rightarrow$ 46.334 citra) dan Langkah 3 (Pemasangan label CSV ground truth $\rightarrow$ 46.334 citra berlabel).
+  * Menambahkan markdown penjelas independen untuk harmonisasi label, visualisasi sebaran 8 kelas, pemisah grafik biner, dan ekspor.
+  * 100% output eksekusi (tabel HTML, grafik PNG, print log) tetap utuh dipertahankan. Salinan cadangan aman tersimpan di `binary_mapping.ipynb.bak`.
 * **Output File:** `Dataset/dataset_binary_final.csv` (33.552 baris, kolom: `image_id`, `source`, `original_label`, `unified_class`, `binary_class`, `target_binary`, `filepath`).
+
 
 ---
 
@@ -85,6 +88,39 @@ Riset ini terbagi menjadi 2 jalur independen:
 
 ---
 
+### B.1 `data_understanding_irisan_3kelas improve.ipynb` (Data Understanding Irisan 3 Kelas — Status: SELESAI 100%)
+* **Dataset yang Digunakan:** HAM10000 (10.015), ISIC 2017 (2.750), ISIC 2019 (25.331).
+* **Struktur Modular:** 12 Langkah terstruktur (24 sel: 12 Markdown ringkas + 11 Code sel + 1 Header) dengan standar metodologi CRISP-DM tanpa kebocoran logika.
+* **Kalkulasi Dinamis Penuh:** Seluruh angka irisan dihitung secara dinamis dari data mentah dan eliminasi duplikat tanpa *hardcoding* data.
+* **Hasil Irisan 3 Kelas Bersih:**
+  * **`NV`:** 14.148 citra (64,2%)
+  * **`MEL`:** 4.895 citra (22,2%)
+  * **`BKL`:** 3.008 citra (13,6%)
+  * **Total Bersih:** **22.051 citra** (100% bebas duplikat)
+* **Gaya Penulisan & Visual:** Singkat, padat, jelas, 100% bebas emoji, tabel deduplikasi lengkap dengan kolom `Duplikat dengan Dataset Mana`, serta output visual grafik 4 kuadran dan sampel fisik pre-rendered utuh.
+
+---
+
+### B.2 `irisan_mapping improve.ipynb` (Data Preparation Irisan 3 Kelas — Status: SELESAI 100%)
+* **Dataset yang Digunakan:** HAM10000, ISIC 2017 (Train/Val/Test), ISIC 2019 (Training Data).
+* **Struktur Modular:** 11 Langkah terstruktur (22 sel: 11 Markdown ringkas + 10 Code sel + 1 Header), sel kosong Cell 22 lama telah dihapus dan diganti kesimpulan kesiapan modeling.
+* **Proses Kunci yang Dilakukan:**
+  1. Pemindaian 38.096 citra fisik dan pemasangan ground truth asli.
+  2. Deduplikasi terarah (HAM10000 100% utuh, 10.735 dibuang, tabel dilengkapi kolom `Duplikat dengan Dataset Mana`).
+  3. Harmonisasi label medis internasional dan seleksi 3 kelas bersama (`NV`, `MEL`, `BKL`).
+  4. Validasi integritas tepat **22.051 citra bersih** (NV: 14.148, MEL: 4.895, BKL: 3.008) dengan 0 missing values.
+  5. Ekspor master dataset ke `Dataset/dataset_irisan_multiclass_final.csv`.
+  6. Pembagian data anti-kebocoran (*Lesion-Aware Stratified Split 80:10:10*) via `StratifiedGroupKFold`:
+     * **Training:** 17.656 citra (80,07%)
+     * **Validation:** 2.192 citra (9,94%)
+     * **Test:** 2.203 citra (9,99%)
+     * **Overlap Lesi Pasien:** **0 (100% Bebas Kebocoran Data)**
+* **Gaya Penulisan & Visual:** Singkat, padat, jelas, 100% bebas emoji, tabel HTML, grafik batang ganda base64 PNG pre-rendered utuh.
+
+---
+
+
+
 ### C. `irisan_7kelas_mapping.ipynb` (Jalur Irisan 7 Kelas: HAM10k ∩ ISIC 2019 — Status: ALTERNATIF SELESAI 100%)
 * **Konsep:** Menggabungkan HAM10000 dan ISIC 2019 (tanpa ISIC 2017) untuk mempertahankan 7 kelas standar emas benchmark medis dunia.
 * **Hasil Irisan (Standar Emas Benchmark HAM10000 / ISIC 2018 Task 3):**
@@ -93,10 +129,17 @@ Riset ini terbagi menjadi 2 jalur independen:
 * **Output File:** `Dataset/dataset_irisan_7kelas_final.csv` (4,39 MB, 24.900 baris).
 * **Status:** **SELESAI & TERSIMPAN** — Tersedia sebagai alternatif benchmark komparasi 7 kelas.
 
+### A.2 `data understanding biner improve.ipynb` (Data Understanding Biner 3 Dataset — Status: SELESAI 100%)
+* **Fokus Riset:** Khusus pada 3 dataset acuan Jalur Biner: HAM10000, ISIC 2017, dan ISIC 2019 (6 partisi data).
+* **Struktur Modular:** 12 Langkah terstruktur (25 sel) dengan format 1 Markdown ringkas + 1 Code sel.
+* **Gaya Penulisan:** Singkat, padat, jelas, tanpa emoji, komentar kode bersih dan secukupnya, mudah dipahami (setara usia 17 tahun/SMA).
+* **Kuantitas Citra:**
+  * **Data Mentah:** 46.334 citra fisik (HAM10k: 10.015, ISIC 2019: 33.569, ISIC 2017: 2.750).
+  * **Duplikat Dibuang:** 10.735 citra kembar (protokol prioritas HAM10000 100% utuh).
+  * **Data Bersih Final:** 35.599 citra unik siap masuk ke tahap harmonisasi dan pemetaan biner.
+* **Output Lengkap:** Seluruh grafik PNG visualisasi kelas asli dan komparasi deduplikasi, tabel HTML, dan log print ter-render utuh.
 
----
 
-## 3. Rincian Temuan Metadata ISIC 2020 & 2024
 
 ### ISIC 2020 (`ISIC_2020_Training_GroundTruth_v2.csv` — 33.126 citra)
 * **`unknown`:** 27.124 (81,88%) — Skrining tele-dermatologi non-biopsi (Jinak / 0)
@@ -154,6 +197,8 @@ Repositori ditata rapi ke dalam direktori tematik untuk memudahkan penulisan skr
 Data Understanding Isic & Ham10k/
 ├── Dataset/                                # Direktori data citra dan ground truth CSV
 │   ├── dataset_binary_final.csv            # Dataset final jalur binary (33.552 citra bersih)
+│   ├── dataset_clean_3dataset.csv          # Metadata 35.599 citra bersih (HAM10k, 2017, 2019)
+│   ├── dataset_clean_final.csv             # Metadata 480.882 citra bersih (14 sumber)
 │   ├── dataset_gabungan_ham10k_2017_2019.csv # Dataset gabungan bersih 3 dataset 9 kelas (35.599 baris)
 │   ├── dataset_irisan_multiclass_final.csv # Master dataset irisan 3 kelas AKTIF (22.051 citra bersih)
 │   ├── dataset_irisan_3kelas_train.csv     # Training set 80% (17.656 citra)
@@ -162,6 +207,7 @@ Data Understanding Isic & Ham10k/
 │   ├── dataset_irisan_7kelas_final.csv     # Dataset final irisan 7 kelas alternatif (24.900 citra bersih)
 │   ├── HAM10K/                             # Folder dataset HAM10000 & uji ISIC 2018
 │   ├── isic 2016/ ... isic 2024/           # Arsip kompetisi ISIC tahunan
+
 ├── kode/                                   # Direktori seluruh kode & notebook terstruktur rapi
 │   ├── 1_data_understanding/               # Eksplorasi awal dataset ISIC & HAM10000
 │   │   ├── 1-data_understanding_isic.ipynb
@@ -170,12 +216,17 @@ Data Understanding Isic & Ham10k/
 │   │   ├── 1.1-data_understanding_isic_exclude isic 20.ipynb
 │   │   └── kaggle isic CLI  16-24-ham10k.ipynb
 │   ├── 2_jalur_biner/                      # Jalur Biner (Benign 0 vs Malignant 1 - Global Union)
-│   │   ├── binary_mapping.ipynb
-│   │   ├── data understanding biner.ipynb
+│   │   ├── binary_mapping.ipynb            # Versi original (29 sel)
+│   │   ├── binary_mapping improve.ipynb    # Versi baru: ringkas, tanpa emoji, tabel asal duplikat, pre-rendered
+│   │   ├── data understanding biner.ipynb  # Versi original (25 sel)
+│   │   ├── data understanding biner improve.ipynb # Versi baru: 12 langkah fokus 3 dataset, tabel asal duplikat
 │   │   └── gabungan_ham10k_2017_2019.ipynb # Analisis penggabungan 3 dataset 9 kelas
+
 │   ├── 3_jalur_irisan_3kelas/              # Jalur Irisan 3 Kelas (NV, MEL, BKL - Sesuai Dosen)
 │   │   ├── data_understanding_irisan_3kelas.ipynb # Data Understanding & audit 10 kolom 2019, HAM10k, 2017
-│   │   ├── irisan_mapping.ipynb            # Data preparation & lesion-aware split 80:10:10
+│   │   ├── data_understanding_irisan_3kelas improve.ipynb # Versi baru: 12 langkah terstruktur, dinamis tanpa hardcode, 100% bebas emoji, pre-rendered
+│   │   ├── irisan_mapping.ipynb            # Versi original: data preparation & lesion-aware split 80:10:10
+│   │   ├── irisan_mapping improve.ipynb    # Versi baru: 11 langkah terstruktur, tanpa emoji, tabel deduplikasi informatif, split 80:10:10 bebas kebocoran, pre-rendered
 │   │   ├── tabel_ekstraksi_jurnal_3kelas.md # Matriks komparasi jurnal & harmonisasi medis
 │   │   ├── baseline_modeling_3kelas.ipynb  # Notebook baseline modeling PyTorch 3 kelas
 │   │   ├── train_baseline.py               # Skrip eksekusi pelatihan modular (ResNet-50 & EfficientNet-B0)
@@ -198,6 +249,22 @@ Data Understanding Isic & Ham10k/
 ├── README.md                               # Dokumentasi repositori GitHub (riset-coyy)
 └── CATATAN_MEMORI_PROYEK.md                # Dokumen memori utama (persistent memory)
 ```
+
+---
+
+### 5.1 Rincian Path Fisik Dataset 3 Sumber (HAM10000, ISIC 2017, ISIC 2019)
+
+Semua path berada di bawah root direktori: `Dataset/` (`C:\Users\ARII\Downloads\Data Understanding Isic & Ham10k\Dataset\`)
+
+| Dataset & Partisi | Direktori Citra Fisik | File Ground Truth CSV | File Metadata Pasien CSV |
+| :--- | :--- | :--- | :--- |
+| **HAM10000** | `HAM10K/HAM10000_images_part_1`<br>`HAM10K/HAM10000_images_part_2` | `HAM10K/HAM10000_metadata` | `HAM10K/HAM10000_metadata`<br>*(kolom: lesion_id, dx_type, age, sex, localization)* |
+| **ISIC 2019 Training** | `isic 2019/ISIC_2019_Training_Input/ISIC_2019_Training_Input/` | `isic 2019/ISIC_2019_Training_Input/ISIC_2019_Training_GroundTruth.csv` | `isic 2019/ISIC_2019_Training_Input/ISIC_2019_Training_Metadata.csv`<br>*(kolom: age_approx, sex, anatom_site_general, lesion_id)* |
+| **ISIC 2019 Test** | `isic 2019/ISIC_2019_Test_Input/ISIC_2019_Test_Input/` | `isic 2019/ISIC_2019_Test_Input/ISIC_2019_Test_GroundTruth.csv` | *- (tidak dirilis panitia)* |
+| **ISIC 2017 Training** | `isic 2017/ISIC-2017_Training_Data/ISIC-2017_Training_Data/` | `isic 2017/ISIC-2017_Training_Data/ISIC-2017_Training_Part3_GroundTruth.csv` | `isic 2017/ISIC-2017_Training_Data/ISIC-2017_Training_Data/ISIC-2017_Training_Data_metadata.csv`<br>*(kolom: age_approximate, sex)* |
+| **ISIC 2017 Validation** | `isic 2017/ISIC-2017_Validation_Data/ISIC-2017_Validation_Data/` | `isic 2017/ISIC-2017_Validation_Data/ISIC-2017_Validation_Part3_GroundTruth.csv` | `isic 2017/ISIC-2017_Validation_Data/ISIC-2017_Validation_Data/ISIC-2017_Validation_Data_metadata.csv`<br>*(kolom: age_approximate, sex)* |
+| **ISIC 2017 Test** | `isic 2017/ISIC-2017_Test_v2_Data/ISIC-2017_Test_v2_Data/` | `isic 2017/ISIC-2017_Test_v2_Data/ISIC-2017_Test_v2_Part3_GroundTruth.csv` | `isic 2017/ISIC-2017_Test_v2_Data/ISIC-2017_Test_v2_Data/ISIC-2017_Test_v2_Data_metadata.csv`<br>*(kolom: age_approximate, sex)* |
+
 
 ---
 
@@ -234,6 +301,20 @@ Progres implementasi Jalur Irisan 3 Kelas (HAM10000 ∩ ISIC 2017 ∩ ISIC 2019)
   - **Verifikasi End-to-End Smoke Test:** Sukses dieksekusi untuk `efficientnet_b0_focal` dan `resnet50_cb_focal`, menghasilkan model checkpoint `.pth`, diagram confusion matrix, serta pembaruan otomatis ke [`models/baseline_comparison_results.csv`](models/baseline_comparison_results.csv).
   - **Panduan GPU Eksekusi:** Disediakan panduan siap eksekusi di [`kode/3_jalur_irisan_3kelas/panduan_eksekusi_gpu_colab_kaggle.md`](kode/3_jalur_irisan_3kelas/panduan_eksekusi_gpu_colab_kaggle.md).
 - [ ] **Langkah 2:** Menjalankan pelatihan penuh (*Full Training* 10–20 epoch) ResNet-50 vs EfficientNet-B0 pada akselerator GPU (Google Colab / Kaggle T4) menggunakan skrip modular `python kode/3_jalur_irisan_3kelas/train_baseline.py --loss focal` / `--loss cb_focal` sesuai panduan GPU.
+
+### 📋 Agenda Tugas Besok (Verifikasi Komparatif Biner vs Irisan & Laporan Dosen)
+- [ ] **Tugas 1: Pengecekan Label Harmonisasi Biner vs Irisan vs Rujukan Jurnal**
+  - Mengaudit konsistensi kode diagnosis (`NV`, `MEL`, `BKL`, `BCC`, `AKIEC`, `SCC`, `VASC`, `DF`, `UNK`) antara notebook jalur biner (`binary_mapping improve.ipynb`) dan jalur irisan (`data_understanding_irisan_3kelas improve.ipynb` & `irisan_mapping.ipynb`).
+  - Memastikan definisi harmonisasi (seperti peleburan `seborrheic_keratosis ≡ BKL`) 100% selaras dengan standar literatur (*Tschandl et al., Nature 2018* dan *Codella et al., IEEE ISBI 2018*).
+- [ ] **Tugas 2: Verifikasi Pemetaan Label Biner dengan Rujukan Konsensus Ilmiah**
+  - Mengecek ulang pemetaan biner (Benign 0 vs Malignant 1) terhadap matriks voting 8 jurnal internasional.
+  - Memvalidasi ketepatan klasifikasi kelas perbatasan (`AKIEC` sebagai ganas/pre-malignant, `VASC` sebagai jinak) dan eliminasi `UNK`.
+- [ ] **Tugas 3: Audit dan Cross-Check Output Data Biner vs Irisan**
+  - Melakukan validasi silang antara file output: `dataset_binary_final.csv` (33.552 baris) dengan `dataset_irisan_multiclass_final.csv` (22.051 baris).
+  - Memastikan subset 3 kelas irisan konsisten dan tidak memiliki anomali/bentrok label terhadap master dataset biner.
+- [ ] **Tugas 4: Pembuatan File Rekapitulasi untuk Dosen (File Excel `.xlsx` / Catatan Laporan Formal)**
+  - Menyusun file Excel (`rekap_dataset_biner_dan_irisan.xlsx`) dan catatan ringkasan yang rapi, profesional, dan mudah dipahami dosen pembimbing.
+  - Memuat lembar kerja komparasi: ringkasan kuantitas citra, matriks deduplikasi, perbandingan distribusi kelas biner vs irisan, serta daftar sitasi jurnal pendukung.
 
 ---
 
