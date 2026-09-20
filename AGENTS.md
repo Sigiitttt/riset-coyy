@@ -27,3 +27,9 @@ Ketika pengguna mengetik `/end`:
    * Perbarui status checklist tugas berikutnya.
 3. **KONFIRMASI PENYIMPANAN:** Tampilkan rekapitulasi pekerjaan yang telah diselesaikan pada sesi ini dan laporkan bahwa memori telah tersimpan aman dan siap dilanjutkan dengan `/start`.
 
+### 3. Aturan Penulisan Kode dan Dokumentasi
+Agen wajib mengikuti panduan penulisan teks dan kode di seluruh pengerjaan:
+1. **Kalimat Markdown**: Harus singkat, padat, dan jelas (tidak bertele-tele, langsung pada intinya). Jangan menggunakan narasi yang panjang.
+2. **Gaya Kode (Code Style)**: Tulis kode layaknya manusia profesional (*human-like*).
+3. **Komentar Kode (Comments)**: Harus sangat minimalis (hanya pada baris yang sangat krusial). Biarkan "*code speak for itself*".
+
