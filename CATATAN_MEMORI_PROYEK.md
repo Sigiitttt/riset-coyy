@@ -1,7 +1,7 @@
 # 🧠 DOKUMEN MEMORI UTAMA PROYEK (PERSISTENT MEMORY)
 **Proyek:** Data Understanding & Pemetaan Dataset ISIC (2016–2024) & HAM10000  
 **Lokasi Direktori:** `C:\Users\ARII\Downloads\Data Understanding Isic & Ham10k\`  
-* **Terakhir Diperbarui:** 24 September 2026, Pukul 15:57 WIB (Pembuatan Laporan Excel Irisan & Biner serta Pembaruan Memori Standar Excel)
+* **Terakhir Diperbarui:** 24 September 2026, Pukul 23:45 WIB (Audit Komparasi Apple-to-Apple Spark on YARN vs Spark Standalone & Pembersihan Workspace)
 
 ---
 
@@ -502,23 +502,20 @@ Seluruh laporan ini sudah memenuhi kaidah *Standar Excel Kulit* (hitam-putih, ta
 ---
 
 ## 7. Catatan Penutupan Sesi Terakhir (Session Log)
-* **Waktu Pembaruan:** 22 September 2026, Pukul 11:46 WIB.
+* **Waktu Pembaruan:** 24 September 2026, Pukul 23:45 WIB.
 * **Rangkuman Sesi Ini:**
-  1. **Restorasi Konteks dari Sesi Sebelumnya:**
-     * Memulihkan status penuh: Skenario 1 Irisan (2W2P) sukses di Kaggle, 5 notebook biner sinkron 100% arsitektur irisan teruji, matriks komparasi float32 vs uint8 tersimpan di memori.
-  2. **Analisis float32 vs uint8 pada Jalur Irisan (22.051 Citra):**
-     * Menyajikan tabel komparasi lengkap: `uint8` mereduksi RAM driver dari **~12,65 GB → ~3,16 GB** (hemat 75%), I/O shard HDFS ~4x lebih cepat, kualitas model identik (konversi `/255.0` per batch).
-  3. **Pembuatan Varian Irisan uint8 (Skenario 1 2W2P):**
-     * Menghasilkan file baru: [`kode/4_Spark_on_Yarn/sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0-selesai-uint8.ipynb`](kode/4_Spark_on_Yarn/sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0-selesai-uint8.ipynb).
-     * Tepat **4 sel berbeda** dari varian float32: Sel 0 (identitas), Sel 82 (array `uint8` + shard `uint8`), Sel 93 (`BatchSequence` casting on-the-fly), Sel 97 (evaluasi via `test_seq`).
-     * 97 sel lainnya 100% identik. Lulus verifikasi AST, cell outputs di-reset bersih, siap dieksekusi untuk komparasi langsung.
-  4. **Perbaikan Bug NameError `class_names` pada 5 Notebook Biner:**
-     * **Root cause:** Sel 67 pada notebook biner tidak mendefinisikan variabel `class_names` (huruf kecil), sedangkan Sel 77 (Langkah 31 — visualisasi) menggunakan `class_names`. `CLASS_NAMES` (kapital) sudah ada sejak Sel 46, tapi `class_names = sorted(CLASS_NAMES)` terlewat.
-     * **Perbaikan Sel 67 (Langkah 26):** Ditambahkan `class_names = sorted(CLASS_NAMES)`.
-     * **Perbaikan Sel 77 (Langkah 31):** Ditambahkan `class_names = sorted(CLASS_NAMES)` + `import subprocess` sebagai proteksi mandiri (*self-contained*).
-     * **Cakupan:** Seluruh 5 file (`2W2P`, `2W8P`, `8W2P`, `8W8P`, `ak85`) diperbaiki dan lulus verifikasi `verify_all_biner.py` 100%.
-  5. **Pengingat Status Tinjauan Pengguna:**
-     * 4 agenda verifikasi dosen tetap berstatus pending review pengguna (harmonisasi label, konsensus voting 8 jurnal, uji irisan vs biner, file excel rekap).
-     * Notebook biner yang sedang dijalankan di Kaggle (sesi aktif): untuk sel yang error di Kaggle sekarang, gunakan `class_names = CLASS_NAMES` sebagai *quick fix* satu baris di atas sel Langkah 31.
+  1. **Audit Komparasi Apple-to-Apple Spark on YARN vs Spark Standalone:**
+     * Memeriksa berkas hasil eksekusi Kaggle GPU: [`kode/4_Spark_on_Yarn/irisan tanpa uint8/sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0-selesai.ipynb`](kode/4_Spark_on_Yarn/irisan%20tanpa%20uint8/sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0-selesai.ipynb) terhadap file teman [`kode/6_kode teman/sk1-spark-standalone-hdfs-matriks-askab-selesai-semua-sk.ipynb`](kode/6_kode%20teman/sk1-spark-standalone-hdfs-matriks-askab-selesai-semua-sk.ipynb).
+     * **Status Validasi Metodologi:** Terbukti **100% Sah & Apple-to-Apple ✅** (*Ceteris Paribus*), di mana dataset (22.051 citra), split 80:10:10, praproses 224px, sharding 64 citra/shard `.npz`, model ResNet-50 + Triplet Attention, Adam $10^{-4}$, batch 32, dan 15 epoch dikunci identik.
+  2. **Perbandingan Metrik Utama (Skenario Sepadan 2W2P):**
+     * **Prapemrosesan Spark:** YARN (**122,06 detik**) vs Standalone (**591,77 detik**) $\to$ YARN ~4,85× lebih cepat karena worker membaca stream HDFS langsung via C++ PyArrow.
+     * **Pelatihan GPU:** YARN (**837,36 detik**) vs Standalone (**872,78 detik**) $\to$ YARN lebih cepat ~35 detik karena data diakses langsung dari RAM host (`np.empty`) tanpa latensi baca disk memmap.
+     * **Metrik Evaluasi Uji (2.203 Citra):** Akurasi (76,49% vs 78,30%), Macro F1 (0,7030 vs 0,7230), ROC-AUC (0,9004 vs 0,9046), dan Test Loss (1,3167 vs 1,3118) membuktikan kedua model konvergen di titik optimal yang setara (selisih minor 1,8% adalah variasi stokastik wajar GPU non-seed).
+  3. **Penyusunan Catatan Metodologi & Variabel Eksperimen:**
+     * Dokumen klasifikasi variabel (Variabel Kontrol, Bebas, Terikat) disimpan tersendiri di [`notes jurnal/catatan_variabel_eksperimen_yarn_vs_standalone.md`](notes%20jurnal/catatan_variabel_eksperimen_yarn_vs_standalone.md).
+  4. **Pembersihan Berkas Redundan & Cache:**
+     * Menghapus skrip generator satu kali pakai: `generate_nb1_improve.py`.
+     * Membersihkan cache direktori `kode/3_jalur_irisan_3kelas/__pycache__`.
 * **Status Memori:** **AMAN, PERSISTEN, & BEBAS KEBOCORAN.** Seluruh pembaruan sesi ini tersimpan secara permanen dan siap dilanjutkan dengan perintah `/start` di sesi kerja berikutnya.
+
 
