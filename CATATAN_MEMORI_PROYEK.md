@@ -1,7 +1,7 @@
 # 🧠 DOKUMEN MEMORI UTAMA PROYEK (PERSISTENT MEMORY)
 **Proyek:** Data Understanding & Pemetaan Dataset ISIC (2016–2024) & HAM10000  
 **Lokasi Direktori:** `C:\Users\ARII\Downloads\Data Understanding Isic & Ham10k\`  
-* **Terakhir Diperbarui:** 24 September 2026, Pukul 12:30 WIB (Perekaman Keberhasilan Skenario 1 Biner 2W2P di Kaggle GPU + Restorasi Sesi /start)
+* **Terakhir Diperbarui:** 24 September 2026, Pukul 15:57 WIB (Pembuatan Laporan Excel Irisan & Biner serta Pembaruan Memori Standar Excel)
 
 ---
 
@@ -393,6 +393,13 @@ Semua path berada di bawah root direktori: `Dataset/` (`C:\Users\ARII\Downloads\
 
 ---
 
+
+### 5.2 Laporan Eksekutif (Excel)
+Telah dibuat standardisasi pembuatan laporan Excel untuk diserahkan kepada dosen.
+* laporan/excel/Laporan_Data_Irisan.xlsx: Laporan deduplikasi & split bebas kebocoran untuk Jalur Irisan 3 Kelas (22.051 citra).
+* laporan/excel/Laporan_Data_Biner.xlsx: Laporan deduplikasi & split bebas kebocoran untuk Jalur Biner (33.552 citra).
+Seluruh laporan ini sudah memenuhi kaidah *Standar Excel Kulit* (hitam-putih, tabel tegas, bahasa non-AI, plus ekstraksi grafik base64 dari .ipynb).
+
 ## 6. Checklist Tugas & Titik Lanjut Berikutnya (Actionable Next Steps)
 
 ### A. Progres Implementasi Jalur Biner (Benign vs Malignant)
@@ -455,6 +462,11 @@ Semua path berada di bawah root direktori: `Dataset/` (`C:\Users\ARII\Downloads\
 ### 📋 Agenda 4 Tugas Verifikasi & Rekap Dosen (STATUS: PENDING TINJAUAN PENGGUNA)
 > [!IMPORTANT]
 > **Catatan Pengguna:** Pengguna belum melakukan/meninjau sendiri 4 tugas di bawah ini setelah perintah `/start`. Seluruh berkas pendukung (file Excel dan laporan formal) telah disiapkan oleh sistem, namun status checklist **tetap dianggap belum selesai (`[ ]`)** dari sudut pandang pengguna dan **wajib diingatkan kembali pada sesi berikutnya**.
+
+- [ ] **Tugas Cross-Check (Wajib Tinjauan Pengguna Sebelum Lanjut): Memastikan Isi Laporan Excel Sinkron dengan Output Kode.** 
+  - Pengguna wajib memeriksa mandiri file laporan/excel/Laporan_Data_Irisan.xlsx dan laporan/excel/Laporan_Data_Biner.xlsx.
+  - Validasi bahwa seluruh angka, metode deduplikasi (Image ID tanpa MD5), dan grafik yang disisipkan telah 100% cocok dengan hasil run terakhir notebook irisan_mapping improve.ipynb dan inary_mapping improve.ipynb.
+
 
 - [ ] **Tugas 1 (Pending Review Pengguna): Pengecekan Label Harmonisasi Biner vs Irisan vs Rujukan Jurnal**
   - Mengaudit konsistensi kode diagnosis (`NV`, `MEL`, `BKL`, `BCC`, `AKIEC`, `SCC`, `VASC`, `DF`, `UNK`) antara notebook jalur biner (`binary_mapping improve.ipynb`) dan jalur irisan (`data_understanding_irisan_3kelas improve.ipynb` & `irisan_mapping improve.ipynb`).
