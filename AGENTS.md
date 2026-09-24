@@ -33,3 +33,9 @@ Agen wajib mengikuti panduan penulisan teks dan kode di seluruh pengerjaan:
 2. **Gaya Kode (Code Style)**: Tulis kode layaknya manusia profesional (*human-like*).
 3. **Komentar Kode (Comments)**: Harus sangat minimalis (hanya pada baris yang sangat krusial). Biarkan "*code speak for itself*".
 
+
+### 4. Aturan Pembuatan Laporan Excel
+Jika diminta membuat laporan dalam bentuk Excel (.xlsx), agen wajib mengikuti standar desain dan bahasa berikut:
+1. **Desain Profesional & Minimalis**: Gunakan tema warna dasar (hitam-putih) atau maksimal 2-3 warna (misal abu-abu terang untuk header tabel). Beri *border* garis hitam tegas pada semua sel yang terisi data. Lebarkan *column width* agar tulisan tidak bertumpuk.
+2. **Bahasa Natural (Human-Like)**: Gunakan gaya bahasa Indonesia tingkat menengah yang mudah dipahami (santai namun tetap akademis/profesional). Jangan kaku seperti robot, dan hindari kata asing/istilah rumit sebisa mungkin (contoh: 'Kumpulan Data', 'Tahi Lalat Jinak', bukan 'Dataset' atau 'Melanocytic Nevus' tanpa penjelasan). Kalimat harus langsung pada intinya (*to the point*).
+3. **Ekstrak Gambar/Grafik Otomatis**: Jika kode yang dijalankan menghasilkan *plot* grafik (misal dari matplotlib di .ipynb), agen diwajibkan menyedot gambar *base64* dari luaran kode tersebut dan menyisipkannya langsung ke dalam sheet Excel.

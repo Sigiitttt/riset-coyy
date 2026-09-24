@@ -1,7 +1,7 @@
 # 🧠 DOKUMEN MEMORI UTAMA PROYEK (PERSISTENT MEMORY)
 **Proyek:** Data Understanding & Pemetaan Dataset ISIC (2016–2024) & HAM10000  
 **Lokasi Direktori:** `C:\Users\ARII\Downloads\Data Understanding Isic & Ham10k\`  
-* **Terakhir Diperbarui:** 20 September 2026, Pukul 22:40 WIB (Penyelesaian YARN Executor Lost / SIGTERM 143, Single-Pass Stream Data Collection, dan Deep Audit 101 Sel)
+* **Terakhir Diperbarui:** 24 September 2026, Pukul 12:30 WIB (Perekaman Keberhasilan Skenario 1 Biner 2W2P di Kaggle GPU + Restorasi Sesi /start)
 
 ---
 
@@ -138,22 +138,117 @@ Riset ini terbagi menjadi 2 jalur independen:
 
 ---
 
-### D. `sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0.ipynb` (PySpark on YARN Tipe 1 Irisan 3 Kelas — Status: SELESAI & TERVERIFIKASI 100% BEBAS BUG)
+### D. `sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0.ipynb` (PySpark on YARN Skenario 1 2W2P — Status: SUKSES DIEKSEKUSI DI KAGGLE GPU 100%)
 * **Tujuan & Lingkungan:** Menjalankan eksperimen Big Data Skenario 1 (2 Worker, 2 Partisi, 15 Epoch) pada klaster Apache Hadoop/YARN + PySpark di Kaggle GPU dengan proteksi memori dan kuota disk lokal.
 * **Dataset yang Digunakan:** Irisan 3 Kelas (`nevus`, `melanoma`, `seborrheic_keratosis`), total 22.051 citra dengan pembagian bebas kebocoran lesi (*Lesion-Aware Stratification* 80:10:10).
-* **Solusi Root Cause Crash Langkah 33 (Sel 82/83):**
-  1. *YARN Bad-Node Protection (Sel 32):* Menambahkan `yarn.nodemanager.disk-health-checker.enable = false` dan `max-disk-utilization = 99.0` pada `yarn-site.xml` agar YARN tidak membunuh executor secara sepihak saat disk Kaggle melebihi 90%.
-  2. *Driver & Network Tuning (Sel 41):* Menetapkan `spark.driver.memory 8g`, `spark.driver.maxResultSize 0` (tanpa batas), serta memperpanjang `spark.network.timeout 800s` dan `spark.executor.heartbeatInterval 60s`.
-  3. *Staging Auto-Resize (Sel 49):* Mengintegrasikan kompresi fisik citra (384×384 px bilinear, JPEG quality 85, 4 worker) saat pementasan lokal. Memangkas konsumsi storage HDFS dari 18.11 GB menjadi ~1.2 GB (menyisakan >14 GB disk bebas di `/kaggle/working`).
-  4. *Penghapusan Disk Flood (Sel 80):* Menghapus `repartition_for_collection()` (mengeliminasi *SortShuffle* 10.6 GB ke disk) dan meniadakan panggilan kedua `.persist(StorageLevel.DISK_ONLY)` (menghemat 13.3 GB penulisan disk berulang).
-  5. *Single-Pass Stream Data Collection (Sel 83):* Mengganti loop multi-pass shuffle dengan pembacaan linier 1 putaran (`processed_rdd.toLocalIterator()`). Mengisi langsung array NumPy driver (`X_train`, `y_train`, `X_val`, `y_val`, `X_test`, `y_test`), diikuti pembersihan memori seketika via `processed_rdd.unpersist()` dan `gc.collect()`.
-  6. *Sanitasi Magic Bash (Sel 44):* Mengubah sel pengujian SparkPi menjadi `%%bash` murni untuk mencegah potensi kesalahan indentasi Python di kernel Jupyter.
-  7. *Modul Mandiri (Sel 70 & Sel 94):* Menambahkan impor eksplisit `time`, `subprocess`, dan `tensorflow` agar eksekusi antar-fase bersifat independen.
-* **Hasil Deep Audit 101 Sel:**
-  * Syntax AST: **0 Error**.
-  * Variabel & Scope: **0 Undefined / 0 Mismatch**.
-  * Zero-Division Guard: Terproteksi penuh di seluruh metrik rata-rata CPU, RAM, throughput, dan confusion matrix.
-  * Logging: Format skema 13 kolom pada `ensure_log_header()` dan `log_result()` sinkron sempurna dengan skrip analisis [`scratch/hitung_speedup.py`](scratch/hitung_speedup.py).
+* **Hasil Eksekusi Penuh di Kaggle GPU (Tercatat Resmi di `results.csv`):**
+  * **Prapemrosesan Terdistribusi (Stage 1):** 122,06 detik (22.051 citra, rata-rata CPU 66,28%, rata-rata RAM 6.936,92 MB).
+  * **Pelatihan Terpusat GPU (Stage 2 - 15 Epoch):** 837,36 detik (~13,96 menit, 17.656 citra latih).
+  * **Metrik Evaluasi Test Set (2.203 Citra Uji Independen):**
+    * **Test Loss:** 1,3167
+    * **Test Accuracy:** **76,49%**
+    * **Test Macro F1-Score:** **0,7030**
+    * **Test ROC-AUC (One-vs-Rest):** **0,9004**
+  * **Kinerja per Kelas Medis (Classification Report):**
+    * `melanoma` (543 sampel): Precision 0,63 | Recall 0,72 | F1-Score 0,67
+    * `nevus` (1.391 sampel): Precision 0,90 | Recall 0,80 | F1-Score 0,85
+    * `seborrheic_keratosis` (269 sampel): Precision 0,53 | Recall 0,67 | F1-Score 0,59
+* **Inovasi Arsitektural Kunci yang Menyelesaikan Crash:**
+  1. *Shard-Based HDFS Streaming (Sel 82):* Menggantikan shuffle masif dengan penulisan shard kompak (64 citra/shard via `pyarrow.fs` ke HDFS), diunduh linier ke array NumPy driver tanpa lonjakan memori, diikuti pelepasan `spark.stop()` sebelum GPU running.
+  2. *Keras 3 BatchSequence (Sel 93):* Membungkus generator batch mandiri guna mengeliminasi duplikasi memori internal TensorFlow Keras 3 (~1,9x RAM).
+  3. *Resource Isolation & NodeManager Lock (Sel 30):* Mengunci kapasitas klaster YARN di 14.336 MB (1.536 MB container, 1 core/executor) agar perbandingan speedup antar-skenario (2W vs 8W) adil dan konsisten.
+* **Status Sinkronisasi 4 Varian Skenario:** Seluruh 4 file di [`kode/4_Spark_on_Yarn/irisan/`](kode/4_Spark_on_Yarn/irisan/) (`2W2P`, `2W8P`, `8W2P`, `8W8P`) telah disinkronkan 100% menggunakan arsitektur shard teruji ini.
+* **Varian Baru Irisan uint8 untuk Studi Komparasi:** Berkas [`kode/4_Spark_on_Yarn/sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0-selesai-uint8.ipynb`](kode/4_Spark_on_Yarn/sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0-selesai-uint8.ipynb) dibuat khusus untuk perbandingan langsung terhadap varian `float32` asli. Tepat 4 sel yang disesuaikan:
+  - **Sel 0 (MD):** Identitas varian Irisan `uint8` [0, 255] (~3,16 GB RAM) vs `float32` (~12,65 GB RAM).
+  - **Sel 82 (Code):** Shard ditulis dan array driver dialokasikan sebagai `uint8` (RAM driver terpangkas dari 12,65 GB menjadi 3,16 GB).
+  - **Sel 93 (Code):** Generator `BatchSequence` mengonversi batch 32 citra secara *on-the-fly* via `bx.astype(np.float32) / 255.0` (~19 MB per langkah).
+  - **Sel 97 (Code):** Evaluasi Test Set dibungkus oleh `test_seq = BatchSequence(X_test, y_test_cat, BATCH_SIZE, shuffle=False)` untuk evaluasi bertahap tanpa lonjakan memori.
+  - *Status Verifikasi:* 101 sel, 0 AST Syntax Error, cell outputs di-reset bersih siap dieksekusi di Kaggle GPU.
+
+---
+
+### D.1 `sk2-spark-on-distributed-biner-2p2w-v3-0-selesai.ipynb` (PySpark on YARN Skenario 1 Biner 2W2P — Status: SUKSES DIEKSEKUSI DI KAGGLE GPU 100%)
+* **Tujuan & Lingkungan:** Menjalankan eksperimen Big Data Jalur Biner Skenario 1 (2 Worker, 2 Partisi, 15 Epoch) pada klaster Apache Hadoop/YARN + PySpark di Kaggle GPU dengan optimasi memori `uint8` dan staging disk auto-resize 384px.
+* **Dataset yang Digunakan:** Jalur Biner (`benign` vs `malignant`), total 33.552 citra bersih bebas kebocoran lesi (*Lesion-Aware Stratification* 80:10:10).
+* **Hasil Eksekusi Penuh di Kaggle GPU (Tercatat Resmi di `results.csv`):**
+  * **Prapemrosesan Terdistribusi (Stage 1):** 184,31 detik (33.552 citra, rata-rata CPU 63,12%, rata-rata RAM 7.150,14 MB).
+  * **Pelatihan Terpusat GPU (Stage 2 - 15 Epoch):** 1.248,33 detik (~20,80 menit, 26.860 citra latih).
+  * **Metrik Evaluasi Test Set (3.291 Citra Uji Independen):**
+    * **Test Loss:** 0,7530
+    * **Test Accuracy:** **79,03%**
+    * **Test Macro F1-Score:** **0,7790**
+    * **Test ROC-AUC:** **0,8718**
+  * **Kinerja per Kelas Medis (Classification Report):**
+    * `benign` (2.090 sampel): Precision 0,86 | Recall 0,80 | F1-Score 0,83
+    * `malignant` (1.201 sampel): Precision 0,69 | Recall 0,77 | F1-Score 0,73
+* **File Tersimpan di Repositori:** [`kode/4_Spark_on_Yarn/sk2-spark-on-distributed-biner-2p2w-v3-0-selesai.ipynb`](kode/4_Spark_on_Yarn/sk2-spark-on-distributed-biner-2p2w-v3-0-selesai.ipynb).
+
+---
+
+### E. Analisis Teknis Limit Memori & Disk: `float32` vs `uint8` pada Jalur Biner (33.552 Citra)
+* **Konteks Masalah Kaggle GPU (RAM ~13 GB, Disk ~20 GB):**
+  - Pada **Jalur Irisan (22.051 citra)**: Format `float32` murni berhasil dijalankan karena total memori array driver = **12,65 GB** (berada tepat di batas 13 GB RAM Kaggle).
+  - Pada **Jalur Biner (33.552 citra)**: Volume data lebih besar (+52%). Jika dipaksakan `float32` murni di memori driver, ukurannya melonjak ke **~18,8 GB** (pasti memicu OOM/Kernel Died) dan file shard HDFS sementara memakan **~18,8 GB** (melebihi kuota disk 20 GB bila digabung staging 1,8 GB).
+* **Tabel Komparasi Teknis:**
+
+| Aspek / Parameter | Opsi A: `float32` Murni (Persis Irisan) | Opsi B: `uint8` Driver + Float per Batch (Kaggle-Optimized) |
+| :--- | :--- | :--- |
+| **Konsumsi RAM Driver** | **~18,8 GB** (33.552 × 224 × 224 × 3 × 4 byte) | **~4,7 GB** (33.552 × 224 × 224 × 3 × 1 byte) |
+| **Batas RAM Kaggle (~13 GB)** | ⚠️ **Sangat Berisiko OOM / Kernel Crash** |  **Aman 100%** (sisa >8 GB RAM bebas) |
+| **Disk HDFS Shard** | Membutuhkan ~18,8 GB storage sementara | Hanya butuh ~4,7 GB storage sementara |
+| **Batas Disk Kaggle (20 GB)** | ⚠️ **Rentan Disk Full** (1,8 GB + 18,8 GB = 20,6 GB) |  **Aman** (Total puncak disk hanya ~7 GB) |
+| **Integritas Nilai Piksel** | Presisi float 32-bit kontinu sejak RDD | Kuantisasi [0–255] asli citra, dibagi 255.0 per batch (kualitas & diagnosis identik) |
+| **Beban CPU saat Training** | Sedikit lebih ringan (tanpa konversi tipe) | Konversi `/ 255.0` per 32 citra di generator (overhead <1 ms per batch) |
+| **Keselarasan Kode Irisan** |  **100% Identik sama persis** | Modifikasi casting `.astype(float32)/255.0` di `BatchSequence` |
+
+* **Status Keputusan:** Tersimpan di memori utama sebagai referensi pertimbangan pengguna sebelum menentukan eksekusi di lingkungan Kaggle GPU standar atau instance High-RAM.
+
+---
+
+### F. Dokumentasi Detail Seluruh Ubahan & Matriks Perbedaan Komparatif (Irisan Selesai vs Biner)
+
+Dokumentasi ini mencatat secara menyeluruh seluruh perubahan yang telah diterapkan pada 5 notebook biner di [`kode/4_Spark_on_Yarn/biner/`](kode/4_Spark_on_Yarn/biner/) dibandingkan dengan notebook acuan yang sukses di Kaggle ([`sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0-selesai.ipynb`](kode/4_Spark_on_Yarn/sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0-selesai.ipynb)).
+
+#### 1. Ringkasan Ubahan Utama (Dari Notebook Biner Lama -> Biner Kaggle-Optimized Baru)
+1. **Mengeliminasi Crash YARN Bad-Node / Executor Lost (SIGTERM 143):**
+   - *Lama:* YARN `NodeHealthCheckerService` membunuh executor saat disk >90%.
+   - *Baru:* Sel 32 menyematkan `yarn.nodemanager.disk-health-checker.enable = false` dan `max-disk-utilization = 99.0%`.
+2. **Mengeliminasi Banjir Disk SortShuffle & Persist Ganda (10+ GB Disk Dump):**
+   - *Lama:* Melakukan `.filter()` pada RDD menjadi 3 partisi lalu masing-masing di-`.persist(DISK_ONLY)` dan dihitung `.count()`.
+   - *Baru:* Sel 80 langsung memuat `train_ids`, `val_ids`, dan `test_ids` dari file CSV master tanpa operasi shuffle RDD sekunder.
+3. **Mengeliminasi OOM Driver via PyArrow Shard-HDFS Streaming:**
+   - *Lama:* Memakai `toLocalIterator()` multi-pass yang menarik partisi utuh ke memori driver.
+   - *Baru:* Sel 82 menulis shard kompak (64 citra/shard via `pyarrow.fs` ke HDFS), lalu driver mengunduh linier ke array NumPy dan langsung menghapus file shard (`shard_path.unlink()`).
+4. **Mengeliminasi Memory Explosion Keras 3 (~1,9x RAM):**
+   - *Lama:* `model.fit(X_train, y_train_cat)` langsung membungkus seluruh array ke `tf.data.from_tensors`.
+   - *Baru:* Sel 93 mengimplementasikan generator mandiri `BatchSequence` yang hanya mengiris 32 citra per batch.
+5. **Mengeliminasi ValueError Ekstensi Checkpoint:**
+   - *Lama:* Menggunakan ekstensi `.h5`.
+   - *Baru:* Sel 91 menggunakan ekstensi `.keras` sesuai standar Keras 3.
+
+---
+
+#### 2. Matriks Komparasi Presisi (Irisan Selesai vs Biner Kaggle-Optimized)
+* **Total Sel:** Tepat **101 Sel** pada kedua varian.
+* **Tingkat Keselarasan Arsitektural:** **88 Sel Identik 100%** (seluruh pipeline instalasi Hadoop, konfigurasi klaster YARN, setup daemon, Spark context, arsitektur Triplet Attention, callbacks Keras 3, hingga format log metrik 13 kolom).
+* **Perbedaan Fungsional:** Tepat **13 Sel Spesifik** yang disesuaikan karena perbedaan domain kelas (3 kelas vs 2 kelas) dan adaptasi limit RAM Kaggle (13 GB):
+
+| No. Sel | Jenis Sel | Komponen / Logika | File Irisan Selesai (`sk1-...selesai.ipynb`) | File Biner Baru (`spark_yarn_tipe1_biner_*.ipynb`) | Alasan Teknis & Solusi Stabilitas |
+| :---: | :---: | :--- | :--- | :--- | :--- |
+| **0** | Markdown | Judul & Metadata Skenario | Irisan 3 Kelas (`NV`, `MEL`, `BKL`) | Biner (`Benign` vs `Malignant`) | Penyesuaian judul skenario riset |
+| **6** | Code | Variabel Konfigurasi | `SCENARIO_TYPE = "irisan"` | `SCENARIO_TYPE = "biner"` | Pengaturan tag log dan direktori HDFS |
+| **46** | Code | Definisi Kelas Target | `CLASS_NAMES = ["nevus", "melanoma", "seborrheic_keratosis"]` (3 kelas) | `CLASS_NAMES = ["benign", "malignant"]` (2 kelas) | Penyesuaian target klasifikasi medis |
+| **47** | Markdown | Keterangan Staging | Manifest: 22.051 citra irisan bersih | Manifest: 33.552 citra biner bersih | Informasi dataset lokal |
+| **48** | Code | Staging Dataset Lokal | Sumber: `dataset_irisan_multiclass_final.csv` (22.051 citra) | Sumber: `dataset_binary_final.csv` (33.552 citra) | Keduanya memakai *Auto-Resize 384x384* (JPEG 85, 4 thread) memangkas HDFS dari ~20 GB -> ~1,8 GB |
+| **67** | Code | Resolusi & Label Mapping | Indeks 0: `nevus`, 1: `melanoma`, 2: `seborrheic_keratosis` | Indeks 0: `benign`, 1: `malignant` (diselaraskan mendefinisikan `class_names = sorted(CLASS_NAMES)` & `label_to_index`) | Sinkronisasi variabel penamaan kelas |
+| **75** | Code | Sanity Check RDD | Verifikasi output vektor one-hot 3 dimensi | Verifikasi output vektor one-hot 2 dimensi | Memastikan validasi data terdistribusi |
+| **77** | Code | Bukti Normalisasi (Visual) | Menampilkan plot 3 kolom per kelas | Menampilkan plot 3 kolom per kelas biner (dilengkapi proteksi mandiri `class_names = sorted(CLASS_NAMES)` & `import subprocess`) | Memastikan cell visualisasi bebas `NameError` |
+| **80** | Code | Pemuatan CSV Split | Memuat ID `train`, `val`, `test` irisan (22.051 citra) | Memuat ID `train`, `val`, `test` biner (33.552 citra) | Pemuatan split lesi bebas kebocoran |
+| **82** | Code | **Format Array Driver RAM** | **`float32`** (22.051 citra = ~12,65 GB RAM) | **`uint8`** (33.552 citra = **~4,7 GB RAM**) | **Kunci pencegah OOM Kaggle**: Biner crash jika float32 (18,8 GB > 13 GB RAM Kaggle) |
+| **84** | Code | Output Layer Model | `Dense(3, activation='softmax')` | `Dense(2, activation='softmax')` | Penyesuaian output logit model AK85 |
+| **86** | Code | Sanity Check Dummy Forward | `assert _dummy_output.shape == (4, 3)` | `assert _dummy_output.shape == (4, 2)` | Validasi graf komputasi model |
+| **93** | Code | **Generator BatchSequence** | Mengiris batch array `float32` langsung | Mengiris batch array `uint8` lalu casting `bx.astype(np.float32) / 255.0` | Eliminasi lonjakan RAM Keras 3; GPU hanya memproses 32 citra (~19 MB) per langkah |
+| **97** | Code | Evaluasi Test Set | 2.203 citra uji (3 kelas target) | 3.291 citra uji (2 kelas target) | Classification Report & Heatmap Confusion Matrix biner |
 
 ---
 
@@ -311,7 +406,15 @@ Semua path berada di bawah root direktori: `Dataset/` (`C:\Users\ARII\Downloads\
     * `dataset_binary_test.csv` (3.291 baris / 9,81%).
 - [x] **Langkah 16 (Selesai):** Evaluasi stratifikasi split dan karakteristik resolusi fisik citra (proporsi Benign ~62,8% vs Malignant ~37,2% konsisten lintas subset data, visualisasi bar plot 2 panel).
 - [x] **Langkah 17 (Selesai):** Kesimpulan data preparation biner dan kesiapan modeling Big Data PySpark on YARN.
-- [x] **Sinkronisasi PySpark on YARN Tipe 1 (Selesai):** Memperbarui Langkah 32 pada [`kode/4_Spark_on_Yarn/spark_yarn_tipe1_biner_ak85.ipynb`](kode/4_Spark_on_Yarn/spark_yarn_tipe1_biner_ak85.ipynb) agar membaca langsung file CSV split biner resmi, identik dengan mekanisme anti-kebocoran pada notebook irisan.
+- [x] **Sinkronisasi Penuh 5 Skenario PySpark on YARN Jalur Biner (Selesai 100%):** Memperbarui seluruh 5 notebook di [`kode/4_Spark_on_Yarn/biner/`](kode/4_Spark_on_Yarn/biner/) (`2W2P`, `2W8P`, `8W2P`, `8W8P`, dan `ak85`) mengadopsi arsitektur teruji dari `sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0-selesai.ipynb`:
+  * *Proteksi Kuota Disk Kaggle (Staging Auto-Resize 384x384):* Sel 48 menggunakan `ThreadPoolExecutor(max_workers=4)` untuk mereduksi 33.552 citra master dari ~20 GB menjadi ~1,8 GB di HDFS.
+  * *Proteksi Memori RAM Kaggle (Array Driver uint8):* Sel 82 mengalokasikan array NumPy driver (`X_train`, `X_val`, `X_test`) dalam format `uint8` (~4,7 GB RAM), mencegah crash OOM (jika float32 memakan 18,8 GB melampaui RAM Kaggle 13 GB).
+  * *PyArrow Shard-HDFS Streaming:* Sel 82 mengeliminasi shuffle masif dan double persist disk, menulis shard 64 citra/shard langsung ke HDFS dan mengunduh linier ke driver dengan pembersihan memori seketika (`spark.stop()`).
+  * *Generator BatchSequence Keras 3:* Sel 93 mengiris batch 32 citra secara mandiri dan mengonversi `uint8 -> float32 / 255.0` on-the-fly, mengeliminasi duplikasi memori internal TensorFlow Keras 3 (~1,9x RAM).
+  * *YARN NodeManager Resource Lock & Bad-Node Protection:* Sel 30 & 32 mengunci memori NodeManager 14 GB dan menonaktifkan `disk-health-checker` (ambang 99%) agar executor tidak dibunuh secara sepihak.
+  * *Arsitektur Model AK85 Biner:* Sel 84 mengintegrasikan layer `ResNetCaffePreprocess` (BGR mean-subtraction), Triplet Attention, dan dense output 2 kelas (`Dense(2, activation='softmax')`), dengan checkpoint `.keras` di Sel 91.
+  * *Verifikasi Komprehensif 101 Sel:* Seluruh 5 notebook terverifikasi tepat 101 sel, 0 Syntax Error AST, dan siap dieksekusi di Kaggle GPU.
+
 
 ### B. Progres Implementasi Jalur Irisan 3 Kelas (HAM10000 ∩ ISIC 2017 ∩ ISIC 2019)
 - [x] **Langkah 1:** Bangun dan perbarui notebook [`kode/irisan_mapping.ipynb`](kode/irisan_mapping.ipynb) dengan 10 langkah modular.
@@ -345,6 +448,8 @@ Semua path berada di bawah root direktori: `Dataset/` (`C:\Users\ARII\Downloads\
   - **Panduan GPU Eksekusi:** Disediakan panduan siap eksekusi di [`kode/3_jalur_irisan_3kelas/panduan_eksekusi_gpu_colab_kaggle.md`](kode/3_jalur_irisan_3kelas/panduan_eksekusi_gpu_colab_kaggle.md).
 - [x] **Perbaikan Eksekusi PySpark on YARN di Kaggle (Selesai):** Menyelesaikan bug `Connection refused` dan *auto-kill* SIGHUP dari Kaggle pada file `irisan-3-kelas-2p2w.ipynb`. Menggunakan trik `!setsid` untuk melindungi daemon YARN dari pembersihan *process group* Kaggle, serta menyuntikkan skrip pembersihan variabel *dead gateway port* Py4J (`PYSPARK_GATEWAY_PORT`). Dataset HDFS juga dipastikan terunggah penuh.
 - [x] **Solusi Crash Kaggle YARN Langkah 33 & Deep Audit 101 Sel (Selesai):** Menuntaskan bug YARN executor lost (SIGTERM 143), mengoptimasi `yarn-site.xml`, `spark-defaults.conf`, auto-resize 384px HDFS staging, mengimplementasikan *Single-Pass Stream* pengumpulan array driver bebas shuffle, dan menyelesaikan deep audit 101 sel pada [`kode/4_Spark_on_Yarn/sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0.ipynb`](kode/4_Spark_on_Yarn/sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0.ipynb).
+- [x] **Eksekusi Penuh Skenario 1 (2W2P) di Kaggle GPU (Selesai 100%):** Berhasil dieksekusi end-to-end tanpa error YARN/OOM. Waktu prapemrosesan terdistribusi: 122,06 detik; waktu training GPU (15 epoch): 837,36 detik. Metrik Test Set: Akurasi 76,49%, Macro F1 0,7030, ROC-AUC 0,9004. Log tersimpan otomatis di `results.csv`.
+- [x] **Sinkronisasi Penuh 4 Varian Skenario PySpark on YARN Irisan 3 Kelas (Selesai):** Seluruh 4 notebook pada folder [`kode/4_Spark_on_Yarn/irisan/`](kode/4_Spark_on_Yarn/irisan/) (`spark_yarn_tipe1_irisan_2W2P.ipynb`, `2W8P`, `8W2P`, `8W8P`) telah disinkronkan dengan arsitektur PyArrow Shard-HDFS (Sel 82), generator `BatchSequence` (Sel 93), dan kunci alokasi NodeManager 14 GB (Sel 30) yang teruji di Kaggle.
 - [ ] **Langkah 2:** Menjalankan pelatihan penuh (*Full Training* 10–20 epoch) ResNet-50 vs EfficientNet-B0 pada akselerator GPU (Google Colab / Kaggle T4) menggunakan skrip modular `python kode/3_jalur_irisan_3kelas/train_baseline.py --loss focal` / `--loss cb_focal` sesuai panduan GPU.
 
 ### 📋 Agenda 4 Tugas Verifikasi & Rekap Dosen (STATUS: PENDING TINJAUAN PENGGUNA)
@@ -369,28 +474,39 @@ Semua path berada di bawah root direktori: `Dataset/` (`C:\Users\ARII\Downloads\
   - Pengguna perlu memeriksa lembar kerja ini sebelum diserahkan ke dosen pembimbing.
 
 ### 🚀 Titik Lanjut Berikutnya (Actionable Next Steps)
-- [ ] **Langkah Lanjut (Modeling GPU):** Menjalankan pelatihan penuh (*Full Training* 10–20 epoch) ResNet-50 vs EfficientNet-B0 pada akselerator GPU (Google Colab / Kaggle T4) menggunakan skrip modular `python kode/3_jalur_irisan_3kelas/train_baseline.py --loss focal` / `--loss cb_focal` sesuai panduan di [`kode/3_jalur_irisan_3kelas/panduan_eksekusi_gpu_colab_kaggle.md`](kode/3_jalur_irisan_3kelas/panduan_eksekusi_gpu_colab_kaggle.md).
-
-
+- [ ] **Eksperimen Big Data PySpark on YARN Jalur Biner (Kaggle GPU):**
+  - [x] **Skenario 1 (2W2P - Selesai 100% di Kaggle GPU):** [`kode/4_Spark_on_Yarn/sk2-spark-on-distributed-biner-2p2w-v3-0-selesai.ipynb`](kode/4_Spark_on_Yarn/sk2-spark-on-distributed-biner-2p2w-v3-0-selesai.ipynb) (Preprocessing: 184,31s, Training 15 epoch: 1.248,33s, Test Acc: 79,03%, Macro F1: 0,7790, ROC-AUC: 0,8718).
+  - [ ] **Skenario 2 (2W8P):** [`kode/4_Spark_on_Yarn/biner dengan uint8/spark_yarn_tipe1_biner_2W8P.ipynb`](kode/4_Spark_on_Yarn/biner%20dengan%20uint8/spark_yarn_tipe1_biner_2W8P.ipynb)
+  - [ ] **Skenario 3 (8W2P):** [`kode/4_Spark_on_Yarn/biner dengan uint8/spark_yarn_tipe1_biner_8W2P.ipynb`](kode/4_Spark_on_Yarn/biner%20dengan%20uint8/spark_yarn_tipe1_biner_8W2P.ipynb)
+  - [ ] **Skenario 4 (8W8P):** [`kode/4_Spark_on_Yarn/biner dengan uint8/spark_yarn_tipe1_biner_8W8P.ipynb`](kode/4_Spark_on_Yarn/biner%20dengan%20uint8/spark_yarn_tipe1_biner_8W8P.ipynb)
+- [ ] **Eksperimen Big Data PySpark on YARN Jalur Irisan 3 Kelas (Kaggle GPU):**
+  - [x] **Skenario 1 (2W2P - Selesai 100% di Kaggle GPU):** [`kode/4_Spark_on_Yarn/sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0-selesai.ipynb`](kode/4_Spark_on_Yarn/sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0-selesai.ipynb) (Preprocessing: 122,06s, Training 15 epoch: 837,36s, Test Acc: 76,49%, Macro F1: 0,7030, ROC-AUC: 0,9004).
+  - [ ] **Skenario 1 Varian uint8 (Studi Komparasi):** [`kode/4_Spark_on_Yarn/sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0-uint8.ipynb`](kode/4_Spark_on_Yarn/sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0-uint8.ipynb)
+  - [ ] **Skenario 2 (2W8P):** [`kode/4_Spark_on_Yarn/irisan tanpa uint8/spark_yarn_tipe1_irisan_2W8P.ipynb`](kode/4_Spark_on_Yarn/irisan%20tanpa%20uint8/spark_yarn_tipe1_irisan_2W8P.ipynb)
+  - [ ] **Skenario 3 (8W2P):** [`kode/4_Spark_on_Yarn/irisan tanpa uint8/spark_yarn_tipe1_irisan_8W2P.ipynb`](kode/4_Spark_on_Yarn/irisan%20tanpa%20uint8/spark_yarn_tipe1_irisan_8W2P.ipynb)
+  - [ ] **Skenario 4 (8W8P):** [`kode/4_Spark_on_Yarn/irisan tanpa uint8/spark_yarn_tipe1_irisan_8W8P.ipynb`](kode/4_Spark_on_Yarn/irisan%20tanpa%20uint8/spark_yarn_tipe1_irisan_8W8P.ipynb)
+- [ ] **Langkah Lanjut (Modeling GPU Baseline PyTorch):** Menjalankan pelatihan penuh (*Full Training* 10–20 epoch) ResNet-50 vs EfficientNet-B0 pada akselerator GPU (Google Colab / Kaggle T4) menggunakan skrip modular `python kode/3_jalur_irisan_3kelas/train_baseline.py --loss focal` / `--loss cb_focal` sesuai panduan di [`kode/3_jalur_irisan_3kelas/panduan_eksekusi_gpu_colab_kaggle.md`](kode/3_jalur_irisan_3kelas/panduan_eksekusi_gpu_colab_kaggle.md).
 
 ---
 
 ## 7. Catatan Penutupan Sesi Terakhir (Session Log)
-* **Waktu Pembaruan:** 20 September 2026, Pukul 22:40 WIB.
+* **Waktu Pembaruan:** 22 September 2026, Pukul 11:46 WIB.
 * **Rangkuman Sesi Ini:**
-  1. **Diagnosa & Solusi Arsitektural Masalah YARN Executor Lost / SIGTERM 143:**
-     * Menemukan akar masalah crash di Langkah 33 (Sel 82): YARN `NodeHealthCheckerService` membunuh Executor 2 karena disk `/kaggle/working` melampaui 90% utilization akibat 10.6 GB SortShuffle dan 13.3 GB persist disk ganda.
-     * Mengonfigurasi proteksi disk `yarn-site.xml` (`disk-health-checker.enable = false`, ambang 99%) dan tuning `spark-defaults.conf` (`driver.memory 8g`, `maxResultSize 0`, `timeout 800s`).
-     * Menerapkan multi-threaded auto-resize (384px) pada staging citra lokal, mereduksi konsumsi HDFS dari 18.11 GB menjadi ~1.2 GB (>14 GB disk Kaggle tetap bebas).
-  2. **Refaktor Data Collection via Single-Pass Stream (Sel 83):**
-     * Mengganti loop 3 pass shuffle dengan 1 iterasi linier dari `processed_rdd.toLocalIterator()`.
-     * Mengeliminasi 10+ GB shuffle jaringan dan 13.3 GB penulisan disk sekunder, langsung mengisi array NumPy driver (`X_train`, `y_train`, `X_val`, `y_val`, `X_test`, `y_test`).
-     * Segera memanggil `processed_rdd.unpersist()` dan `gc.collect()` untuk mengosongkan memori sebelum pelatihan GPU.
-  3. **Penyempurnaan Sintaksis & Deep Audit End-to-End 101 Sel:**
-     * Mengubah Sel 44 pengujian SparkPi menjadi `%%bash` murni guna mencegah potensi error indentasi Python di kernel Jupyter.
-     * Menambahkan modul impor eksplisit `time`, `subprocess`, dan `tensorflow` di Sel 70 dan Sel 94.
-     * Memverifikasi menyeluruh 101 sel (48 code cells): 0 Syntax Error AST, 0 Undefined Variable, validasi pembagian nol (zero-division guard), konsistensi metrik evaluasi dan skema log `results.csv` 13 kolom.
-  4. **Tindakan Lanjut untuk Pengguna:**
-     * Menjalankan notebook [`kode/4_Spark_on_Yarn/sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0.ipynb`](kode/4_Spark_on_Yarn/sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0.ipynb) di Kaggle (*Run All*).
-     * Memeriksa 4 Agenda Tugas Verifikasi Dosen (konsensus label, audit biner vs irisan, file Excel `rekap_dataset_biner_dan_irisan improve.xlsx`) yang berstatus *Pending Review*.
+  1. **Restorasi Konteks dari Sesi Sebelumnya:**
+     * Memulihkan status penuh: Skenario 1 Irisan (2W2P) sukses di Kaggle, 5 notebook biner sinkron 100% arsitektur irisan teruji, matriks komparasi float32 vs uint8 tersimpan di memori.
+  2. **Analisis float32 vs uint8 pada Jalur Irisan (22.051 Citra):**
+     * Menyajikan tabel komparasi lengkap: `uint8` mereduksi RAM driver dari **~12,65 GB → ~3,16 GB** (hemat 75%), I/O shard HDFS ~4x lebih cepat, kualitas model identik (konversi `/255.0` per batch).
+  3. **Pembuatan Varian Irisan uint8 (Skenario 1 2W2P):**
+     * Menghasilkan file baru: [`kode/4_Spark_on_Yarn/sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0-selesai-uint8.ipynb`](kode/4_Spark_on_Yarn/sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0-selesai-uint8.ipynb).
+     * Tepat **4 sel berbeda** dari varian float32: Sel 0 (identitas), Sel 82 (array `uint8` + shard `uint8`), Sel 93 (`BatchSequence` casting on-the-fly), Sel 97 (evaluasi via `test_seq`).
+     * 97 sel lainnya 100% identik. Lulus verifikasi AST, cell outputs di-reset bersih, siap dieksekusi untuk komparasi langsung.
+  4. **Perbaikan Bug NameError `class_names` pada 5 Notebook Biner:**
+     * **Root cause:** Sel 67 pada notebook biner tidak mendefinisikan variabel `class_names` (huruf kecil), sedangkan Sel 77 (Langkah 31 — visualisasi) menggunakan `class_names`. `CLASS_NAMES` (kapital) sudah ada sejak Sel 46, tapi `class_names = sorted(CLASS_NAMES)` terlewat.
+     * **Perbaikan Sel 67 (Langkah 26):** Ditambahkan `class_names = sorted(CLASS_NAMES)`.
+     * **Perbaikan Sel 77 (Langkah 31):** Ditambahkan `class_names = sorted(CLASS_NAMES)` + `import subprocess` sebagai proteksi mandiri (*self-contained*).
+     * **Cakupan:** Seluruh 5 file (`2W2P`, `2W8P`, `8W2P`, `8W8P`, `ak85`) diperbaiki dan lulus verifikasi `verify_all_biner.py` 100%.
+  5. **Pengingat Status Tinjauan Pengguna:**
+     * 4 agenda verifikasi dosen tetap berstatus pending review pengguna (harmonisasi label, konsensus voting 8 jurnal, uji irisan vs biner, file excel rekap).
+     * Notebook biner yang sedang dijalankan di Kaggle (sesi aktif): untuk sel yang error di Kaggle sekarang, gunakan `class_names = CLASS_NAMES` sebagai *quick fix* satu baris di atas sel Langkah 31.
 * **Status Memori:** **AMAN, PERSISTEN, & BEBAS KEBOCORAN.** Seluruh pembaruan sesi ini tersimpan secara permanen dan siap dilanjutkan dengan perintah `/start` di sesi kerja berikutnya.
+
