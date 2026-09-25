@@ -1,7 +1,7 @@
 # 🧠 DOKUMEN MEMORI UTAMA PROYEK (PERSISTENT MEMORY)
 **Proyek:** Data Understanding & Pemetaan Dataset ISIC (2016–2024) & HAM10000  
 **Lokasi Direktori:** `C:\Users\ARII\Downloads\Data Understanding Isic & Ham10k\`  
-* **Terakhir Diperbarui:** 24 September 2026, Pukul 23:45 WIB (Audit Komparasi Apple-to-Apple Spark on YARN vs Spark Standalone & Pembersihan Workspace)
+* **Terakhir Diperbarui:** 25 September 2026, Pukul 11:30 WIB (Penyederhanaan Template Skenario Mandiri 33 Sel & Pembersihan Varian)
 
 ---
 
@@ -501,20 +501,22 @@ Seluruh laporan ini sudah memenuhi kaidah *Standar Excel Kulit* (hitam-putih, ta
 ---
 
 ## 7. Catatan Penutupan Sesi Terakhir (Session Log)
-* **Waktu Pembaruan:** 24 September 2026, Pukul 23:45 WIB.
+* **Waktu Pembaruan:** 25 September 2026, Pukul 11:30 WIB.
 * **Rangkuman Sesi Ini:**
-  1. **Audit Komparasi Apple-to-Apple Spark on YARN vs Spark Standalone:**
-     * Memeriksa berkas hasil eksekusi Kaggle GPU: [`kode/4_Spark_on_Yarn/irisan tanpa uint8/sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0-selesai.ipynb`](kode/4_Spark_on_Yarn/irisan%20tanpa%20uint8/sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0-selesai.ipynb) terhadap file teman [`kode/6_kode teman/sk1-spark-standalone-hdfs-matriks-askab-selesai-semua-sk.ipynb`](kode/6_kode%20teman/sk1-spark-standalone-hdfs-matriks-askab-selesai-semua-sk.ipynb).
-     * **Status Validasi Metodologi:** Terbukti **100% Sah & Apple-to-Apple ✅** (*Ceteris Paribus*), di mana dataset (22.051 citra), split 80:10:10, praproses 224px, sharding 64 citra/shard `.npz`, model ResNet-50 + Triplet Attention, Adam $10^{-4}$, batch 32, dan 15 epoch dikunci identik.
-  2. **Perbandingan Metrik Utama (Skenario Sepadan 2W2P):**
-     * **Prapemrosesan Spark:** YARN (**122,06 detik**) vs Standalone (**591,77 detik**) $\to$ YARN ~4,85× lebih cepat karena worker membaca stream HDFS langsung via C++ PyArrow.
-     * **Pelatihan GPU:** YARN (**837,36 detik**) vs Standalone (**872,78 detik**) $\to$ YARN lebih cepat ~35 detik karena data diakses langsung dari RAM host (`np.empty`) tanpa latensi baca disk memmap.
-     * **Metrik Evaluasi Uji (2.203 Citra):** Akurasi (76,49% vs 78,30%), Macro F1 (0,7030 vs 0,7230), ROC-AUC (0,9004 vs 0,9046), dan Test Loss (1,3167 vs 1,3118) membuktikan kedua model konvergen di titik optimal yang setara (selisih minor 1,8% adalah variasi stokastik wajar GPU non-seed).
-  3. **Penyusunan Catatan Metodologi & Variabel Eksperimen:**
-     * Dokumen klasifikasi variabel (Variabel Kontrol, Bebas, Terikat) disimpan tersendiri di [`notes jurnal/catatan_variabel_eksperimen_yarn_vs_standalone.md`](notes%20jurnal/catatan_variabel_eksperimen_yarn_vs_standalone.md).
-  4. **Pembersihan Berkas Redundan & Cache:**
-     * Menghapus skrip generator satu kali pakai: `generate_nb1_improve.py`.
-     * Membersihkan cache direktori `kode/3_jalur_irisan_3kelas/__pycache__`.
+  1. **Konsolidasi Notebook PySpark on YARN (101 Sel -> 33 Sel Ringkas):**
+     * Meringkas notebook menjadi 33 sel (10 Markdown + 23 Code) setara dengan notebook teman (~35 sel) dengan tetap mempertahankan 100% konfigurasi PySpark on YARN, arsitektur Sharding HDFS, NodeManager lock, ResNet-50 + Triplet Attention, serta verifikasi Bab 4 (JPS, before/after viz, kurva loss/acc, confusion matrix).
+  2. **Standardisasi Template Skenario Mandiri (Default 2W2P):**
+     * Folder [`kode/4_Spark_on_Yarn/irisan tanpa uint8/`](kode/4_Spark_on_Yarn/irisan%20tanpa%20uint8/):
+       - [`sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0-selesai.ipynb`](kode/4_Spark_on_Yarn/irisan%20tanpa%20uint8/sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0-selesai.ipynb) (Original 101 sel + output Kaggle lengkap sebagai bukti riil).
+       - [`spark_yarn_tipe1_irisan_ringkas.ipynb`](kode/4_Spark_on_Yarn/irisan%20tanpa%20uint8/spark_yarn_tipe1_irisan_ringkas.ipynb) (Template ringkas 33 sel, default 2W2P).
+     * Folder [`kode/4_Spark_on_Yarn/biner uint8/`](kode/4_Spark_on_Yarn/biner%20uint8/):
+       - [`sk2-spark-on-distributed-biner-2p2w-v3-0-selesai.ipynb`](kode/4_Spark_on_Yarn/biner%20uint8/sk2-spark-on-distributed-biner-2p2w-v3-0-selesai.ipynb) (Original 101 sel + output Kaggle lengkap).
+       - [`spark_yarn_tipe1_biner_ringkas.ipynb`](kode/4_Spark_on_Yarn/biner%20uint8/spark_yarn_tipe1_biner_ringkas.ipynb) (Template ringkas 33 sel, default 2W2P).
+  3. **Pembersihan & Eliminasi Varian Terpisah:**
+     * Menghapus semua file varian `2W2P`, `2W8P`, `8W2P`, `8W8P` terpisah agar workspace rapi. Eksekusi 4 skenario cukup dilakukan pada 1 file template dengan mengganti variabel `NUM_WORKERS` & `NUM_PARTITIONS` di Fase 1 (sel 4), dan hasil otomatis terakumulasi ke `results.csv`.
+  4. **Panduan Teknis Eksekusi Berulang & Restart Kernel:**
+     * Menjelaskan penyebab run ke-2 dst melambat jika tanpa restart (fragmentasi VRAM GPU, I/O disk throttling dari sisa shard/staging HDFS, JVM daemon zombie threads, dan overhead Python GC).
+     * Prosedur baku: Lakukan **Restart Kernel** antar-skenario, jangan jalankan sel penghapusan `results.csv` (sel 2), lalu jalankan skenario berikutnya.
 * **Status Memori:** **AMAN, PERSISTEN, & BEBAS KEBOCORAN.** Seluruh pembaruan sesi ini tersimpan secara permanen dan siap dilanjutkan dengan perintah `/start` di sesi kerja berikutnya.
 
 
