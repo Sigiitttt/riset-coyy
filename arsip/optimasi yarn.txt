@@ -1,0 +1,56 @@
+# Strategi Optimasi Spark On Yarn
+
+Melihat karakteristik lingkungan **Kaggle GPU (4 vCPU, 30 GB RAM, GPU Tesla T4)** dan konfigurasi skenario matriks ($W \in \{2, 8\}$ dan $P \in \{2, 8\}$), berikut **5 strategi optimasi terbaik** agar Spark on YARN bekerja lebih kencang, stabil, dan efisien:
+
+---
+
+### 1. Gunakan Format `uint8` pada Sharding HDFS (Penghematan Terbesar)
+
+Saat ini pada versi `float32`, array citra yang dikumpulkan driver memakan **~13,2 GB RAM**.
+
+- **Solusi Optimal:** Simpan citra di HDFS shard dan memori driver dalam format **`uint8` $[0, 255]$**.
+- **Dampak:**
+    - Konsumsi RAM driver langsung terpangkas drastis dari **~13,2 GB $\to$ ~3,3 GB (hemat 75%)**.
+    - Waktu I/O penulisan & pembacaan Shard HDFS menjadi **~3–4× lebih cepat**.
+    - Di `BatchSequence`, batch 32 citra cukup dikonversi *on-the-fly*:*(Beban komputasi konversi ini hanya memakan ~19 MB per langkah di CPU/GPU, tidak terasa sama sekali).*
+        
+        ```python
+        return (self.X[sel].astype(np.float32) / 255.0), self.y[sel]
+        ```
+        
+
+---
+
+### 2. Kunci Penjadwal YARN dengan *DominantResourceCalculator* (Wajib untuk 8 Worker)
+
+Secara default, penjadwal YARN (*CapacityScheduler*) hanya menghitung alokasi RAM dan mengabaikan Core CPU. Ini sering menyebabkan skenario **8 Worker** terhambat (*pending container*).
+
+- **Solusi Optimal:** Tambahkan properti ini pada konfigurasi `capacity-scheduler.xml`:
+    
+    ```xml
+    <property>
+      <name>yarn.scheduler.capacity.resource-calculator</name>
+      <value>org.apache.hadoop.yarn.util.resource.DominantResourceCalculator</value>
+    </property>
+    ```
+    
+- **Dampak:** YARN akan membagi alokasi CPU vCore dan RAM secara proporsional. Skenario 8 worker akan langsung mendapatkan 8 container aktif tanpa antre (*starvation*).
+
+---
+
+### 3. Mengapa Skenario Partisi 8 (P=8) Lebih Menguntungkan daripada P=2?
+
+Dalam komputasi terdistribusi, membagi data menjadi partisi yang lebih banyak (granularitas halus) memiliki keunggulan besar:
+
+- **Pada 2 Partisi (P=2):** Tiap partisi menampung **~11.025 citra**. Jika 1 worker selesai lebih cepat, worker lain yang masih memproses 11.000 citra akan menjadi *bottleneck* (efek *data skewness*).
+- **Pada 8 Partisi (P=8):** Tiap partisi hanya menampung **~2.756 citra**.
+    - *Load balancing* jauh lebih merata: Worker yang selesai memproses 2.756 citra bisa langsung mencuri tugas (*task stealing*) partisi berikutnya.
+    - Memori eksekutor tidak terbebani tumpukan *garbage collection* (GC) citra berukuran besar.
+
+---
+
+### 4. Tambahkan Buffer I/O Stream pada Pembacaan PyArrow
+
+Di dalam fungsi `preprocess_partition`, saat ini stream dibuka langsung per file.
+
+- **Solusi Optimal:** Berikan parameter buffer baca (misal 64 KB) agar transfer stream dari HDFS DataNode ke memori worker Python tidak tersendat:

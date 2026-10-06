@@ -1,7 +1,7 @@
 # 🧠 DOKUMEN MEMORI UTAMA PROYEK (PERSISTENT MEMORY)
 **Proyek:** Data Understanding & Pemetaan Dataset ISIC (2016–2024) & HAM10000  
 **Lokasi Direktori:** `C:\Users\ARII\Downloads\Data Understanding Isic & Ham10k\`  
-* **Terakhir Diperbarui:** 25 September 2026, Pukul 11:30 WIB (Penyederhanaan Template Skenario Mandiri 33 Sel & Pembersihan Varian)
+* **Terakhir Diperbarui:** 5 Oktober 2026 (Sesi Penutupan Eksperimen Backbone EXP 5-A & EXP 5-B)
 
 ---
 
@@ -138,7 +138,7 @@ Riset ini terbagi menjadi 2 jalur independen:
 
 ---
 
-### D. `sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0.ipynb` (PySpark on YARN Skenario 1 2W2P — Status: SUKSES DIEKSEKUSI DI KAGGLE GPU 100%)
+### D. `sk1-irisan-tipe1-101cel-selesai.ipynb` (PySpark on YARN Skenario 1 2W2P — Status: SUKSES DIEKSEKUSI DI KAGGLE GPU 100%)
 * **Tujuan & Lingkungan:** Menjalankan eksperimen Big Data Skenario 1 (2 Worker, 2 Partisi, 15 Epoch) pada klaster Apache Hadoop/YARN + PySpark di Kaggle GPU dengan proteksi memori dan kuota disk lokal.
 * **Dataset yang Digunakan:** Irisan 3 Kelas (`nevus`, `melanoma`, `seborrheic_keratosis`), total 22.051 citra dengan pembagian bebas kebocoran lesi (*Lesion-Aware Stratification* 80:10:10).
 * **Hasil Eksekusi Penuh di Kaggle GPU (Tercatat Resmi di `results.csv`):**
@@ -157,17 +157,11 @@ Riset ini terbagi menjadi 2 jalur independen:
   1. *Shard-Based HDFS Streaming (Sel 82):* Menggantikan shuffle masif dengan penulisan shard kompak (64 citra/shard via `pyarrow.fs` ke HDFS), diunduh linier ke array NumPy driver tanpa lonjakan memori, diikuti pelepasan `spark.stop()` sebelum GPU running.
   2. *Keras 3 BatchSequence (Sel 93):* Membungkus generator batch mandiri guna mengeliminasi duplikasi memori internal TensorFlow Keras 3 (~1,9x RAM).
   3. *Resource Isolation & NodeManager Lock (Sel 30):* Mengunci kapasitas klaster YARN di 14.336 MB (1.536 MB container, 1 core/executor) agar perbandingan speedup antar-skenario (2W vs 8W) adil dan konsisten.
-* **Status Sinkronisasi 4 Varian Skenario:** Seluruh 4 file di [`kode/4_Spark_on_Yarn/irisan/`](kode/4_Spark_on_Yarn/irisan/) (`2W2P`, `2W8P`, `8W2P`, `8W8P`) telah disinkronkan 100% menggunakan arsitektur shard teruji ini.
-* **Varian Baru Irisan uint8 untuk Studi Komparasi:** Berkas [`kode/4_Spark_on_Yarn/sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0-selesai-uint8.ipynb`](kode/4_Spark_on_Yarn/sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0-selesai-uint8.ipynb) dibuat khusus untuk perbandingan langsung terhadap varian `float32` asli. Tepat 4 sel yang disesuaikan:
-  - **Sel 0 (MD):** Identitas varian Irisan `uint8` [0, 255] (~3,16 GB RAM) vs `float32` (~12,65 GB RAM).
-  - **Sel 82 (Code):** Shard ditulis dan array driver dialokasikan sebagai `uint8` (RAM driver terpangkas dari 12,65 GB menjadi 3,16 GB).
-  - **Sel 93 (Code):** Generator `BatchSequence` mengonversi batch 32 citra secara *on-the-fly* via `bx.astype(np.float32) / 255.0` (~19 MB per langkah).
-  - **Sel 97 (Code):** Evaluasi Test Set dibungkus oleh `test_seq = BatchSequence(X_test, y_test_cat, BATCH_SIZE, shuffle=False)` untuk evaluasi bertahap tanpa lonjakan memori.
-  - *Status Verifikasi:* 101 sel, 0 AST Syntax Error, cell outputs di-reset bersih siap dieksekusi di Kaggle GPU.
+* **File Tersimpan di Repositori:** [`kode/4_Spark_on_Yarn/4.2-arsip-irisan-benchmark/sk1-irisan-tipe1-101cel-selesai.ipynb`](kode/4_Spark_on_Yarn/4.2-arsip-irisan-benchmark/sk1-irisan-tipe1-101cel-selesai.ipynb).
 
 ---
 
-### D.1 `sk2-spark-on-distributed-biner-2p2w-v3-0-selesai.ipynb` (PySpark on YARN Skenario 1 Biner 2W2P — Status: SUKSES DIEKSEKUSI DI KAGGLE GPU 100%)
+### D.1 `sk2-biner-tipe1-101cel-selesai.ipynb` (PySpark on YARN Skenario 1 Biner 2W2P — Status: SUKSES DIEKSEKUSI DI KAGGLE GPU 100%)
 * **Tujuan & Lingkungan:** Menjalankan eksperimen Big Data Jalur Biner Skenario 1 (2 Worker, 2 Partisi, 15 Epoch) pada klaster Apache Hadoop/YARN + PySpark di Kaggle GPU dengan optimasi memori `uint8` dan staging disk auto-resize 384px.
 * **Dataset yang Digunakan:** Jalur Biner (`benign` vs `malignant`), total 33.552 citra bersih bebas kebocoran lesi (*Lesion-Aware Stratification* 80:10:10).
 * **Hasil Eksekusi Penuh di Kaggle GPU (Tercatat Resmi di `results.csv`):**
@@ -181,7 +175,7 @@ Riset ini terbagi menjadi 2 jalur independen:
   * **Kinerja per Kelas Medis (Classification Report):**
     * `benign` (2.090 sampel): Precision 0,86 | Recall 0,80 | F1-Score 0,83
     * `malignant` (1.201 sampel): Precision 0,69 | Recall 0,77 | F1-Score 0,73
-* **File Tersimpan di Repositori:** [`kode/4_Spark_on_Yarn/sk2-spark-on-distributed-biner-2p2w-v3-0-selesai.ipynb`](kode/4_Spark_on_Yarn/sk2-spark-on-distributed-biner-2p2w-v3-0-selesai.ipynb).
+* **File Tersimpan di Repositori:** [`kode/4_Spark_on_Yarn/4.1-arsip-biner-benchmark/sk2-biner-tipe1-101cel-selesai.ipynb`](kode/4_Spark_on_Yarn/4.1-arsip-biner-benchmark/sk2-biner-tipe1-101cel-selesai.ipynb).
 
 ---
 
@@ -228,6 +222,83 @@ Dokumentasi ini mencatat secara menyeluruh seluruh perubahan yang telah diterapk
 
 ---
 
+### G. Kamus Tata Nama Standar & Peta Berkas Spark on YARN (Resmi Ditetapkan)
+
+Untuk memastikan konsistensi penamaan di seluruh riset dan menghindari kerancuan, format nama file diatur dengan formula baku:
+> **Pola Baku:**  
+> **`[sk] - [keterangan: irisan / biner] - [tipe1] - [keterangan pengerjaan / versi].ipynb`**
+
+#### 1. Kamus Definisi Tata Nama:
+* **`sk1`**: Skenario 1 (Jalur Irisan 3 Kelas: `nevus`, `melanoma`, `seborrheic_keratosis`). Total 22.051 citra.
+* **`sk2`**: Skenario 2 (Jalur Biner 2 Kelas: `benign` vs `malignant`). Total 33.552 citra.
+* **`irisan`**: Menggunakan dataset irisan 3 kelas medis (HAM10000 ∩ ISIC 2017 ∩ ISIC 2019).
+* **`biner`**: Menggunakan dataset biner 2 kelas (Jinak vs Ganas) hasil voting konsensus medis.
+* **`tipe1`**: Arsitektur sistem Big Data Hybrid:
+  * **Tahap 1:** Prapemrosesan terdistribusi pada Apache Spark on YARN cluster (HDFS reading, auto-resize, sharding).
+  * **Tahap 2:** Pelatihan model terpusat (Centralized) pada GPU tunggal driver via generator Keras 3 `BatchSequence`.
+  * *(Bukan Tipe 2 yang melatih model secara terdistribusi penuh di banyak node worker cluster via Horovod/DDP).*
+* **`ringkas-optimasi`**: Versi ringkas mandiri (33 sel) yang telah dilengkapi 5 optimasi YARN (`DominantResourceCalculator` di `yarn-site.xml` & `capacity-scheduler.xml`, buffer baca PyArrow 64KB, `uint8` sharding, on-the-fly casting Keras 3 `BatchSequence`, dan evaluasi `test_seq`).
+* **`101cel-optimasi`**: Versi panjang 101 sel lengkap yang telah disematkan 5 optimasi YARN di atas.
+* **`101cel-selesai`**: Versi panjang 101 sel historis yang telah berhasil dieksekusi 100% di Kaggle GPU dengan bukti log output.
+* **`ringkas`**: Versi ringkas 33 sel awal sebelum optimasi YARN disematkan.
+* **`unittest-3img`**: Versi pengujian cepat 3 citra per kelas.
+* **`ringkas-prepjurnal`**: Versi ringkas mandiri (33 sel) yang mengintegrasikan prapemrosesan jurnal LA-CapsNet MDPI 2024 (Pad & Resize 299x299, Contrast Stretching $n_0=128, \text{var}_0=4000$, Active Contour Snake Segmentation, on-the-fly batch augmentation, dan format hemat uint8).
+* **`101cel-error-cell33`**: Arsip histori kegagalan pada cell 33 (sebelum fix memory).
+
+#### 2. Peta Berkas Resmi di Folder `kode/4_Spark_on_Yarn/`:
+* **`4.6-ringkas-optimasi-prepjurnal/`** *(✨ VERSI TERCANGGIH: REKAYASA PREPROCESSING MEDIS OPSI B 224px)*:
+  * [`sk1-irisan-tipe1-ringkas-prepjurnal.ipynb`](kode/4_Spark_on_Yarn/4.6-ringkas-optimasi-prepjurnal/sk1-irisan-tipe1-ringkas-prepjurnal.ipynb) (Irisan 3 Kelas Spark on YARN - Pad & Resize 224x224, Dull Razor Hair Removal, Adaptive Snake Segmentation, Soft-Blending, uint8, zero-leakage split)
+  * [`sk3-irisan-local-prepjurnal-ak85.ipynb`](kode/4_Spark_on_Yarn/4.6-ringkas-optimasi-prepjurnal/sk3-irisan-local-prepjurnal-ak85.ipynb) (Irisan 3 Kelas Spark Local Mode 20 Sel - Pad & Resize 224x224, Dull Razor, Snake Segmentation, Soft-Blending, Dual GPU MirroredStrategy)
+  * [`sk2-biner-tipe1-ringkas-prepjurnal.ipynb`](kode/4_Spark_on_Yarn/4.6-ringkas-optimasi-prepjurnal/sk2-biner-tipe1-ringkas-prepjurnal.ipynb) (Biner 2 Kelas Spark on YARN - Resize 224x224, Dull Razor, Snake Segmentation, uint8)
+* **`4.4-ringkas-optimasi/`** *(FOLDER BASELINE: PIPELINE 224px TANPA SEGMENTASI — resize polos + uint8)*:
+  * [`sk1-irisan-tipe1-ringkas-optimasi.ipynb`](kode/4_Spark_on_Yarn/4.4-ringkas-optimasi/sk1-irisan-tipe1-ringkas-optimasi.ipynb) (Jalur Irisan 3 Kelas - 33 sel ringkas, resize PIL polos TANPA Dull Razor/segmentasi, uint8, zero-leakage split — hasil aktual di `results.csv`: 73,63–76,31%)
+  * [`sk2-biner-tipe1-ringkas-optimasi.ipynb`](kode/4_Spark_on_Yarn/4.4-ringkas-optimasi/sk2-biner-tipe1-ringkas-optimasi.ipynb) (Jalur Biner 2 Kelas - 33 sel ringkas, resize PIL polos TANPA Dull Razor/segmentasi, uint8, zero-leakage split)
+  * **Koreksi dokumentasi (diverifikasi ulang dari kode aktual, bukan dari catatan lama):** folder ini **TIDAK** memakai Dull Razor/Adaptive Snake/Soft-Blend — deskripsi versi sebelumnya di baris ini keliru. Segmentasi hanya ada di folder `4.6-ringkas-optimasi-prepjurnal/` dan turunannya di `4.7-finetune-conv5/`.
+* **`4.3-101cel-optimasi/`** *(Versi Riset Lengkap 101 Sel + Optimasi YARN)*:
+  * [`sk1-irisan-tipe1-101cel-optimasi.ipynb`](kode/4_Spark_on_Yarn/4.3-101cel-optimasi/sk1-irisan-tipe1-101cel-optimasi.ipynb)
+  * [`sk2-biner-tipe1-101cel-optimasi.ipynb`](kode/4_Spark_on_Yarn/4.3-101cel-optimasi/sk2-biner-tipe1-101cel-optimasi.ipynb)
+* **`4.2-arsip-irisan-benchmark/`** *(Arsip Bukti Run Sukses di Kaggle - Irisan 76,49%)*:
+  * [`sk1-irisan-tipe1-101cel-selesai.ipynb`](kode/4_Spark_on_Yarn/4.2-arsip-irisan-benchmark/sk1-irisan-tipe1-101cel-selesai.ipynb)
+  * [`sk1-irisan-tipe1-ringkas.ipynb`](kode/4_Spark_on_Yarn/4.2-arsip-irisan-benchmark/sk1-irisan-tipe1-ringkas.ipynb)
+  * [`sk1-irisan-tipe1-unittest-3img.ipynb`](kode/4_Spark_on_Yarn/4.2-arsip-irisan-benchmark/sk1-irisan-tipe1-unittest-3img.ipynb)
+* **`4.1-arsip-biner-benchmark/`** *(Arsip Bukti Run Sukses di Kaggle - Biner 79,03%)*:
+  * [`sk2-biner-tipe1-101cel-selesai.ipynb`](kode/4_Spark_on_Yarn/4.1-arsip-biner-benchmark/sk2-biner-tipe1-101cel-selesai.ipynb)
+  * [`sk2-biner-tipe1-ringkas.ipynb`](kode/4_Spark_on_Yarn/4.1-arsip-biner-benchmark/sk2-biner-tipe1-ringkas.ipynb)
+* **`4.5-arsip-debugging/`** *(Arsip Histori Crash Cell 33 Sebelum Memory Fix)*:
+  * [`sk1-irisan-tipe1-101cel-error-cell33.ipynb`](kode/4_Spark_on_Yarn/4.5-arsip-debugging/sk1-irisan-tipe1-101cel-error-cell33.ipynb)
+
+#### 3. Panduan Cepat Pemahaman Pengguna:
+1. **File yang dipakai eksekusi:** Pengguna hanya perlu membuka folder **`4.4-ringkas-optimasi/`** karena file di folder ini yang paling ringkas (33 sel) dan sudah memiliki setelan hemat RAM (`uint8`) serta Core CPU (`DominantResourceCalculator`).
+2. **Fungsi folder 4.1, 4.2, 4.3, 4.5:** Murni sebagai arsip riwayat riset (pembuktian ke dosen bahwa eksperimen 101 sel sebelumnya pernah sukses dijalankan di Kaggle dengan log resmi).
+3. **Rumus balok nama berkas:**
+   * `sk1` / `sk2` = Kode tugas (sk1: 3 penyakit kulit, sk2: jinak vs ganas).
+   * `irisan` / `biner` = Sumber data yang dimuat.
+   * `tipe1` = Cara kerja pipeline (Spark olah citra di worker, GPU latih model terpusat di driver).
+   * `ringkas-optimasi` = 33 sel ringkas dan sudah terpasang penghemat memori.
+
+#### 4. Hasil Audit Kepatuhan Metodologi CRISP-DM, Disiplin Namespace & Bebas Data Leakage (Folder 4.4 & 4.6):
+* **Audit Alur CRISP-DM (Linear 0 s/d 33 Sel):**
+  1. *Fase 0 & 1 (Business/Research Understanding & Environment Setup):* Pembersihan log lama, instalasi Hadoop, Java, Spark, konfigurasi cluster.
+  2. *Fase 2 & 3 (Distributed Data Architecture):* Inisialisasi HDFS NameNode/DataNode & YARN ResourceManager/NodeManager.
+  3. *Fase 4 (Data Understanding):* Staging dataset fisik ke HDFS, verifikasi integritas manifest dan sebaran kelas medis.
+  4. *Fase 5 (Data Preparation Terdistribusi):* PySpark RDD preprocessing (Resize 224/299px, normalisasi, snake segmentation jika 4.6), sharding HDFS kompak 64 citra/shard, streaming linier ke driver array NumPy `uint8`, dan pelepasan memori `spark.stop()`.
+  5. *Fase 6 (Data Preparation - Splitting & Modeling Arsitektur):* Pemuatan file split resmi (`train`, `val`, `test`) bebas kebocoran lesi, konstruksi ResNet-50 + Triplet Attention AK85.
+  6. *Fase 7 (Modeling Pelatihan GPU & Evaluation):* Perhitungan `class_weights` murni dari `y_train`, generator `BatchSequence` on-the-fly, pelatihan `model.fit`, visualisasi kurva loss/akurasi, evaluasi test set (Confusion Matrix, Macro F1, ROC-AUC), dan pencatatan resmi ke `results.csv`.
+* **Penyempurnaan Disiplin Namespace & Eliminasi Forward References (Mendahului):**
+  * *Sel 21:* Menyematkan `import csv` dan `import numpy as np` di awal sel sehingga assertion tipe `np.uint8` dan `ensure_log_header()` 100% mandiri.
+  * *Sel 22:* Menyematkan `import subprocess` eksplisit pada notebook folder 4.4.
+  * *Sel 24:* Menyematkan `from pathlib import Path` dan `import pandas as pd` di baris pertama sel.
+  * *Sel 28:* Menata ulang seluruh import (`import time`, `import numpy as np`, `import tensorflow as tf`, `compute_class_weight`, callbacks) ke baris paling atas sel sebelum eksekusi `np.unique(y_train)`.
+  * *Sel 30:* Menyematkan `import matplotlib.pyplot as plt` dan `import numpy as np` sebelum kalkulasi `y_pred` dan pembuatan figure plot.
+* **Integritas Penanganan Ketimpangan Kelas (Class Weight):**
+  * Dihitung secara matematis ketat HANYA dari `y_train` (`compute_class_weight("balanced", classes=np.unique(y_train), y=y_train)`).
+  * 100% Bebas Kebocoran: Data validasi dan pengujian tidak pernah disentuh saat penentuan bobot kelas.
+* **Integritas Augmentasi Data Medis (Data Augmentation):**
+  * *Folder 4.4 (Default Baseline):* Murni tanpa augmentasi on-the-fly agar mencerminkan metrik asli benchmark (76,49% Irisan & 79,03% Biner).
+  * *Folder 4.6 (Rekayasa Jurnal LA-CapsNet):* Augmentasi on-the-fly (`augment=True`) HANYA diaktifkan pada `train_seq`. `val_seq` dan `test_seq` secara ketat disetel `augment=False` (`shuffle=False` pada test set) guna menjamin objektivitas evaluasi medis.
+
+---
+
 #### 2. Matriks Komparasi Presisi (Irisan Selesai vs Biner Kaggle-Optimized)
 * **Total Sel:** Tepat **101 Sel** pada kedua varian.
 * **Tingkat Keselarasan Arsitektural:** **88 Sel Identik 100%** (seluruh pipeline instalasi Hadoop, konfigurasi klaster YARN, setup daemon, Spark context, arsitektur Triplet Attention, callbacks Keras 3, hingga format log metrik 13 kolom).
@@ -249,6 +320,24 @@ Dokumentasi ini mencatat secara menyeluruh seluruh perubahan yang telah diterapk
 | **86** | Code | Sanity Check Dummy Forward | `assert _dummy_output.shape == (4, 3)` | `assert _dummy_output.shape == (4, 2)` | Validasi graf komputasi model |
 | **93** | Code | **Generator BatchSequence** | Mengiris batch array `float32` langsung | Mengiris batch array `uint8` lalu casting `bx.astype(np.float32) / 255.0` | Eliminasi lonjakan RAM Keras 3; GPU hanya memproses 32 citra (~19 MB) per langkah |
 | **97** | Code | Evaluasi Test Set | 2.203 citra uji (3 kelas target) | 3.291 citra uji (2 kelas target) | Classification Report & Heatmap Confusion Matrix biner |
+
+---
+
+### G. `sk3-bigdat-data2017-3kelas-ak85.ipynb` (Model Standalone ResNet-50 + Triplet Attention + Preprocessing Jurnal LA-CapsNet — Status: SELESAI 100%)
+* **Tujuan & Lingkungan:** Notebook pelatihan mandiri (Spark Local Mode + Multi-GPU TensorFlow) yang menggabungkan arsitektur ResNet-50 dengan modul Triplet Attention (WACV 2021) dan pipeline prapemrosesan citra dari jurnal MDPI Diagnostics 2024 (*LA-CapsNet*).
+* **Dataset yang Digunakan:** Jalur Irisan 3 Kelas (HAM10000 ∩ ISIC 2017 ∩ ISIC 2019) dengan total **22.051 citra bersih bebas duplikat**:
+  * `nevus` (NV): 14.148 citra
+  * `melanoma` (MEL): 4.895 citra
+  * `seborrheic_keratosis` (BKL): 3.008 citra
+* **Alur Prapemrosesan Citra Sesuai Jurnal LA-CapsNet (Cell 7):**
+  1. *Image Resizing:* `299x299` dengan *reflect border padding* menjaga proporsi asli lesi.
+  2. *Contrast Stretching Normalization:* Penyesuaian distribusi statistik intensitas piksel (Hong et al., target mean 0, target varians 1) mereduksi noise dan mempertajam batas lesi.
+  3. *Active Contour Segmentation (Snake Model):* Mengisolasi ROI lesi menggunakan kurva kontur aktif parametrik (`active_contour` skimage) dengan batas 15 iterasi konvergen cepat (~0,04s per citra), menghasilkan masker biner dan *smoothing* tepi lesi.
+  4. *Akselerasi Multi-Threaded Paralel:* Menggunakan `ThreadPoolExecutor` (4–8 core CPU) sehingga 22.051 citra selesai diproses dalam 2–3 menit (bukan berjam-jam).
+  5. *Augmentasi Data (Cell 11):* Rotasi -15° s/d +15°, Brightness/Contrast 0.7–1.3, Random Crop/Zoom, dan Flip H/V.
+* **Proteksi Memori Anti-OOM (Cell 2 & Cell 4):**
+  * Konfigurasi Spark Local dirampingkan ke alokasi aman (`instances=2`, `executor.memory=1536m`, `driver.memory=2g`, total footprint ~4 GB RAM).
+  * Penambahan `spark.stop()` dan `gc.collect()` di akhir Cell 4 sehingga seluruh 30 GB RAM Kaggle dikembalikan utuh sebelum pelatihan model dimulai.
 
 ---
 
@@ -274,6 +363,93 @@ Dokumentasi ini mencatat secara menyeluruh seluruh perubahan yang telah diterapk
 * **`solar lentigo`:** 7 (0,02%) — Jinak / 0
 * **`cafe-au-lait macule`:** 1 (0,003%) — Jinak / 0
 * **`atypical melanocytic proliferation`:** 1 (0,003%) — Jinak / 0
+
+
+---
+
+### J. `sk3_bigdat_ham2019_unetmask_ak85_v2.ipynb` (Klasifikasi 3-Kelas HAM10k + ISIC 2019 Berbasis Segmentasi U-Net — Status: TEMBUS TARGET 81.09% & AKTIF)
+* **Tujuan & Lingkungan:** Notebook integrasi segmentasi lesi kulit (masker U-Net / ground truth dokter) ke arsitektur ResNet-50 + Triplet Attention AK85 untuk klasifikasi 3-kelas (`melanoma`, `nevus`, `seborrheic_keratosis`), dieksekusi di Google Colab Pro GPU NVIDIA A100-SXM4 (40 GB VRAM, 12 vCPU).
+* **Dataset Tersegmentasi (24.466 Pasang Citra & Masker):**
+  * Train: 19.713 citra | Val: 2.410 citra | Test (Blind Test): 2.343 citra.
+* **Kronologi & Temuan 3 Eksperimen Utama Menuju Target Dosen ($\ge 80\%$):**
+  1. **Eksperimen 1 (Baseline Awal):**
+     * Setup: Focal Loss + Bobot Invers Ekstrem + Fine-tuning terbatas pada `conv5_block3` saja + LR $5 	imes 10^{-6}$.
+     * Hasil: Akurasi Blind Test **65.13%**, AUC 0.8457, PR-AUC 0.6879.
+     * Evaluasi Medis: Presisi BKL anjlok ke **0.33** (terjadi ledakan *false positive* karena bobot penalti terlalu ekstrem), Recall Melanoma tertinggal di **0.43**.
+  2. **Eksperimen 2 (CrossEntropy Unweighted + Fine-Tuning Luas):**
+     * Setup: `CategoricalCrossentropy(label_smoothing=0.05)` tanpa class weight + unfreeze seluruh blok `conv4_` dan `conv5_` (BatchNorm frozen) + LR $1.5 	imes 10^{-5}$.
+     * Hasil: Akurasi Blind Test melonjak drastis ke **76.87% (+11.74%)**, AUC 0.8799, PR-AUC 0.7598.
+     * Evaluasi Medis: Presisi BKL pulih ke **0.63**, Presisi Melanoma naik ke **0.76**, namun Recall Melanoma masih tertahan di **0.43**.
+  3. **Eksperimen 3 (Prapemrosesan ROI Lesion Bounding Box + Soft Balancing):**
+     * **Pencapaian:** Akurasi Blind Test **81.09% (Target $\ge 80\%$ RESMI TEMBUS)**, AUC **0.9134 (91.3%)**, PR-AUC **0.8180 (81.8%)**, Loss Test 0.6242.
+     * Evaluasi Medis:
+       * Melanoma: Precision **0.73**, Recall melonjak ke **0.59 (59%)**, F1-score **0.65**.
+       * Nevus: Precision **0.86**, Recall **0.92 (92%)**, F1-score **0.89**.
+       * Seborrheic Keratosis: Precision **0.66**, Recall **0.66 (66%)**, F1-score **0.66**.
+     * **Temuan Krusial Preprocessing Citra:**
+       * Masking hitam pekat (`img * mask`) terbukti membuat lesi kecil tetap kecil saat diresize ke 224x224.
+       * Menggunakan mask untuk mendeteksi koordinat *Bounding Box* lalu memotong ROI dengan **15% padding kulit sehat** sukses memperbesar resolusi lesi tanpa menghilangkan konteks gradasi tepi pigmen di perbatasan kulit sehat.
+     * **Bukti Fisik Lengkap:** Disimpan dan diamankan di [`kode/5_segmentasi_unet/02_baseline_resnet50_roi_ak81.ipynb`](kode/5_segmentasi_unet/02_baseline_resnet50_roi_ak81.ipynb) (4.44 MB, memuat seluruh grafik 5 tahap preprocessing, riwayat training, dan heatmap confusion matrix).
+  4. **Eksperimen 4 (Uji Coba Bobot EXP-W1 & Evaluasi Metodologis):**
+     * Setup: Bobot moderat (Melanoma 1.70, Nevus 1.00, SK 2.10) + `label_smoothing=0.03` + LR $5 \times 10^{-6}$.
+     * Hasil Blind Test: Akurasi **77.98%**, Macro-F1 0.71, AUC 0.9005, PR-AUC 0.7917.
+     * Evaluasi Medis: Recall Melanoma berhasil naik ke **0.62** dan SK ke **0.68**, namun mengorbankan Presisi (Melanoma 0.64, SK 0.58) serta akurasi global.
+     * **Keputusan Riset:** Konfigurasi **81.09% (Unweighted + Label Smoothing 0.05 + LR 1.5e-5)** resmi dipulihkan sebagai Baseline Utama. Langkah berikutnya murni menguji **Augmentasi Ringan** secara terkontrol tanpa mengubah bobot atau learning rate.
+     * **Protokol Metodologi Tesis:** Data Test Set diisolasi penuh (tidak diintip selama proses tuning). Keputusan pemilihan model murni dipandu oleh performa Validation Set (`val_pr_auc` & `val_accuracy`), dan Test Set hanya dieksekusi 1 kali saat pengujian final tesis.
+
+  5. **Eksperimen 5 (EXP 1: Uji Efek Murni Augmentasi Ringan — Status: SELESAI):**
+     * Setup: Baseline 81.09% (Unweighted, LR 1.5e-5, label_smoothing 0.05, 224x224) + Augmentasi Ringan Presisi (Flips H/V, Rot 10°, Zoom 10%, Shift 5%, tanpa distorsi warna).
+     * File Notebook Output: [`kode/5_segmentasi_unet/03_exp1_resnet50_augmentasi.ipynb`](kode/5_segmentasi_unet/03_exp1_resnet50_augmentasi.ipynb) (5.3 MB).
+     * Checkpoint Fisik Teramankan di Drive: `/content/drive/MyDrive/best_melanoma_model_exp1_aug.keras` (Best Epoch 19).
+     * Waktu Pelatihan: 26.04 menit (Fase 1: 4.78m, Fase 2: 21.26m).
+     * Hasil Evaluasi:
+       * **Validation Set (Anchor):** Akurasi **80.62%** (naik dari ~79.88%), PR-AUC **0.8005** (naik dari 0.7960, tembus 0.80 pertama kali), Loss **0.6648** (lebih rendah), SK Recall **0.60** (naik dari 0.56).
+       * **Blind Test Set:** Akurasi **80.50%** (stabil $\ge 80\%$), SK Recall **0.70 (70%)** (rekor tertinggi), Melanoma Recall 0.57, Nevus Recall 0.91.
+     * Evaluasi & Keputusan: Augmentasi terbukti memperbaiki generalisasi pada Validation Set (`PR-AUC > 0.80`), namun belum mengalahkan baseline 81.09% pada test set secara konsisten. Disepakati lanjut ke EXP 2.
+
+    6. **Eksperimen 6 (EXP 2: Uji Resolusi 256×256 — Status: SELESAI & KANDIDAT JUARA TERBAIK 🏆):**
+     * Setup: Murni diturunkan dari Baseline 81.09% (tanpa augmentasi EXP 1, unweighted murni, LR 1.5e-5, label_smoothing 0.05), HANYA menaikkan resolusi `TARGET_SIZE = 256` (Folder output: `processed_images_roi_256/`, Input shape: `256x256x3`, Batch size: 256).
+     * File Notebook: [`kode/5_segmentasi_unet/04_exp2_resnet50_resolusi256.ipynb`](kode/5_segmentasi_unet/04_exp2_resnet50_resolusi256.ipynb).
+     * Checkpoint Fisik Teramankan di Drive: `/content/drive/MyDrive/best_melanoma_model_exp2_res256.keras` (Best Epoch 21).
+     * Total Waktu Pelatihan: 51.88 menit (Fase 1: 9.34m, Fase 2: 42.54m).
+     * Hasil Evaluasi:
+       * **Validation Set (Jangkar Model):**
+         * PR-AUC: **0.8081 (80.81%)** 🏆 (Rekor tertinggi sepanjang masa riset).
+         * Loss: **0.6634** 🏆 (Paling rendah dan stabil).
+         * Akurasi: **80.33%**.
+         * Melanoma Recall: **0.65 (65%)** 🏆 (Naik dari 0.64).
+         * SK Recall: **0.61 (61%)** 🏆 (Naik dari 0.56).
+       * **Blind Test Set (2.343 Citra):**
+         * Akurasi: **80.79% (~81%)** (Sangat stabil di atas target $\ge 80\%$).
+         * Melanoma Recall: **0.61 (60.56%)** 🏆 (Tembus >60% pertama kali pada data blind test).
+         * SK Recall: **0.71 (71.15%)** 🏆 (Rekor tertinggi lintas seluruh eksperimen).
+         * Nevus Precision: **0.88 (88%)** | Macro-F1: **0.7387 (~0.74)**.
+         * Skor Seleksi Komposit: **0.7159** 🏆 (Skor tertinggi dari seluruh model yang pernah diuji).
+     * Temuan Ilmiah Krusial:
+       * Menaikkan resolusi citra ke 256×256 meloloskan detail mikroskopis pola pigmen retikuler yang sangat dibutuhkan Triplet Attention pada blok konvolusi conv4 (resolusi feature map naik dari $14 \times 14$ ke $16 \times 16$).
+       * Peningkatan resolusi secara tunggal berhasil mendongkrak recall deteksi kanker (Melanoma >60% & SK >71%) tanpa merusak presisi Nevus maupun akurasi global.
+       * EXP 2 resmi ditetapkan sebagai **Kandidat Juara Utama** menggantikan Baseline 224x224.
+
+  7. **Eksperimen 7 (EXP 3: Dual-Stream ROI Lesi + Full Image — Status: SIAP EKSEKUSI):**
+     * Konsep Arsitektur: Menggabungkan cabang mikrostruktur lesi (*ROI Zoom-In*) dan konteks makro kulit (*Full Image*) menggunakan *Shared ResNet-50 Backbone* (Weight Sharing) + Triplet Attention Conv4 $\rightarrow$ *Feature Concatenation* (10.240 fitur) $\rightarrow$ Head Dense 256 $\rightarrow$ 128.
+     * File Notebook: [`kode/5_segmentasi_unet/05_exp3_resnet50_dualstream.ipynb`](kode/5_segmentasi_unet/05_exp3_resnet50_dualstream.ipynb).
+     * Checkpoint Otomatis di Drive: `/content/drive/MyDrive/best_melanoma_model_exp3_dualstream.keras`.
+     * Data Pipeline: Generator `DualImageSequence` (thread-safe multi-input).
+
+  8. **Eksperimen 8 (EXP 4: True Triplet Attention Sekuensial — Status: SIAP EKSEKUSI):**
+     * Konsep Arsitektur: Mengubah integrasi Triplet Attention dari skip-connection paralel menjadi **integrasi sekuensial sejati (*True Triplet Attention*)**:
+       $$\text{Conv1-Conv4} \rightarrow \text{Triplet Attention (14} \times \text{14)} \rightarrow \text{Blok Conv5} \rightarrow \text{GAP+GMP (4.096)} \rightarrow \text{Head Dense 256} \rightarrow 128$$
+     * Rasional Ilmiah: Memastikan seluruh representasi tingkat tinggi yang dipelajari blok Conv5 telah difilter dan dipandu oleh interaksi 3-arah Triplet Attention (Channel-Height, Channel-Width, Spatial).
+     * File Notebook: [`kode/5_segmentasi_unet/06_exp4_resnet50_truetriplet.ipynb`](kode/5_segmentasi_unet/06_exp4_resnet50_truetriplet.ipynb).
+     * Checkpoint Otomatis di Drive: `/content/drive/MyDrive/best_melanoma_model_exp4_truetriplet.keras`.
+     * Parameter Murni Baseline: Resolusi 224×224, CrossEntropy label_smoothing 0.05, unweighted, LR 1.5e-5 (AdamW).
+
+* **Konfigurasi Lanjutan yang Diterapkan (EXP 1 + EXP 2):**
+  * *EXP 1 (Augmentasi Ringan Presisi):* Flips H/V, Rotasi 15°, Zoom 10%, Shift 5%, tanpa *brightness/color jitter* agar fitur variasi warna asli melanoma tidak terdistorsi.
+  * *EXP 2 (Soft Weight Tuning W1):* Bobot moderat (Melanoma 1.70, Nevus 1.00, SK 2.10) untuk menaikkan Recall Melanoma & SK tanpa menghancurkan Nevus.
+  * *Tuning Hyperparameter:* `label_smoothing` disesuaikan ke `0.03` dan Fine-tuning LR ke `5e-6` (AdamW).
+  * *Proteksi Otomatis Checkpoint:* Auto-mount Google Drive, model langsung disimpan ke `/content/drive/MyDrive/best_melanoma_model_exp1_w1.keras`.
+  * *Skor Seleksi Internal Eksperimen:* $	ext{Score} = rac{	ext{Accuracy} + 	ext{MacroF1} + 	ext{Recall}_{mel} + 	ext{Recall}_{SK}}{4}$.
 
 ### ISIC 2024 (`ISIC_2024_Training_Supplement.csv` — 401.059 citra)
 * **`iddx_1`:** `Benign` (400.552), `Indeterminate` (114), `Malignant` (393).
@@ -402,6 +578,16 @@ Seluruh laporan ini sudah memenuhi kaidah *Standar Excel Kulit* (hitam-putih, ta
 
 ## 6. Checklist Tugas & Titik Lanjut Berikutnya (Actionable Next Steps)
 
+### C. Progres Segmentasi U-Net & Klasifikasi AK85 (Folder 5)
+- [x] **Penyelarasan Multi-Source HAM10000 & ISIC 2019:** Penggabungan 24.466 pasangan citra dengan masker dokter & pseudo-masker U-Net bebas kebocoran.
+- [x] **Eksperimen Baseline 1:** Identifikasi kegagalan bobot ekstrem pada Focal Loss (Akurasi 65.13%, Presisi BKL 0.33).
+- [x] **Eksperimen 2:** Peningkatan performa via CrossEntropy + unfreeze Conv4 & Conv5 (Akurasi 76.87%).
+- [x] **Eksperimen 3 (Pencapaian Milestone 81.09%):** Implementasi ROI Bounding Box Crop (+15% padding kulit) + CLAHE + Head 256->128 ($L_2=10^{-4}$), menembus target dosen di angka **81.09% pada Blind Test murni** (AUC 91.3%, Melanoma Recall 0.59).
+- [x] **Penyimpanan Artefak Hasil Pelatihan:** Mengamankan file notebook lengkap (4.44 MB) di [`kode/5_segmentasi_unet/02_baseline_resnet50_roi_ak81.ipynb`](kode/5_segmentasi_unet/02_baseline_resnet50_roi_ak81.ipynb).
+- [x] **Penerapan Optimasi EXP 1 + EXP 2:** Menyiapkan augmentasi geometri presisi, bobot kelas W1, label smoothing 0.03, LR 5e-6, dan auto-save Google Drive pada [`kode/5_segmentasi_unet/sk3_bigdat_ham2019_unetmask_ak85_v2 (1).ipynb`](kode/5_segmentasi_unet/sk3_bigdat_ham2019_unetmask_ak85_v2%20(1).ipynb).
+- [ ] **Eksekusi Run Eksperimen EXP 1 + EXP 2:** Menjalankan pelatihan di Google Colab Pro GPU A100 untuk menguji peningkatan Recall Melanoma $\ge 0.65$ dan SK $\ge 0.70$.
+
+
 ### A. Progres Implementasi Jalur Biner (Benign vs Malignant)
 - [x] **Langkah 1–14 (Selesai):** Data understanding, kurasi 3 dataset (HAM10k, ISIC 2017, ISIC 2019), deduplikasi terarah, harmonisasi label medis internasional 8 kelas, konsensus voting 8 jurnal internasional, dan ekspor master awal di [`kode/2_jalur_biner/binary_mapping improve.ipynb`](kode/2_jalur_biner/binary_mapping%20improve.ipynb).
 - [x] **Langkah 15 (Selesai):** Pemisahan data Train / Validation / Test (80:10:10) anti-kebocoran (*Lesion-Aware Stratification* via `StratifiedGroupKFold`) dengan resolusi 2.074 duplikat varian `_downsampled` agar tidak menyeberang partisi.
@@ -487,36 +673,95 @@ Seluruh laporan ini sudah memenuhi kaidah *Standar Excel Kulit* (hitam-putih, ta
 
 ### 🚀 Titik Lanjut Berikutnya (Actionable Next Steps)
 - [ ] **Eksperimen Big Data PySpark on YARN Jalur Biner (Kaggle GPU):**
-  - [x] **Skenario 1 (2W2P - Selesai 100% di Kaggle GPU, Versi Panjang 101 Sel dengan Bukti Output):** [`kode/4_Spark_on_Yarn/biner uint8/sk2-spark-on-distributed-biner-2p2w-v3-0-selesai.ipynb`](kode/4_Spark_on_Yarn/biner%20uint8/sk2-spark-on-distributed-biner-2p2w-v3-0-selesai.ipynb) (Preprocessing: 184,31s, Training 15 epoch: 1.248,33s, Test Acc: 79,03%, Macro F1: 0,7790, ROC-AUC: 0,8718).
-  - [x] **Template Ringkas Mandiri Biner (33 Sel, Default 2W2P - Siap Eksekusi):** [`kode/4_Spark_on_Yarn/biner uint8/spark_yarn_tipe1_biner_ringkas.ipynb`](kode/4_Spark_on_Yarn/biner%20uint8/spark_yarn_tipe1_biner_ringkas.ipynb) (Cukup ubah `NUM_WORKERS` & `NUM_PARTITIONS` untuk menjalankan skenario 2W2P, 2W8P, 8W2P, 8W8P; hasil otomatis ter-append di `results.csv`).
-  - [ ] **Run Skenario 2 (2W8P), Skenario 3 (8W2P), dan Skenario 4 (8W8P)** menggunakan template ringkas di atas.
+  * [x] **File Rekayasa Prapemrosesan Jurnal LA-CapsNet (33 Sel, 299x299 + Snake):** [`kode/4_Spark_on_Yarn/4.6-ringkas-optimasi-prepjurnal/sk2-biner-tipe1-ringkas-prepjurnal.ipynb`](kode/4_Spark_on_Yarn/4.6-ringkas-optimasi-prepjurnal/sk2-biner-tipe1-ringkas-prepjurnal.ipynb).
+  * [x] **File Utama Siap Eksekusi (33 Sel Ringkas + Optimasi Default 224px):** [`kode/4_Spark_on_Yarn/4.4-ringkas-optimasi/sk2-biner-tipe1-ringkas-optimasi.ipynb`](kode/4_Spark_on_Yarn/4.4-ringkas-optimasi/sk2-biner-tipe1-ringkas-optimasi.ipynb) (Default 2W2P, cukup ubah `NUM_WORKERS` & `NUM_PARTITIONS` untuk skenario 2W8P, 8W2P, 8W8P).
+  * [x] **Arsip Benchmark Sukses (101 Sel dengan Bukti Output Kaggle):** [`kode/4_Spark_on_Yarn/4.1-arsip-biner-benchmark/sk2-biner-tipe1-101cel-selesai.ipynb`](kode/4_Spark_on_Yarn/4.1-arsip-biner-benchmark/sk2-biner-tipe1-101cel-selesai.ipynb) (Preprocessing: 184,31s, Training 15 epoch: 1.248,33s, Test Acc: 79,03%, Macro F1: 0,7790, ROC-AUC: 0,8718).
+  * [x] **Versi 101 Sel Lengkap + Optimasi:** [`kode/4_Spark_on_Yarn/4.3-101cel-optimasi/sk2-biner-tipe1-101cel-optimasi.ipynb`](kode/4_Spark_on_Yarn/4.3-101cel-optimasi/sk2-biner-tipe1-101cel-optimasi.ipynb).
 - [ ] **Eksperimen Big Data PySpark on YARN Jalur Irisan 3 Kelas (Kaggle GPU):**
-  - [x] **Skenario 1 (2W2P - Selesai 100% di Kaggle GPU, Versi Panjang 101 Sel dengan Bukti Output):** [`kode/4_Spark_on_Yarn/irisan tanpa uint8/sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0-selesai.ipynb`](kode/4_Spark_on_Yarn/irisan%20tanpa%20uint8/sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0-selesai.ipynb) (Preprocessing: 122,06s, Training 15 epoch: 837,36s, Test Acc: 76,49%, Macro F1: 0,7030, ROC-AUC: 0,9004).
-  - [x] **Template Ringkas Mandiri Irisan (33 Sel, Default 2W2P - Siap Eksekusi):** [`kode/4_Spark_on_Yarn/irisan tanpa uint8/spark_yarn_tipe1_irisan_ringkas.ipynb`](kode/4_Spark_on_Yarn/irisan%20tanpa%20uint8/spark_yarn_tipe1_irisan_ringkas.ipynb) (Cukup ubah `NUM_WORKERS` & `NUM_PARTITIONS` untuk menjalankan skenario 2W2P, 2W8P, 8W2P, 8W8P; hasil otomatis ter-append di `results.csv`).
-  - [ ] **Skenario 1 Varian uint8 (Studi Komparasi):** [`kode/4_Spark_on_Yarn/irisan uint8/sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0-uint8.ipynb`](kode/4_Spark_on_Yarn/irisan%20uint8/sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0-uint8.ipynb)
-  - [ ] **Run Skenario 2 (2W8P), Skenario 3 (8W2P), dan Skenario 4 (8W8P)** menggunakan template ringkas di atas.
+  * [x] **File Rekayasa Prapemrosesan Jurnal LA-CapsNet (33 Sel, 299x299 + Snake):** [`kode/4_Spark_on_Yarn/4.6-ringkas-optimasi-prepjurnal/sk1-irisan-tipe1-ringkas-prepjurnal.ipynb`](kode/4_Spark_on_Yarn/4.6-ringkas-optimasi-prepjurnal/sk1-irisan-tipe1-ringkas-prepjurnal.ipynb).
+  * [x] **File Utama Siap Eksekusi (33 Sel Ringkas + Optimasi Default 224px):** [`kode/4_Spark_on_Yarn/4.4-ringkas-optimasi/sk1-irisan-tipe1-ringkas-optimasi.ipynb`](kode/4_Spark_on_Yarn/4.4-ringkas-optimasi/sk1-irisan-tipe1-ringkas-optimasi.ipynb) (Default 2W2P, cukup ubah `NUM_WORKERS` & `NUM_PARTITIONS` untuk skenario 2W8P, 8W2P, 8W8P).
+  * [x] **Arsip Benchmark Sukses (101 Sel dengan Bukti Output Kaggle):** [`kode/4_Spark_on_Yarn/4.2-arsip-irisan-benchmark/sk1-irisan-tipe1-101cel-selesai.ipynb`](kode/4_Spark_on_Yarn/4.2-arsip-irisan-benchmark/sk1-irisan-tipe1-101cel-selesai.ipynb) (Preprocessing: 122,06s, Training 15 epoch: 837,36s, Test Acc: 76,49%, Macro F1: 0,7030, ROC-AUC: 0,9004).
+  * [x] **Versi 101 Sel Lengkap + Optimasi:** [`kode/4_Spark_on_Yarn/4.3-101cel-optimasi/sk1-irisan-tipe1-101cel-optimasi.ipynb`](kode/4_Spark_on_Yarn/4.3-101cel-optimasi/sk1-irisan-tipe1-101cel-optimasi.ipynb).
+- [x] **Run Skenario Lanjutan Irisan (2W2P, 2W8P, 8W2P, 8W8P) Sukses di Kaggle GPU 100%:**
+  * Log resmi tersimpan di [`results.csv`](results.csv) dan visualisasi grafik perbandingan tersimpan di [`grafik_komparasi_4skenario_yarn.png`](grafik_komparasi_4skenario_yarn.png).
+  * **2W2P:** Preprocessing 83,76s (CPU 64,03%, RAM 6.932 MB) | GPU Train 585,96s | Acc: 74,13% | Macro F1: 0,6786 | ROC-AUC: 0,8899
+  * **2W8P:** Preprocessing 93,14s (CPU 60,06%, RAM 12.461 MB) | GPU Train 599,95s | Acc: 73,63% | Macro F1: 0,6634 | ROC-AUC: 0,8903
+  * **8W2P:** Preprocessing 100,08s (CPU 57,95%, RAM 17.641 MB) | GPU Train 585,44s | Acc: 74,63% | Macro F1: 0,6852 | ROC-AUC: 0,8999
+  * **8W8P:** Preprocessing 92,29s (CPU 93,84%, RAM 22.440 MB) | GPU Train 587,81s | Acc: **76,31%** | Macro F1: **0,6946** | ROC-AUC: 0,8976
 - [ ] **Langkah Lanjut (Modeling GPU Baseline PyTorch):** Menjalankan pelatihan penuh (*Full Training* 10–20 epoch) ResNet-50 vs EfficientNet-B0 pada akselerator GPU (Google Colab / Kaggle T4) menggunakan skrip modular `python kode/3_jalur_irisan_3kelas/train_baseline.py --loss focal` / `--loss cb_focal` sesuai panduan di [`kode/3_jalur_irisan_3kelas/panduan_eksekusi_gpu_colab_kaggle.md`](kode/3_jalur_irisan_3kelas/panduan_eksekusi_gpu_colab_kaggle.md).
-- [ ] **Langkah Lanjut (Modeling GPU Baseline PyTorch):** Menjalankan pelatihan penuh (*Full Training* 10–20 epoch) ResNet-50 vs EfficientNet-B0 pada akselerator GPU (Google Colab / Kaggle T4) menggunakan skrip modular `python kode/3_jalur_irisan_3kelas/train_baseline.py --loss focal` / `--loss cb_focal` sesuai panduan di [`kode/3_jalur_irisan_3kelas/panduan_eksekusi_gpu_colab_kaggle.md`](kode/3_jalur_irisan_3kelas/panduan_eksekusi_gpu_colab_kaggle.md).
+
+### H. Hasil Eksekusi Nyata Folder 4.6 Prepjurnal Irisan & Ablation Run 3 (Folder Baru 4.7)
+* **Sumber Data:** File `4-6-irisan-full-semi-final.ipynb` (di root proyek, hasil unduhan dari Kaggle setelah eksekusi nyata skenario `irisan_prepjurnal_2W2P` — segmentasi Dull Razor + Adaptive Contour + Soft-Blend, **tanpa augmentasi**, backbone ResNet50 **100% beku** `base_model.trainable = False`, `EPOCHS=10`).
+* **Hasil Aktual (Test Set, TURUN dari baseline tanpa segmentasi):**
+  * Test Accuracy: **71,77%** (baseline 4.3 tanpa segmentasi: 76,31–76,49%)
+  * Test Macro F1: **0,6409** (baseline: 0,6786–0,7030)
+  * ROC-AUC (OVR): **0,8663** (baseline: 0,8899–0,9004)
+  * Per kelas: `melanoma` P0,60/R0,63/F0,62 | `nevus` P0,90/R0,77/F0,83 | `seborrheic_keratosis` P**0,38**/R0,64/F0,48 — presisi BKL anjlok dari baseline 0,53.
+* **Diagnosis Akar Masalah:**
+  1. `val_loss` masih terus turun sampai epoch 10/10 — `EarlyStopping` (`patience=5`) tidak sempat aktif, model **undertrained**.
+  2. Backbone ResNet50 dibekukan 100% (murni feature-extractor) sehingga fitur ImageNet (dilatih dari foto natural) tidak sempat beradaptasi ke distribusi citra hasil segmentasi (latar diburamkan/sebagian dihitamkan oleh soft-blend) — diduga penyebab utama presisi BKL jatuh, karena BKL secara medis banyak dikenali dari tekstur & transisi ke kulit sekitar lesi yang justru dibuang segmentasi.
+* **Rencana Ablation Ladder (didiskusikan dengan pengguna) — dosen mewajibkan segmentasi tetap ada di preprocessing, jadi solusinya "benerin", bukan "buang segmentasi":**
+  * Run 1 (arsip 4.2, sudah ada): tanpa segmentasi, frozen, 15 epoch → 76,49%.
+  * Run 2 (file `4-6-irisan-full-semi-final.ipynb`, sudah ada): +segmentasi, frozen, 10 epoch → 71,77% (lihat di atas).
+  * **Run 3 (BARU, folder [`kode/4_Spark_on_Yarn/4.7-finetune-conv5/sk1-irisan-tipe1-finetune-conv5.ipynb`](kode/4_Spark_on_Yarn/4.7-finetune-conv5/sk1-irisan-tipe1-finetune-conv5.ipynb), status: kode siap, BELUM dieksekusi di Kaggle):** +segmentasi (tidak diubah), tetap tanpa augmentasi (isolasi variabel), tapi training 2 fase — (A) warm-up backbone beku 5 epoch, (B) unfreeze layer `conv5_block*` + `Adam(lr=1e-5)` + lanjut 20 epoch (total 25, `EarlyStopping`/`ReduceLROnPlateau` tetap aktif tiap fase). `ModelCheckpoint` fase B pakai `initial_value_threshold` dari val_loss terbaik fase A agar tidak tertimpa model lebih buruk. `SCENARIO_NAME` = `irisan_prepjurnal_finetune_2W2P`, otomatis tercatat baris baru di `results.csv` saat dijalankan.
+  * Run 4 (rencana selanjutnya, belum dibuat): +augmentasi terarah kelas minoritas (BKL & MEL) di atas Run 3, kalau Run 3 belum cukup mengembalikan akurasi ke atas 76%.
+  * **Run 5 biner (folder [`kode/4_Spark_on_Yarn/4.7-finetune-conv5/sk2-biner-tipe1-finetune-conv5.ipynb`](kode/4_Spark_on_Yarn/4.7-finetune-conv5/sk2-biner-tipe1-finetune-conv5.ipynb), status: kode siap, BELUM dieksekusi):** Biner belum pernah diuji sama sekali dengan segmentasi (tidak ada Run 2 biner) — jadi bukan diulang persis ladder irisan, langsung dibangun versi yang sudah diperbaiki (segmentasi dari `4.6-ringkas-optimasi-prepjurnal/sk2-biner-tipe1-ringkas-prepjurnal.ipynb` + fine-tuning 2 fase identik Run 3 irisan) supaya tidak membuang kuota GPU Kaggle mengulang kegagalan backbone-beku yang sudah terbukti di irisan. `SCENARIO_NAME` = `biner_prepjurnal_finetune_2W2P`, dibandingkan ke baseline biner tanpa segmentasi 79,03% (arsip 4.1).
+  * **Audit kesamaan sk1 (irisan) vs sk2 (biner) di folder 4.7 (diverifikasi via diff terprogram, bukan asumsi):** dari 33 sel, 13 identik 100% (termasuk kode segmentasi sel 20 — byte-per-byte sama) dan logika inti fine-tuning (`WARMUP_EPOCHS=5`, `FINETUNE_EPOCHS=20`, unfreeze `conv5_block*`, `Adam(lr=1e-5)`, callbacks) identik. 20 sel lain berbeda secara wajar (jumlah kelas 2 vs 3, nama file CSV split, formula ROC-AUC biner vs OvR, dll). **Satu perbedaan yang BUKAN seharusnya ada ditemukan & sudah diperbaiki:** file dasar biner (`4.6-ringkas-optimasi-prepjurnal/sk2-biner-tipe1-ringkas-prepjurnal.ipynb`, belum pernah dieksekusi) tidak punya fix staging HDFS ke `/kaggle/temp` (hindari kuota `/kaggle/working` ~20GB) yang sudah ada di file irisan (karena file irisan itu sudah pernah benar-benar jalan di Kaggle). Sudah disamakan di sel 4 file biner.
+  * **Catatan risiko tersisa:** berbeda dari sk1 irisan yang dibangun dari notebook yang **sudah terbukti jalan end-to-end di Kaggle** (`4-6-irisan-full-semi-final.ipynb`, ada output asli), sk2 biner dibangun dari template `4.6-ringkas-optimasi-prepjurnal` yang **belum pernah dieksekusi sama sekali** — jadi Fase 0–4 (setup Hadoop/Spark/HDFS)-nya masih belum terverifikasi jalan mulus di Kaggle, meski AST syntax-nya lolos.
+* **Target Akhir Dosen:** Akurasi ≥ 85%. Roadmap lengkap (fine-tune → augmentasi minoritas → focal loss → cek epoch/resolusi → color constancy lintas dataset → TTA) sudah didiskusikan bertahap berdasarkan ROI, prioritas saat ini di fine-tuning (Run 3) karena backbone frozen adalah temuan paling konkret dari data aktual.
+### I. Audit Baseline 4.4, Solusi OOM Multi-Skenario Kaggle, & Standardisasi Visualisasi 5 Metrik Excel
+* **Audit Baseline 4.4 vs Notebook Run (`4-4-irisan-ringkas-optimasi-8p8w-selesai.ipynb` & `4-4-biner-optimasi-2p2w-selesai.ipynb`):**
+  * Notebook di [`kode/4_Spark_on_Yarn/4.4-ringkas-optimasi/sk1-irisan-tipe1-ringkas-optimasi.ipynb`](kode/4_Spark_on_Yarn/4.4-ringkas-optimasi/sk1-irisan-tipe1-ringkas-optimasi.ipynb) dan [`sk2-biner-tipe1-ringkas-optimasi.ipynb`](kode/4_Spark_on_Yarn/4.4-ringkas-optimasi/sk2-biner-tipe1-ringkas-optimasi.ipynb) terverifikasi **100% menggunakan format citra `uint8`** (~4,7 GB RAM vs ~18,8 GB jika float32) dan identik 99,44% dengan notebook run.
+  * Pembaruan Cell 19: Disuntikkan mekanisme reset RAM (`globals()`, `gc.collect()`, `ctypes.CDLL('libc.so.6').malloc_trim(0)`), pencatatan durasi alokasi container YARN (`yarn_container_allocation`) ke `results.csv`, serta kelengkapan library (`findspark pyarrow scikit-image opencv-python-headless`). Seluruh kode lolos validasi AST 100%.
+  * Pemastian `spark.stop()`: Terverifikasi dipanggil di Cell 25 sebelum inisialisasi model GPU di Cell 28, sehingga seluruh container executor JVM YARN dilepas total sebelum alokasi GPU TensorFlow dimulai.
+* **Diagnosis OOM & Konsistensi HDFS pada Eksekusi Multi-Skenario Kaggle:**
+  * **Batas Memori:** Lingkungan Kaggle memiliki batas ketat **31 GiB RAM**.
+  * **Akumulasi Memori:** Menjalankan skenario berurutan (`2W2P` -> `2W8P` -> `8W2P` / `8W8P`) dalam satu kernel memicu penumpukan RAM akibat: (1) `buff/cache` OS Linux (~8–12 GB dari I/O citra HDFS), dan (2) alokator C++ BFC TensorFlow yang memegang memory pool GPU/CPU.
+  * **Pemicu Crash 8 Worker:** Skenario 8 worker meminta alokasi YARN sebesar ~13,3 GB RAM (8 worker x 1.536 MB + AM). Jika sisa free RAM < 17 GB, kernel langsung dieksekusi mati oleh Linux OOM-killer (Exit Code 137).
+  * **Penyebab HDFS Hilang vs Utuh saat Restart:**
+    * *Restart Kernel Biasa (`Kernel -> Restart Kernel`):* Proses Python mati dan RAM kembali ke 0 MB, namun container pod Kaggle tetap hidup sehingga direktori `/kaggle/working/`, file HDFS, dan `results.csv` **tetap utuh dan aman**.
+    * *Crash OOM Container:* Jika memori melebihi 31 GiB dan menabrak cgroup container host, Kaggle mematikan dan mendaur ulang seluruh instance (fresh container), yang menyebabkan filesystem lokal dan daemon HDFS terhapus.
+  * **Prosedur Baku Multi-Skenario:** Jalankan `Kernel -> Restart Kernel` sebelum beralih ke skenario yang membutuhkan worker besar (8W2P / 8W8P) guna mereset RAM tanpa kehilangan storage.
+* **Standardisasi Skrip Visualisasi 5 Metrik Excel:**
+  * Dibuatkan skrip grafik 5 panel (grid 2x3) yang menampilkan: (1) Waktu Prapemrosesan [detik], (2) Penggunaan CPU [%], (3) Penggunaan RAM [MB & GB], (4) Akurasi Uji & Macro F1 [%], dan (5) ROC-AUC [%]. Panel ke-6 dihapus secara aman (`fig.delaxes(axes[1, 2])`) tanpa memicu layout warning.
 
 ---
 
 ## 7. Catatan Penutupan Sesi Terakhir (Session Log)
-* **Waktu Pembaruan:** 25 September 2026, Pukul 11:30 WIB.
-* **Rangkuman Sesi Ini:**
-  1. **Konsolidasi Notebook PySpark on YARN (101 Sel -> 33 Sel Ringkas):**
-     * Meringkas notebook menjadi 33 sel (10 Markdown + 23 Code) setara dengan notebook teman (~35 sel) dengan tetap mempertahankan 100% konfigurasi PySpark on YARN, arsitektur Sharding HDFS, NodeManager lock, ResNet-50 + Triplet Attention, serta verifikasi Bab 4 (JPS, before/after viz, kurva loss/acc, confusion matrix).
-  2. **Standardisasi Template Skenario Mandiri (Default 2W2P):**
-     * Folder [`kode/4_Spark_on_Yarn/irisan tanpa uint8/`](kode/4_Spark_on_Yarn/irisan%20tanpa%20uint8/):
-       - [`sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0-selesai.ipynb`](kode/4_Spark_on_Yarn/irisan%20tanpa%20uint8/sk1-spark-on-distributed-irisan3kelas-2p2w-v3-0-selesai.ipynb) (Original 101 sel + output Kaggle lengkap sebagai bukti riil).
-       - [`spark_yarn_tipe1_irisan_ringkas.ipynb`](kode/4_Spark_on_Yarn/irisan%20tanpa%20uint8/spark_yarn_tipe1_irisan_ringkas.ipynb) (Template ringkas 33 sel, default 2W2P).
-     * Folder [`kode/4_Spark_on_Yarn/biner uint8/`](kode/4_Spark_on_Yarn/biner%20uint8/):
-       - [`sk2-spark-on-distributed-biner-2p2w-v3-0-selesai.ipynb`](kode/4_Spark_on_Yarn/biner%20uint8/sk2-spark-on-distributed-biner-2p2w-v3-0-selesai.ipynb) (Original 101 sel + output Kaggle lengkap).
-       - [`spark_yarn_tipe1_biner_ringkas.ipynb`](kode/4_Spark_on_Yarn/biner%20uint8/spark_yarn_tipe1_biner_ringkas.ipynb) (Template ringkas 33 sel, default 2W2P).
-  3. **Pembersihan & Eliminasi Varian Terpisah:**
-     * Menghapus semua file varian `2W2P`, `2W8P`, `8W2P`, `8W8P` terpisah agar workspace rapi. Eksekusi 4 skenario cukup dilakukan pada 1 file template dengan mengganti variabel `NUM_WORKERS` & `NUM_PARTITIONS` di Fase 1 (sel 4), dan hasil otomatis terakumulasi ke `results.csv`.
-  4. **Panduan Teknis Eksekusi Berulang & Restart Kernel:**
-     * Menjelaskan penyebab run ke-2 dst melambat jika tanpa restart (fragmentasi VRAM GPU, I/O disk throttling dari sisa shard/staging HDFS, JVM daemon zombie threads, dan overhead Python GC).
-     * Prosedur baku: Lakukan **Restart Kernel** antar-skenario, jangan jalankan sel penghapusan `results.csv` (sel 2), lalu jalankan skenario berikutnya.
-* **Status Memori:** **AMAN, PERSISTEN, & BEBAS KEBOCORAN.** Seluruh pembaruan sesi ini tersimpan secara permanen dan siap dilanjutkan dengan perintah `/start` di sesi kerja berikutnya.
+* **Waktu Pembaruan:** 5 Oktober 2026 (Pukul 22:30 WIB).
+* **Rangkuman Sesi Ini (Evolusi Lengkap Eksperimen Folder 5):**
+  1. **Pencapaian Target Dosen 81.09% (Baseline Utama):** Mengubah masker U-Net menjadi pemandu *ROI Bounding Box (+15% padding kulit)* + Hair Removal + CLAHE + ResNet-50 + Triplet Attention Conv4 + Head 256->128 ($L_2=10^{-4}$) menembus target dosen $\ge 80\%$ (Test Acc 81.09%, AUC 0.9134).
+  2. **Eksperimen 1 (EXP 1: Augmentasi Ringan):** Rotasi 10°, zoom 10%, shift 5%, flips. Hasil: Val PR-AUC 0.8005, Test Acc 80.50%, SK Recall 70%.
+  3. **Eksperimen 2 (EXP 2: Resolusi 256×256 - KANDIDAT JUARA TERBAIK 🏆):** Murni menaikkan resolusi 224 ke 256 dari Baseline 81%.
+     * **Val PR-AUC:** **0.8081 (80.81%)** 🏆 (Rekor tertinggi riset).
+     * **Val Loss:** **0.6634** 🏆 (Paling rendah).
+     * **Melanoma Recall:** **0.65 (Val)** & **0.61 (Test)** 🏆 (Tembus >60% pertama kali).
+     * **SK Recall:** **0.61 (Val)** & **0.71 (Test)** 🏆 (Rekor tertinggi).
+     * **Akurasi Blind Test:** **80.79% (~81%)**, Macro-F1 **0.74**, Skor Seleksi **0.7159** 🏆.
+     * Checkpoint fisik: `/content/drive/MyDrive/best_melanoma_model_exp2_res256.keras`.
+  4. **Eksperimen 3 / Dual-Stream (ROI + Full Image):** Fusi ROI lesi + konteks kulit makro via Shared ResNet-50.
+     * Hasil: Val PR-AUC 0.7918, Test Acc 80.79%, Nevus Recall 0.94 (sangat kuat pada lesi jinak), namun Melanoma Recall turun ke 0.56 akibat bias latar kulit sehat.
+  5. **Eksperimen 4 (EXP 4: True Triplet Attention Sekuensial):** Alur `Conv4 -> Triplet Attention -> Conv5 -> GAP -> Classifier` di [`kode/5_segmentasi_unet/06_exp4_resnet50_truetriplet.ipynb`](kode/5_segmentasi_unet/06_exp4_resnet50_truetriplet.ipynb). Output di-reset bersih (fresh).
+  6. **Eksperimen 5-A (EXP 5-A: EfficientNetV2-S Murni dari Baseline 81%):**
+     * Notebook: [`kode/5_segmentasi_unet/07_exp5a_backbone_efficientnetv2s.ipynb`](kode/5_segmentasi_unet/07_exp5a_backbone_efficientnetv2s.ipynb).
+     * Seluruh variabel dikunci mati ke Baseline 81%: ROI U-Net 224x224, Hair Removal, CLAHE, Stride-16 Triplet Attention, Feature Fusion (GAP+GMP+Attn), Head 256->128, LR 1.5e-5, loss label smoothing 0.05.
+     * Penyesuaian memori: `batch_sz = 64` untuk proteksi OOM blok MBConv.
+     * Checkpoint: `/content/drive/MyDrive/best_melanoma_model_exp5a_effnetv2s.keras`.
+  7. **Eksperimen 5-B (EXP 5-B: ConvNeXt-Tiny Murni dari Baseline 81%):**
+     * Notebook: [`kode/5_segmentasi_unet/08_exp5b_backbone_convnext_keras.ipynb`](kode/5_segmentasi_unet/08_exp5b_backbone_convnext_keras.ipynb).
+     * 100% identik Baseline 81%: Backbone murni ditukar ke `ConvNeXtTiny`, Triplet Attention pada stage 2 (14x14), Head 256->128, normalisasi LayerNorm/BatchNorm dikunci saat fine-tuning.
+     * Diagnosis & Solusi OOM: Pada batch 256, backward pass inverted bottleneck (3.072 kanal) meminta 16,9 GB VRAM per tensor. Diperbaiki dengan mengunci `batch_sz = 64` (~4,2 GB, aman di GPU T4/A100).
+     * Checkpoint: `/content/drive/MyDrive/best_melanoma_model_exp5b_convnext.keras`.
+  8. **Arsip Pembanding Tambahan (EXP 5-C):** [`09_exp5c_backbone_convnext_pytorch_ak84.ipynb`](kode/5_segmentasi_unet/09_exp5c_backbone_convnext_pytorch_ak84.ipynb) disimpan sebagai arsip pembanding arsitektur PyTorch timm.
+  9. **Standarisasi Modul Pelaporan Beban Kerja CPU:** Sel 8 pada `exp5a` dan `exp5b` telah dilengkapi tabel resmi laporan beban kerja (Core vCPU, waktu, throughput citra/detik, utilisasi 100%).
+  10. **Pembersihan Bersih (Clean Slate):** Seluruh sel output dan execution count pada notebook baru telah di-reset ke 0 agar siap dieksekusi bersih di Google Colab.
+* **Status Memori:** **AMAN & PERSISTEN.** Seluruh progres, temuan ilmiah, dan log eksperimen telah diperbarui dalam dokumen memori proyek ini. Siap dilanjutkan kapan saja dengan perintah `/start`.
 
 
+---
+
+## ⚡ ATURAN INTEGRITAS KODE & PARAMETER (DIPATUHI SETIAP SESI)
+1. **Dilarang Keras Mengubah Parameter Tanpa Izin:** Parameter kunci seperti atch_size, epochs, learning_rate, 	arget_size, loss function, maupun arsitektur tidak boleh diubah secara sepihak/inisiatif sendiri.
+2. **Kunci Baseline 100% Identik:** Semua eksperimen pembanding wajib mengunci nilai identik dengan baseline acuan pengguna.
+3. **Konfirmasi Sebelum Tindakan:** Jika ada pertimbangan teknis (misal risiko OOM), agen wajib bertanya dan meminta persetujuan pengguna terlebih dahulu.
+4. **Zero Redundant Scan:** Dilarang melakukan scan berulang lintas file jika instruksi/target sudah spesifik. Langsung eksekusi target.

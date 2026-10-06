@@ -1,0 +1,9 @@
+timestamp,scenario,num_workers,num_partitions,stage,elapsed_sec,image_count,avg_cpu_percent,avg_mem_mb,accuracy,f1_score,loss,roc_auc
+2026-09-26 04:59:05,irisan_2W2P,2,2,preprocessing,83.76,22051,64.03,6932.75,,,,
+2026-09-26 05:11:40,irisan_2W2P,2,2,training_centralized_gpu,585.96,17656,,,0.7413,0.6786,1.5227,0.8899
+2026-09-26 05:22:16,irisan_2W8P,2,8,preprocessing,93.14,22051,60.06,12461.93,,,,
+2026-09-26 05:34:41,irisan_2W8P,2,8,training_centralized_gpu,599.95,17656,,,0.7363,0.6634,1.5352,0.8903
+2026-09-26 06:06:50,irisan_8W2P,8,2,preprocessing,100.08,22051,57.95,17641.67,,,,
+2026-09-26 06:21:07,irisan_8W2P,8,2,training_centralized_gpu,585.44,17656,,,0.7463,0.6852,1.5154,0.8999
+2026-09-26 06:31:14,irisan_8W8P,8,8,preprocessing,92.29,22051,93.84,22440.94,,,,
+2026-09-26 06:43:18,irisan_8W8P,8,8,training_centralized_gpu,587.81,17656,,,0.7631,0.6946,1.4706,0.8976

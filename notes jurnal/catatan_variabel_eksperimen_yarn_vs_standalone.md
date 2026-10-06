@@ -22,7 +22,7 @@ Seluruh parameter ini **dikunci 100% sama** antara pengujian Spark on YARN (Saya
 | | Modul Perhatian | **Triplet Attention Module** pada `conv4_block6_out` (14×14×1024) |
 | | Head Klasifikasi | Multi-pooling (GAP + GMP + Attn) $\to$ BN $\to$ Dense 512 $\to$ Dense 256 $\to$ Dense 3 |
 | **Pelatihan & Evaluasi** | Hyperparameter | Optimizer Adam ($10^{-4}$), Loss `categorical_crossentropy` |
-| | Batch & Epoch | Batch Size: **32**, Maksimal Epoch: **15** |
+| | Batch & Epoch | Batch Size: **32**, Maksimal Epoch: **10** |
 | | Bobot Kelas | `compute_class_weight('balanced')` pada data latih |
 | | Batch Generator | Custom `BatchSequence` (Aman dari kebocoran memori Keras 3) |
 | | Data Evaluasi | Dievaluasi pada **Test Set murni (2.203 citra)** yang tidak disentuh saat training |
@@ -56,7 +56,7 @@ Indikator hasil dan metrik kinerja yang diukur untuk membandingkan kedua lingkun
    * **Test Accuracy:** Tingkat akurasi prediksi pada 2.203 citra test.
    * **Test Macro F1-Score:** Rata-rata harmonis presisi dan recall per kelas.
    * **Test ROC-AUC (OvR):** Area under curve multi-kelas satu lawan semua.
-   * **Durasi Pelatihan GPU:** Waktu penyelesaian 15 epoch di GPU Tesla T4.
+   * **Durasi Pelatihan GPU:** Waktu penyelesaian 10 epoch di GPU Tesla T4.
 
 ---
 

@@ -39,3 +39,11 @@ Jika diminta membuat laporan dalam bentuk Excel (.xlsx), agen wajib mengikuti st
 1. **Desain Profesional & Minimalis**: Gunakan tema warna dasar (hitam-putih) atau maksimal 2-3 warna (misal abu-abu terang untuk header tabel). Beri *border* garis hitam tegas pada semua sel yang terisi data. Lebarkan *column width* agar tulisan tidak bertumpuk.
 2. **Bahasa Natural (Human-Like)**: Gunakan gaya bahasa Indonesia tingkat menengah yang mudah dipahami (santai namun tetap akademis/profesional). Jangan kaku seperti robot, dan hindari kata asing/istilah rumit sebisa mungkin (contoh: 'Kumpulan Data', 'Tahi Lalat Jinak', bukan 'Dataset' atau 'Melanocytic Nevus' tanpa penjelasan). Kalimat harus langsung pada intinya (*to the point*).
 3. **Ekstrak Gambar/Grafik Otomatis**: Jika kode yang dijalankan menghasilkan *plot* grafik (misal dari matplotlib di .ipynb), agen diwajibkan menyedot gambar *base64* dari luaran kode tersebut dan menyisipkannya langsung ke dalam sheet Excel.
+
+---
+
+### 5. LARANGAN KERAS PERUBAHAN PARAMETER & INISIATIF TANPA PERSETUJUAN (STRICT INTEGRITY)
+1. **DILARANG MENGUBAH PARAMETER TANPA PERSETUJUAN:** Agen dilarang keras mengubah parameter atau nilai penting (seperti batch_size, epochs, learning_rate, target_size, konfigurasi hardware, atau struktur data) secara asal-asalan atau sepihak dengan alasan apa pun.
+2. **KUNCI BASELINE IDENTIK:** Dalam membuat eksperimen pembanding, seluruh nilai wajib dikunci identik dengan baseline acuan pengguna.
+3. **TANYAKAN SEBELUM MENGUBAH:** Jika ada pertimbangan teknis (misal potensi OOM), agen wajib bertanya dan meminta persetujuan pengguna terlebih dahulu, BUKAN langsung mengubah kode secara diam-diam.
+4. **ZERO SCANNING REDUNDAN:** Jangan melakukan pemindaian/scan direktori berulang jika target sudah jelas. Langsung eksekusi file target.

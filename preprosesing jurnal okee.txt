@@ -1,0 +1,44 @@
+Berikut adalah **catatan singkat dan padat** tahapan prapemrosesan (*preprocessing*) dari jurnal tersebut, siap untuk kamu simpan sebagai catatan riset:
+
+---
+
+# 📝 Catatan Singkat: Alur Preprocessing Citra (Jurnal LA-CapsNet)
+
+**Tujuan Utama:** Menghilangkan artefak (rambut, gelembung udara, bayangan lingkaran kamera), memperjelas batas lesi, dan mengatasi ketimpangan jumlah data (*class imbalance*).
+
+---
+
+### Tahap 1: Pengubahan Ukuran Citra (Image Resizing)
+* **Aksi:** Mengubah ukuran seluruh gambar asli menjadi seragam **299 x 299 piksel** (format RGB 3 kanal).
+* **Tujuan:** Standarisasi ukuran input untuk proses *batching* serta meringankan beban komputasi memori GPU.
+
+---
+
+### Tahap 2: Normalisasi Citra (Contrast Stretching)
+* **Aksi:** Menyesuaikan sebaran nilai intensitas piksel menggunakan acuan statistik (target rata-rata = 0, varians = 1), sehingga rentang nilai piksel berada di skala **-1 hingga 1** (atau skala **0 hingga 1**).
+* **Tujuan:** 
+  * Menghilangkan derau (*noise*).
+  * Mempertahankan ketajaman kontras antara lesi dan kulit normal.
+  * Mempercepat kestabilan proses konvergensi saat model dilatih.
+* **Hasil Kualitas Citra:** Nilai PSNR mencapai **44.90 dB** (kualitas kejernihan tinggi) dan nilai perbedaan piksel (*Mean Absolute Difference*) turun sangat rendah ke **0.0052**.
+
+---
+
+### Tahap 3: Augmentasi Data (Khusus Data Training)
+* **Aksi:** Menambah variasi gambar secara sintetis pada data latih (terutama untuk kelas melanoma yang jumlah datanya sedikit).
+* **Teknik yang Dipakai:**
+  1. **Rotasi acak:** sudut putar antara **-15 derajat sampai +15 derajat**.
+  2. **Flip acak:** pembalikan secara **Horizontal** dan **Vertikal**.
+  3. **Pengaturan kontras & kecerahan:** faktor pengali acak antara **0.7 hingga 1.3**.
+  4. **Random Crop** (pemotongan acak sebagian area).
+  5. **Penambahan noise** (derau acak).
+* **Dampak:** Terbukti menaikkan akurasi klasifikasi akhir dari 78% (tanpa augmentasi) menjadi **98%** (dengan augmentasi).
+
+---
+
+### Tahap 4: Segmentasi Area Lesi (Active Contour / Snake Model)
+* **Aksi:** Mengisolasi bentuk lesi menggunakan kurva elastis parametrik (*Snake*) yang bergerak mengunci tepi batas lesi.
+* **Keluaran:** Menghasilkan masker biner (*binary mask*):
+  * **Nilai 1 (Putih):** Area lesi penyakit (Region of Interest / ROI).
+  * **Nilai 0 (Hitam):** Latar belakang kulit normal yang dibuang.
+* **Finishing:** Diberikan proses penghalusan (*smoothing*) untuk meratakan tepi potongan agar bersih dari sisa-sisa derau.
