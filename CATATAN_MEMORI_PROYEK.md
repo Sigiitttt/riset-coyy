@@ -1,7 +1,7 @@
 # 🧠 DOKUMEN MEMORI UTAMA PROYEK (PERSISTENT MEMORY)
 **Proyek:** Data Understanding & Pemetaan Dataset ISIC (2016–2024) & HAM10000  
 **Lokasi Direktori:** `C:\Users\ARII\Downloads\Data Understanding Isic & Ham10k\`  
-* **Terakhir Diperbarui:** 5 Oktober 2026 (Sesi Penutupan Eksperimen Backbone EXP 5-A & EXP 5-B)
+* **Terakhir Diperbarui:** 7 Oktober 2026 (Penyempurnaan Laporan Excel Natural Human-Like 9 Sheet & Sinkronisasi Git)
 
 ---
 
@@ -535,6 +535,13 @@ Data Understanding Isic & Ham10k/
 │   │   ├── train_baseline.py               # Skrip eksekusi pelatihan modular (ResNet-50 & EfficientNet-B0)
 │   │   ├── eksekusi_full_training_gpu.ipynb # Notebook siap jalan untuk Kaggle/Colab T4
 │   │   └── panduan_eksekusi_gpu_colab_kaggle.md # Panduan komprehensif eksekusi cloud GPU
+│   ├── 4_Spark_on_Yarn/                    # Eksperimen Big Data PySpark on YARN klaster
+│   ├── 5_segmentasi_unet/                  # Eksperimen Klasifikasi 3-Kelas + U-Net Mask ResNet-50
+│   ├── 6_backbone_convnext/                # JALUR AKTIF: Eksperimen Khusus Backbone ConvNeXt (PyTorch)
+│   │   ├── 00_baseline_convnext_tiny_ak84.ipynb   # Baseline Utama Resmi (83.87%, AUC 93.60%)
+│   │   └── 01_exp5d_convnext_soft_weight.ipynb    # EXP 5-D: Uji Soft Sqrt Class Weight (Siap Run)
+│   ├── 7_kode teman/                       # Audit & referensi silang kode eksternal
+│   └── 8_referensi tugas sebelumnya/       # Arsip historis tugas & benchmark sebelumnya
 ├── notes jurnal/                           # Direktori catatan, analisis, & ringkasan jurnal
 │   ├── biner/                              # Catatan riset jalur biner
 │   │   ├── ringkasan jurnal biner saya.txt                # Catatan ringkasan paper rujukan biner
@@ -755,10 +762,70 @@ Seluruh laporan ini sudah memenuhi kaidah *Standar Excel Kulit* (hitam-putih, ta
   8. **Arsip Pembanding Tambahan (EXP 5-C):** [`09_exp5c_backbone_convnext_pytorch_ak84.ipynb`](kode/5_segmentasi_unet/09_exp5c_backbone_convnext_pytorch_ak84.ipynb) disimpan sebagai arsip pembanding arsitektur PyTorch timm.
   9. **Standarisasi Modul Pelaporan Beban Kerja CPU:** Sel 8 pada `exp5a` dan `exp5b` telah dilengkapi tabel resmi laporan beban kerja (Core vCPU, waktu, throughput citra/detik, utilisasi 100%).
   10. **Pembersihan Bersih (Clean Slate):** Seluruh sel output dan execution count pada notebook baru telah di-reset ke 0 agar siap dieksekusi bersih di Google Colab.
+* **Waktu Pembaruan Baru:** 6 Oktober 2026 (Sesi Analisis Eksekusi ConvNeXt).
+* **Rangkuman Sesi Ini (Analisis EXP 5-D s/d 5-F ConvNeXt-Tiny):**
+  1. **Validasi Baseline:** Baseline 09 / 00 (PyTorch) tetap menjadi Kandidat Juara Tertinggi dengan Akurasi 83.87% dan Macro-F1 0.7867.
+  2. **EXP 5-D (Soft Class Weight):** Gagal mengungguli baseline. Akurasi turun menjadi 80.41%. Model sangat bergantung pada penalti bobot *full inverse*.
+  3. **EXP 5-E (Resolusi 320x320):** Akurasi merosot ke 79.60%. Disimpulkan adanya distorsi/blur interpolasi dari citra asal (hasil crop) yang dipaksa di-upscale.
+  4. **EXP 5-F (MixUp + Label Smoothing):** Akurasi global terendah (78.92%), namun mencetak rekor Recall Melanoma (70.74%) dan SK (75.96%). Regularisasi terbukti mengacaukan pembeda kelas jinak (Nevus) meski sangat baik untuk deteksi kanker.
+  5. **Tindak Lanjut (EXP 5-G):** Membuat file `04_exp5g_convnext_discriminative_lr.ipynb` untuk menguji *Discriminative Fine-Tuning* / Layer-wise Learning Rate, mengunci arsitektur agar filter low-level dipertahankan dengan LR 1e-6 dan layer klasifikasi beradaptasi dengan LR 2e-5.
 * **Status Memori:** **AMAN & PERSISTEN.** Seluruh progres, temuan ilmiah, dan log eksperimen telah diperbarui dalam dokumen memori proyek ini. Siap dilanjutkan kapan saja dengan perintah `/start`.
 
 
 ---
+
+---
+
+## 8. Roadmap Resmi Peningkatan Performa ConvNeXt-Tiny (Menuju 86–90%)
+**Keputusan Resmi Riset:**
+* **`08_exp5b` (Keras):** DITINGGALKAN sebagai baseline utama (mentok di 77.68%, Melanoma Recall 49.63%).
+* **`09_exp5c` (PyTorch timm):** DIKUNCI sebagai **BASELINE RESMI BARU = 83.87%** (Macro-F1 0.7867, Melanoma Recall 70.93%, SK Recall 73.08%, AUC 0.9360).
+* **Prapemrosesan Dasar:** ROI Bounding Box (+15% padding) + Hair Removal + CLAHE 100% DIKUNCI MATI (terbukti bukan bottleneck).
+* **Prinsip Riset:** Fokus pada penanganan ketimpangan kelas yang seimbang, resolusi detail dermatoskopi, dan regularisasi bertahap—BUKAN menambah Triplet Attention pada ConvNeXt.
+
+```text
+08 (Keras) -> DITINGGALKAN
+ │
+ ↓
+09 (PyTorch) -> BASELINE RESMI BARU = 83.87% (AUC 93.60%, Macro-F1 0.7867)
+ │
+ ├── EXP 5-D : Soft Class Weight (sqrt class weight) -> [SELESAI] Akurasi 80.41%, Macro F1 0.7398. (Lebih rendah dari baseline)
+ │
+ ├── EXP 5-E : Resolution 320x320 -> [SELESAI] Akurasi 79.60%, Macro F1 0.7394. (Belum optimal)
+ │
+ ├── EXP 5-F : Regularisasi (MixUp + LS 0.02) -> [SELESAI] Akurasi 78.92%, Mel Recall 70.74%, SK Recall 75.96%. (Recall naik sangat baik, tetapi akurasi global turun)
+ │
+ ├── EXP 5-G : Discriminative Fine-Tuning (Layer-wise LR: 1e-6 s/d 2e-5)
+ │
+ ├── EXP 5-H : Test-Time Augmentation (TTA 4-arah)
+ │
+ └── EXP 5-I : Skalasi Arsitektur (ConvNeXt-Small / ConvNeXt-V2) jika diperlukan
+```
+
+### Rincian Rencana Bertahap:
+1. **EXP 5-D (Soft Class Weight):**
+   * Mengubah bobot `cnt.sum() / (K * cnt)` menjadi akar kuadrat `sqrt(cnt.sum() / cnt)`.
+   * Menyeimbangkan penalti SK (sebelumnya 2.523) agar presisi Nevus dan global accuracy tetap terjaga sambil menjaga recall Melanoma/SK di atas 70%.
+2. **EXP 5-E (Resolusi 320×320):**
+   * Menghindari hilangnya detail retikuler lesi pada resolusi 224px.
+   * Uji 320×320 (dan 384×384 jika VRAM GPU memungkinkan).
+3. **EXP 5-F (Regularisasi Anti-Overfitting):**
+   * MixUp ringan + Label Smoothing moderat 0.02–0.03 (menghindari kegagalan LS 0.05 Keras) + Early Stopping berbasis Val Macro-F1.
+4. **EXP 5-G (Discriminative Fine-Tuning):**
+   * Mengatasi domain shift ImageNet -> Dermoscopy dengan LR bertingkat: Early stage (1e-6) -> Middle stage (3e-6) -> Late stage (1e-5) -> Classifier head (2e-5).
+5. **EXP 5-H (Test-Time Augmentation / TTA):**
+   * Rata-rata probabilitas dari original, H-Flip, V-Flip, dan HV-Flip pada inference blind test.
+6. **EXP 5-I (Arsitektur Lanjutan - Opsional):**
+   * ConvNeXt-Small atau ConvNeXt-V2 jika performa masih berada di rentang 86–88%.
+
+---
+
+## 7. Laporan Eksperimen Resmi Excel (Status: SELESAI & FINAL)
+* **File Utama:** `Laporan_Eksperimen_UNet_Segmentasi_Lengkap.xlsx` dan `Laporan_Eksperimen_Akademis.xlsx`
+* **Struktur:** 9 Sheet terstruktur rapi (1. Ringkasan, 2. Dataset, 3. Metodologi, 4. Eksperimen, 5. Hasil Akurasi, 6. Per Kelas, 7. Confusion Matrix, 8. Grafik Tren Berlabel, 9. Analisis).
+* **Gaya Bahasa:** Bahasa Indonesia natural (human-like) tingkat menengah yang lugas dan mudah dipahami, bebas dari narasi kaku/hiperbolik robotik AI.
+* **Cakupan Eksperimen:** Konsisten dari Eksperimen 1 hingga EXP 5-A (EXP 5-B dan 5-C dipisahkan ke modul ConvNeXt lanjutan).
+* **Model Rekomendasi:** EXP 2 (ResNet-50 ROI Bounding Box U-Net 256x256) dengan Akurasi 80.79% dan Melanoma Recall 61.00%.
 
 ## ⚡ ATURAN INTEGRITAS KODE & PARAMETER (DIPATUHI SETIAP SESI)
 1. **Dilarang Keras Mengubah Parameter Tanpa Izin:** Parameter kunci seperti atch_size, epochs, learning_rate, 	arget_size, loss function, maupun arsitektur tidak boleh diubah secara sepihak/inisiatif sendiri.
