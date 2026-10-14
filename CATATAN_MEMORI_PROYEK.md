@@ -1,7 +1,7 @@
 # 🧠 DOKUMEN MEMORI UTAMA PROYEK (PERSISTENT MEMORY)
 **Proyek:** Data Understanding & Pemetaan Dataset ISIC (2016–2024) & HAM10000  
 **Lokasi Direktori:** `C:\Users\ARII\Downloads\Data Understanding Isic & Ham10k\`  
-* **Terakhir Diperbarui:** 7 Oktober 2026 (Penyempurnaan Laporan Excel Natural Human-Like 9 Sheet & Sinkronisasi Git)
+* **Terakhir Diperbarui:** 14 Oktober 2026 (Sinkronisasi Hasil Final Riset Spark on YARN ConvNeXt-Tiny & Status TTA)
 
 ---
 
@@ -762,17 +762,23 @@ Seluruh laporan ini sudah memenuhi kaidah *Standar Excel Kulit* (hitam-putih, ta
   8. **Arsip Pembanding Tambahan (EXP 5-C):** [`09_exp5c_backbone_convnext_pytorch_ak84.ipynb`](kode/5_segmentasi_unet/09_exp5c_backbone_convnext_pytorch_ak84.ipynb) disimpan sebagai arsip pembanding arsitektur PyTorch timm.
   9. **Standarisasi Modul Pelaporan Beban Kerja CPU:** Sel 8 pada `exp5a` dan `exp5b` telah dilengkapi tabel resmi laporan beban kerja (Core vCPU, waktu, throughput citra/detik, utilisasi 100%).
   10. **Pembersihan Bersih (Clean Slate):** Seluruh sel output dan execution count pada notebook baru telah di-reset ke 0 agar siap dieksekusi bersih di Google Colab.
-* **Waktu Pembaruan Baru:** 6 Oktober 2026 (Sesi Analisis Eksekusi ConvNeXt).
-* **Rangkuman Sesi Ini (Analisis EXP 5-D s/d 5-F ConvNeXt-Tiny):**
-  1. **Validasi Baseline:** Baseline 09 / 00 (PyTorch) tetap menjadi Kandidat Juara Tertinggi dengan Akurasi 83.87% dan Macro-F1 0.7867.
-  2. **EXP 5-D (Soft Class Weight):** Gagal mengungguli baseline. Akurasi turun menjadi 80.41%. Model sangat bergantung pada penalti bobot *full inverse*.
-  3. **EXP 5-E (Resolusi 320x320):** Akurasi merosot ke 79.60%. Disimpulkan adanya distorsi/blur interpolasi dari citra asal (hasil crop) yang dipaksa di-upscale.
-  4. **EXP 5-F (MixUp + Label Smoothing):** Akurasi global terendah (78.92%), namun mencetak rekor Recall Melanoma (70.74%) dan SK (75.96%). Regularisasi terbukti mengacaukan pembeda kelas jinak (Nevus) meski sangat baik untuk deteksi kanker.
-  5. **Tindak Lanjut (EXP 5-G):** Membuat file `04_exp5g_convnext_discriminative_lr.ipynb` untuk menguji *Discriminative Fine-Tuning* / Layer-wise Learning Rate, mengunci arsitektur agar filter low-level dipertahankan dengan LR 1e-6 dan layer klasifikasi beradaptasi dengan LR 2e-5.
-* **Status Memori:** **AMAN & PERSISTEN.** Seluruh progres, temuan ilmiah, dan log eksperimen telah diperbarui dalam dokumen memori proyek ini. Siap dilanjutkan kapan saja dengan perintah `/start`.
-
-
----
+* **Waktu Pembaruan Baru:** 7 Oktober 2026 (Sesi Pemulihan Konteks /start & Eksekusi Roadmap EXP 5-G s/d 5-H).
+* **Rangkuman Sesi Ini (Hasil Nyata EXP 5-D s/d EXP 5-G ConvNeXt-Tiny):**
+  1. **Validasi Baseline:** Baseline 09 / 00 (PyTorch timm) tetap menjadi Kandidat Juara Tertinggi dengan Akurasi **83.87%**, Macro-F1 **0.7867**, dan AUC **0.9360**.
+  2. **EXP 5-D (Soft Class Weight):** Akurasi turun menjadi **80.41%** (Macro-F1 0.7398). Model terbukti sangat bergantung pada penalti bobot *full inverse*.
+  3. **EXP 5-E (Resolusi 320x320):** Akurasi merosot ke **79.60%** (Macro-F1 0.7394) akibat distorsi interpolasi upscale dari crop asli.
+  4. **EXP 5-F (MixUp + Label Smoothing):** Akurasi global **78.92%**, namun mencetak rekor Recall Melanoma (70.74%) dan SK (75.96%). Regularisasi mengaburkan batas kelas jinak (Nevus).
+  5. **EXP 5-G (Discriminative Learning Rate - SUKSES DIEKSEKUSI DI TESLA T4):**
+     * Setup: DLR decay 0.5 (stage 0-2: ~3.75e-6 s/d 1.5e-5, stage 3: 3e-5, head: 1e-4), full inverse weight, cosine scheduler, LR warmup head 4 epoch. Waktu: 25.90 menit.
+     * Hasil Blind Test (2.343 citra): Akurasi **79.47%**, Macro-F1 **0.7333**, AUC **0.9221**, Melanoma Recall **71.48%**, SK Recall **66.03%**, Nevus Precision **0.90**.
+     * Temuan: DLR sangat baik dalam menjaga Melanoma Recall tetap di atas 71%, namun akurasi global belum melampaui Baseline 09 (83.87%).
+  6. **Tindak Lanjut (EXP 5-H):** Menerapkan *Test-Time Augmentation (TTA 4-arah: Original, H-Flip, V-Flip, HV-Flip)* pada checkpoint Baseline Terbaik 83.87% dan EXP 5-G untuk mendorong performa menuju 85–86%+ tanpa retraining berat (notebook `kode/6_backbone_convnext/05_exp5h_convnext_tta.ipynb` telah disiapkan).
+* **Waktu Pembaruan Baru:** 14 Oktober 2026 (Eksekusi Penuh Big Data Spark on YARN ConvNeXt-Tiny di `kode/7_Final Riset/`).
+* **Rangkuman Sesi Ini (Hasil Nyata Big Data Spark on YARN ConvNeXt-Tiny):**
+  1. **Jalur Irisan 3 Kelas (`irisan_12W8P`, `irisan_12W12P`, `irisan_8W8P`, `irisan_8W12P`):** Sukses dieksekusi 100% pada klaster Apache Spark on YARN + HDFS streaming (24.466 citra). Akurasi Blind Test konsisten: **83,87%**, Macro-F1: **0,7867**, Test AUC: **0,9360**, Melanoma Recall: **70,93%**, SK Recall: **73,08%**, Nevus Precision: **0,89**. Preprocessing terdistribusi 434–585 detik, Shard write 15–20s, Centralized GPU training 704–712 detik.
+  2. **Jalur Biner 2 Kelas (`biner_8W8P`, `biner_12W8P`, `biner_8W12P`, `biner_12W12P`):** Sukses dieksekusi 100% pada klaster Spark on YARN + HDFS. Akurasi Blind Test (3.090 citra uji): **84,43%**, Macro-F1: **0,8363**, Test AUC: **0,9247**, Malignant Recall: **80,59%**, Benign Precision: **0,88**. Preprocessing terdistribusi ~624 detik, Centralized GPU training ~891 detik.
+  3. **Arsip & Bukti Output Teramankan:** Seluruh output log, perbandingan waktu tahapan sistem (allocation, preprocessing, shard_write, collect, training), dan classification report terverifikasi utuh di folder [`kode/7_Final Riset/`](kode/7_Final%20Riset/).
+* **Status Memori:** **AMAN & PERSISTEN.** Seluruh progres, temuan ilmiah, dan log eksperimen telah diperbarui dalam dokumen memori proyek ini.
 
 ---
 
@@ -789,32 +795,27 @@ Seluruh laporan ini sudah memenuhi kaidah *Standar Excel Kulit* (hitam-putih, ta
  ↓
 09 (PyTorch) -> BASELINE RESMI BARU = 83.87% (AUC 93.60%, Macro-F1 0.7867)
  │
- ├── EXP 5-D : Soft Class Weight (sqrt class weight) -> [SELESAI] Akurasi 80.41%, Macro F1 0.7398. (Lebih rendah dari baseline)
+ ├── EXP 5-D : Soft Class Weight (sqrt class weight) -> [SELESAI] Akurasi 80.41%, Macro F1 0.7398.
  │
- ├── EXP 5-E : Resolution 320x320 -> [SELESAI] Akurasi 79.60%, Macro F1 0.7394. (Belum optimal)
+ ├── EXP 5-E : Resolution 320x320 -> [SELESAI] Akurasi 79.60%, Macro F1 0.7394.
  │
- ├── EXP 5-F : Regularisasi (MixUp + LS 0.02) -> [SELESAI] Akurasi 78.92%, Mel Recall 70.74%, SK Recall 75.96%. (Recall naik sangat baik, tetapi akurasi global turun)
+ ├── EXP 5-F : Regularisasi (MixUp + LS 0.02) -> [SELESAI] Akurasi 78.92%, Mel Recall 70.74%, SK Recall 75.96%.
  │
- ├── EXP 5-G : Discriminative Fine-Tuning (Layer-wise LR: 1e-6 s/d 2e-5)
+ ├── EXP 5-G : Discriminative Fine-Tuning (Layer-wise LR) -> [SELESAI] Akurasi 79.47%, Mel Recall 71.48%.
  │
- ├── EXP 5-H : Test-Time Augmentation (TTA 4-arah)
+ ├── EXP 5-H : Test-Time Augmentation (TTA 4-arah) -> [SEDANG DIKERJAKAN / AKTIF]
  │
  └── EXP 5-I : Skalasi Arsitektur (ConvNeXt-Small / ConvNeXt-V2) jika diperlukan
 ```
 
 ### Rincian Rencana Bertahap:
-1. **EXP 5-D (Soft Class Weight):**
-   * Mengubah bobot `cnt.sum() / (K * cnt)` menjadi akar kuadrat `sqrt(cnt.sum() / cnt)`.
-   * Menyeimbangkan penalti SK (sebelumnya 2.523) agar presisi Nevus dan global accuracy tetap terjaga sambil menjaga recall Melanoma/SK di atas 70%.
-2. **EXP 5-E (Resolusi 320×320):**
-   * Menghindari hilangnya detail retikuler lesi pada resolusi 224px.
-   * Uji 320×320 (dan 384×384 jika VRAM GPU memungkinkan).
-3. **EXP 5-F (Regularisasi Anti-Overfitting):**
-   * MixUp ringan + Label Smoothing moderat 0.02–0.03 (menghindari kegagalan LS 0.05 Keras) + Early Stopping berbasis Val Macro-F1.
-4. **EXP 5-G (Discriminative Fine-Tuning):**
-   * Mengatasi domain shift ImageNet -> Dermoscopy dengan LR bertingkat: Early stage (1e-6) -> Middle stage (3e-6) -> Late stage (1e-5) -> Classifier head (2e-5).
+1. **EXP 5-D (Soft Class Weight):** [SELESAI - 80.41%]
+2. **EXP 5-E (Resolusi 320×320):** [SELESAI - 79.60%]
+3. **EXP 5-F (Regularisasi Anti-Overfitting):** [SELESAI - 78.92%]
+4. **EXP 5-G (Discriminative Fine-Tuning):** [SELESAI - 79.47%]
 5. **EXP 5-H (Test-Time Augmentation / TTA):**
-   * Rata-rata probabilitas dari original, H-Flip, V-Flip, dan HV-Flip pada inference blind test.
+   * Rata-rata probabilitas dari Original, H-Flip, V-Flip, dan HV-Flip pada inference blind test (2.343 citra) dan validation set (2.410 citra).
+   * Dievaluasi langsung pada Checkpoint Juara Baseline (`best_melanoma_model_exp5c_convnext_tiny.pt`) dan Checkpoint EXP 5-G.
 6. **EXP 5-I (Arsitektur Lanjutan - Opsional):**
    * ConvNeXt-Small atau ConvNeXt-V2 jika performa masih berada di rentang 86–88%.
 

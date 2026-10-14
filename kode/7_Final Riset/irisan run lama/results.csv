@@ -1,0 +1,26 @@
+timestamp,scenario,num_workers,num_partitions,stage,elapsed_sec,image_count,avg_cpu_percent,avg_mem_mb,accuracy,f1_score,loss,roc_auc,replicate,val_macro_f1
+2026-10-10 01:37:08,irisan_12W8P,12,8,yarn_container_allocation,0.02,,,,,,,,1,
+2026-10-10 01:45:59,irisan_12W8P,12,8,preprocessing,505.20,24466,74.43,16670.03,,,,,1,
+2026-10-10 01:46:21,irisan_12W8P,12,8,shard_write,17.26,24466,,,,,,,1,
+2026-10-10 01:46:38,irisan_12W8P,12,8,collect_driver,16.21,24466,,,,,,,1,
+2026-10-10 01:58:48,irisan_12W8P,12,8,training_centralized_gpu,707.20,19713,,,0.8387,0.7867,0.5733,0.9360,1,0.7621
+2026-10-10 02:10:31,irisan_12W12P,12,12,yarn_container_allocation,0.02,,,,,,,,2,
+2026-10-10 02:18:14,irisan_12W12P,12,12,preprocessing,437.28,24466,98.30,17593.69,,,,,2,
+2026-10-10 02:18:34,irisan_12W12P,12,12,shard_write,15.38,24466,,,,,,,2,
+2026-10-10 02:18:53,irisan_12W12P,12,12,collect_driver,17.94,24466,,,,,,,2,
+2026-10-10 02:30:50,irisan_12W12P,12,12,training_centralized_gpu,706.06,19713,,,0.8387,0.7867,0.5733,0.9360,2,0.7621
+2026-10-10 02:39:29,irisan_8W8P,8,8,yarn_container_allocation,0.02,,,,,,,,3,
+2026-10-10 02:48:25,irisan_8W8P,8,8,preprocessing,510.79,24466,72.83,15354.33,,,,,3,
+2026-10-10 02:48:46,irisan_8W8P,8,8,shard_write,16.89,24466,,,,,,,3,
+2026-10-10 02:49:04,irisan_8W8P,8,8,collect_driver,16.67,24466,,,,,,,3,
+2026-10-10 03:01:03,irisan_8W8P,8,8,training_centralized_gpu,707.61,19713,,,0.8387,0.7867,0.5733,0.9360,3,0.7621
+2026-10-10 03:07:18,irisan_8W12P,8,12,yarn_container_allocation,0.02,,,,,,,,4,
+2026-10-10 03:17:22,irisan_8W12P,8,12,preprocessing,578.04,24466,60.04,15510.98,,,,,4,
+2026-10-10 03:17:50,irisan_8W12P,8,12,shard_write,23.90,24466,,,,,,,4,
+2026-10-10 03:18:07,irisan_8W12P,8,12,collect_driver,15.20,24466,,,,,,,4,
+2026-10-10 03:30:10,irisan_8W12P,8,12,training_centralized_gpu,712.00,19713,,,0.8387,0.7867,0.5733,0.9360,4,0.7621
+2026-10-10 23:34:53,irisan_8W8P,8,8,yarn_container_allocation,3.03,,,,,,,,1,
+2026-10-10 23:43:48,irisan_8W8P,8,8,preprocessing,507.60,24466,74.01,15411.69,,,,,1,
+2026-10-10 23:44:09,irisan_8W8P,8,8,shard_write,16.82,24466,,,,,,,1,
+2026-10-10 23:44:27,irisan_8W8P,8,8,collect_driver,16.62,24466,,,,,,,1,
+2026-10-11 18:51:18,irisan_8W8P,8,8,yarn_container_allocation,19.99,,,,,,,,1,

@@ -1,0 +1,169 @@
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta charset="utf-8">
+<style>
+table { border-collapse: collapse; width: 100%; font-family: 'Times New Roman', serif; font-size: 11pt; }
+th, td { border: 1px solid black; padding: 8px; text-align: left; vertical-align: top; }
+th { text-align: center; font-weight: bold; background-color: #f2f2f2; }
+</style>
+</head>
+<body>
+<p style="font-family: 'Times New Roman', serif; font-size: 12pt;"><strong>Format Logbook Kegiatan Mahasiswa</strong></p>
+<table>
+  <tr>
+    <th width="5%">No</th>
+    <th width="15%">Hari / Tanggal</th>
+    <th width="45%">Deskripsi Kegiatan</th>
+    <th width="20%">Bukti Dokumentasi / Foto</th>
+    <th width="15%">Paraf Pembimbing</th>
+  </tr>
+  <tr>
+    <td align="center">1</td>
+    <td>24 Agustus 2026</td>
+    <td>Mengikuti pembekalan riset dan berdiskusi dengan pembimbing mengenai ruang lingkup dan penentuan topik klasifikasi penyakit kulit berbasis <i>deep learning</i>.</td>
+    <td>Foto sesi pembekalan & catatan topik</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td align="center">2</td>
+    <td>26 Agustus 2026</td>
+    <td>Melakukan <i>Exploratory Data Analysis</i> (EDA) pada dataset publik ISIC dan HAM10000 untuk melihat struktur data, format gambar, dan kelengkapan informasinya.</td>
+    <td>Screenshot folder data & ringkasan dataset</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td align="center">3</td>
+    <td>28 Agustus 2026</td>
+    <td>Menganalisis sebaran jumlah kelas (<i>class distribution</i>) pada tiap diagnosis penyakit untuk mendeteksi adanya ketimpangan data (<i>class imbalance</i>).</td>
+    <td>Grafik sebaran jumlah data per kelas</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td align="center">4</td>
+    <td>31 Agustus 2026</td>
+    <td>Melakukan tahap <i>preprocessing</i> untuk mencari dan menghapus gambar yang duplikat agar data yang digunakan untuk pengujian lebih valid.</td>
+    <td>Tabel ringkasan penghapusan duplikat</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td align="center">5</td>
+    <td>2 September 2026</td>
+    <td>Melakukan penyeragaman penamaan penyakit dari kedua dataset agar bisa digabungkan (<i>data merging</i>) tanpa ada tumpang tindih kelas.</td>
+    <td>Tabel penyeragaman nama medis</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td align="center">6</td>
+    <td>4 September 2026</td>
+    <td>Mencari irisan penyakit yang ada di kedua dataset, lalu menetapkan 3 diagnosis utama sebagai fokus utama penelitian ini.</td>
+    <td>Screenshot kelas data yang dipilih</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td align="center">7</td>
+    <td>7 September 2026</td>
+    <td>Membaca dan menelaah jurnal referensi internasional sebagai landasan teori mengapa kita memilih 3 kelas penyakit tersebut.</td>
+    <td>Daftar pustaka & matriks jurnal referensi</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td align="center">8</td>
+    <td>9 September 2026</td>
+    <td>Merekap seluruh hasil analisis data awal, pembersihan, dan pembagian kelas ke dalam file Excel sebagai acuan dasar sebelum pengujian.</td>
+    <td>Screenshot rekap Excel</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td align="center">9</td>
+    <td>11 September 2026</td>
+    <td>Membagi dataset menjadi partisi data latih dan data uji secara proporsional, serta memastikan tidak ada kebocoran data gambar pasien yang sama (<i>data leakage</i>).</td>
+    <td>Tabel pembagian proporsi data</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td align="center">10</td>
+    <td>14 September 2026</td>
+    <td>Menyiapkan sistem komputasi Apache Spark untuk mempercepat proses pembacaan gambar (<i>data loading</i>) yang berukuran besar.</td>
+    <td>Screenshot sistem Apache Spark berjalan</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td align="center">11</td>
+    <td>16 September 2026</td>
+    <td>Melakukan perbaikan kualitas gambar, seperti menyamarkan rambut (<i>hair removal</i>) dan mengatur kontras agar fitur penyakit lebih jelas.</td>
+    <td>Foto perbandingan sebelum & sesudah filter</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td align="center">12</td>
+    <td>18 September 2026</td>
+    <td>Membuat sistem segmentasi otomatis untuk memotong area penyakit (<i>Region of Interest</i>) agar model bisa fokus dan tidak terganggu oleh gambar latar belakang.</td>
+    <td>Visualisasi tahapan pemotongan penyakit</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td align="center">13</td>
+    <td>21 September 2026</td>
+    <td>Melatih model dasar (<i>baseline model</i>) yang pertama. Proses awal ini berhasil mendapatkan tingkat akurasi sebesar 81%.</td>
+    <td>Grafik hasil pelatihan baseline model</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td align="center">14</td>
+    <td>23 September 2026</td>
+    <td>Melakukan <i>hyperparameter tuning</i>, seperti mengubah ukuran resolusi gambar, untuk melihat apakah performa model dasar masih bisa dinaikkan.</td>
+    <td>Screenshot metrik hasil penyesuaian</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td align="center">15</td>
+    <td>25 September 2026</td>
+    <td>Mengevaluasi hasil grafik model dasar dan menemukan bahwa tingkat akurasinya mulai stagnan (sulit naik lagi).</td>
+    <td>Grafik evaluasi model yang mengalami stagnasi</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td align="center">16</td>
+    <td>28 September 2026</td>
+    <td>Mencari alternatif arsitektur <i>neural network</i> model baru yang sekiranya lebih cocok untuk mengenali pola khusus pada gambar medis.</td>
+    <td>Catatan rancangan eksperimen komparasi model</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td align="center">17</td>
+    <td>30 September 2026</td>
+    <td>Melakukan uji coba pada model alternatif pertama untuk melihat kemampuannya dalam mempelajari data penyakit kulit ini.</td>
+    <td>Screenshot metrik awal model alternatif pertama</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td align="center">18</td>
+    <td>2 Oktober 2026</td>
+    <td>Menganalisis masalah <i>Out-of-Memory</i> (OOM) atau kehabisan memori komputasi akibat terlalu beratnya perhitungan pada model alternatif pertama.</td>
+    <td>Screenshot log eror memori penuh</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td align="center">19</td>
+    <td>5 Oktober 2026</td>
+    <td>Beralih menggunakan varian model baru yang lebih ringan memorinya. Pengujian ini berjalan lancar dan berhasil mencapai akurasi hingga 84%.</td>
+    <td>Laporan metrik keberhasilan model akhir</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td align="center">20</td>
+    <td>6 Oktober 2026</td>
+    <td>Mengumpulkan dan membandingkan seluruh angka pengujian (akurasi dan eror) dari semua model yang sudah dicoba (dari model dasar hingga akhir).</td>
+    <td>Tabel perbandingan skor seluruh eksperimen</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td align="center">21</td>
+    <td>7 Oktober 2026</td>
+    <td>Merapikan tabel hasil akhir dari model dengan akurasi terbaik untuk digunakan sebagai bahan diskusi lanjutan.</td>
+    <td>Screenshot tabel evaluasi akhir untuk diskusi</td>
+    <td></td>
+  </tr>
+</table>
+</body>
+</html>

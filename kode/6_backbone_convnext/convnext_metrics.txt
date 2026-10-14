@@ -220,3 +220,61 @@ Score Seleksi: 0.7475
 === PERFORMA TEST PER SUMBER DATA ===
 HAM10000   n=1030  acc=0.8427 macroF1=0.7498 melRecall=0.6012 (n_mel=173)
 ISIC2019   n=1313  acc=0.7471 macroF1=0.7136 melRecall=0.7575 (n_mel=367)
+
+=================== 04_exp5g_convnext_discriminative_lr.ipynb ===================
+Device: cuda Tesla T4 | torch 2.11.0+cu130 | timm 1.0.30
+Bobot kelas (full): {'melanoma': 1.397, 'nevus': 0.53, 'seborrheic_keratosis': 2.523}
+Checkpoint terbaik: /content/drive/MyDrive/best_melanoma_model_exp5g_convnext_tiny_res224_s42.pt
+[INFO] Fase 1: head saja, 4 epoch, LR 0.0003
+ep 01 [fase 1] | train loss 0.8499 | val loss 0.7154 acc 0.7017 AUC 0.8371 macroF1 0.6264 balAcc 0.6397 | lr->3.0e-04~3.0e-04 | 136s
+ep 02 [fase 1] | train loss 0.7576 | val loss 0.7186 acc 0.6967 AUC 0.8419 macroF1 0.6319 balAcc 0.6560 | lr->3.0e-04~3.0e-04 | 134s
+ep 03 [fase 1] | train loss 0.7313 | val loss 0.7268 acc 0.6876 AUC 0.8439 macroF1 0.6220 balAcc 0.6468 | lr->3.0e-04~3.0e-04 | 133s
+ep 04 [fase 1] | train loss 0.7160 | val loss 0.7552 acc 0.6793 AUC 0.8466 macroF1 0.6268 balAcc 0.6704 | lr->3.0e-04~3.0e-04 | 130s
+[INFO] Fase 2: fine-tuning penuh, maks 15 epoch, LR diskriminatif + cosine
+ep 05 [fase 2] | train loss 0.6658 | val loss 0.5207 acc 0.7859 AUC 0.9086 macroF1 0.7245 balAcc 0.7358 | lr->1.9e-06~9.9e-05 | 149s
+ep 06 [fase 2] | train loss 0.5133 | val loss 0.6560 acc 0.7261 AUC 0.9018 macroF1 0.6983 balAcc 0.7421 | lr->1.8e-06~9.6e-05 | 147s
+ep 07 [fase 2] | train loss 0.4227 | val loss 0.5353 acc 0.8066 AUC 0.9125 macroF1 0.7548 balAcc 0.7522 | lr->1.7e-06~9.0e-05 | 145s
+ep 08 [fase 2] | train loss 0.3361 | val loss 0.6530 acc 0.7813 AUC 0.9075 macroF1 0.7354 balAcc 0.7464 | lr->1.6e-06~8.3e-05 | 147s
+ep 09 [fase 2] | train loss 0.2639 | val loss 0.6394 acc 0.7755 AUC 0.9083 macroF1 0.7279 balAcc 0.7539 | lr->1.4e-06~7.5e-05 | 144s
+ep 10 [fase 2] | train loss 0.2053 | val loss 0.7252 acc 0.7851 AUC 0.9035 macroF1 0.7363 balAcc 0.7351 | lr->1.2e-06~6.5e-05 | 143s
+ep 11 [fase 2] | train loss 0.1581 | val loss 0.7208 acc 0.7892 AUC 0.9094 macroF1 0.7374 balAcc 0.7430 | lr->1.0e-06~5.5e-05 | 143s
+[INFO] Early stopping
+
+[HASIL] Total Waktu Pelatihan: 25.90 menit | Val Macro-F1 terbaik: 0.7548
+[INFO] Model terbaik dimuat dari /content/drive/MyDrive/best_melanoma_model_exp5g_convnext_tiny_res224_s42.pt
+=== CLASSIFICATION REPORT (VALIDATION SET - EXP 5-G) ===
+                      precision    recall  f1-score   support
+
+            melanoma       0.67      0.76      0.71       594
+               nevus       0.89      0.87      0.88      1462
+seborrheic_keratosis       0.73      0.62      0.67       354
+
+            accuracy                           0.81      2410
+           macro avg       0.76      0.75      0.75      2410
+        weighted avg       0.81      0.81      0.81      2410
+
+=== CLASSIFICATION REPORT (TEST SET - EXP 5-G) ===
+                      precision    recall  f1-score   support
+
+            melanoma       0.62      0.71      0.66       540
+               nevus       0.90      0.85      0.88      1491
+seborrheic_keratosis       0.66      0.66      0.66       312
+
+            accuracy                           0.79      2343
+           macro avg       0.73      0.74      0.73      2343
+        weighted avg       0.80      0.79      0.80      2343
+
+=== SKOR SELEKSI INTERNAL EKSPERIMEN 5-G ===
+Val Loss     : 0.5353
+Test AUC     : 0.9221
+Accuracy     : 79.47%
+Macro-F1     : 0.7333
+Mel Recall   : 0.7148
+SK Recall    : 0.6603
+Score Seleksi: 0.7258
+==========================================
+
+=== PERFORMA TEST PER SUMBER DATA ===
+HAM10000   n=1030  acc=0.8369 macroF1=0.7402 melRecall=0.6127 (n_mel=173)
+ISIC2019   n=1313  acc=0.7616 macroF1=0.7195 melRecall=0.7629 (n_mel=367)
+
