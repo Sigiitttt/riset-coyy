@@ -1,7 +1,7 @@
 # 🧠 DOKUMEN MEMORI UTAMA PROYEK (PERSISTENT MEMORY)
 **Proyek:** Data Understanding & Pemetaan Dataset ISIC (2016–2024) & HAM10000  
 **Lokasi Direktori:** `C:\Users\ARII\Downloads\Data Understanding Isic & Ham10k\`  
-* **Terakhir Diperbarui:** 14 Oktober 2026 (Sinkronisasi Hasil Final Riset Spark on YARN ConvNeXt-Tiny & Status TTA)
+* **Terakhir Diperbarui:** 15 Oktober 2026 (Pembaruan Protokol Perintah start/end & Sinkronisasi Folder kode/7_Final Riset/irisan Baru/ ke GitHub)
 
 ---
 
@@ -778,6 +778,11 @@ Seluruh laporan ini sudah memenuhi kaidah *Standar Excel Kulit* (hitam-putih, ta
   1. **Jalur Irisan 3 Kelas (`irisan_12W8P`, `irisan_12W12P`, `irisan_8W8P`, `irisan_8W12P`):** Sukses dieksekusi 100% pada klaster Apache Spark on YARN + HDFS streaming (24.466 citra). Akurasi Blind Test konsisten: **83,87%**, Macro-F1: **0,7867**, Test AUC: **0,9360**, Melanoma Recall: **70,93%**, SK Recall: **73,08%**, Nevus Precision: **0,89**. Preprocessing terdistribusi 434–585 detik, Shard write 15–20s, Centralized GPU training 704–712 detik.
   2. **Jalur Biner 2 Kelas (`biner_8W8P`, `biner_12W8P`, `biner_8W12P`, `biner_12W12P`):** Sukses dieksekusi 100% pada klaster Spark on YARN + HDFS. Akurasi Blind Test (3.090 citra uji): **84,43%**, Macro-F1: **0,8363**, Test AUC: **0,9247**, Malignant Recall: **80,59%**, Benign Precision: **0,88**. Preprocessing terdistribusi ~624 detik, Centralized GPU training ~891 detik.
   3. **Arsip & Bukti Output Teramankan:** Seluruh output log, perbandingan waktu tahapan sistem (allocation, preprocessing, shard_write, collect, training), dan classification report terverifikasi utuh di folder [`kode/7_Final Riset/`](kode/7_Final%20Riset/).
+* **Waktu Pembaruan Baru:** 15 Oktober 2026 (Pukul 14:42 WIB — Standardisasi Protokol start/end & Sinkronisasi Git).
+* **Rangkuman Sesi Ini:**
+  1. **Standardisasi Perintah `start` & `end`:** Menyelaraskan protokol `AGENTS.md` dan `CATATAN_MEMORI_PROYEK.md` agar secara resmi mendukung input teks langsung `start` dan `end` (tanpa tanda `/` yang dapat tertahan oleh popup slash command autocomplete IDE).
+  2. **Pelacakan & Sinkronisasi Git:** Menambahkan dan mengunggah 5 berkas notebook baru pada folder [`kode/7_Final Riset/irisan Baru/`](kode/7_Final%20Riset/irisan%20Baru/) (`12w12p.ipynb`, `12w8p.ipynb`, `8w12p.ipynb`, `8w8p.ipynb`, dan `Irisan_convnext_tiny_tanpa_spark (1).ipynb`).
+  3. **Status Push GitHub:** Berhasil di-commit (`c9d3e79`) dan disinkronkan ke remote `origin/main`.
 * **Status Memori:** **AMAN & PERSISTEN.** Seluruh progres, temuan ilmiah, dan log eksperimen telah diperbarui dalam dokumen memori proyek ini.
 
 ---
