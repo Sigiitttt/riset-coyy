@@ -7,9 +7,9 @@
 
 ## ⚡ PROTOKOL PERINTAH SESI KERJA
 
-* **`/start`** $\rightarrow$ **Pulihkan Memori & Langsung Lanjut:**  
+* **`start`** atau **`/start`** $\rightarrow$ **Pulihkan Memori & Langsung Lanjut:**  
   Agen wajib membaca dokumen ini, memulihkan status kerja terakhir, dan langsung melanjutkan langkah berikutnya dari checklist tanpa mengulang dari awal.
-* **`/end`** $\rightarrow$ **Sesi Selesai & Simpan Memori:**  
+* **`end`** atau **`/end`** $\rightarrow$ **Sesi Selesai & Simpan Memori:**  
   Agen menghentikan pekerjaan secara aman, memperbarui dokumen ini dengan progres terbaru, memperbarui checklist, dan menyimpan status proyek.
 
 
